@@ -2,6 +2,9 @@
 pragma solidity ^0.8.17;
 
 import "@zkevm/interfaces/IPolygonZkEVMBridge.sol";
+import {SafeERC20} from "@oz/token/ERC20/utils/SafeERC20.sol";
+
+import {IUSDC} from "./interfaces/IUSDC.sol";
 
 // - Minter
 // This contract will receive messages from the LXLY bridge on zkEVM,
@@ -14,10 +17,12 @@ import "@zkevm/interfaces/IPolygonZkEVMBridge.sol";
 contract ZkMinterBurner {
     // TODO: upgradeable
 
+    using SafeERC20 for IUSDC;
+
     IPolygonZkEVMBridge public immutable bridge;
     uint32 public immutable l1ChainId;
     address public immutable l1Contract;
-    address public immutable zkUsdc; // TODO: replace with IUSDC
+    IUSDC public immutable zkUsdc;
 
     constructor(
         IPolygonZkEVMBridge bridge_,
@@ -25,11 +30,10 @@ contract ZkMinterBurner {
         address l1Contract_,
         address zkUsdc_
     ) {
-        // TODO: TBI
         bridge = bridge_;
         l1ChainId = l1ChainId_;
         l1Contract = l1Contract_;
-        zkUsdc = zkUsdc_;
+        zkUsdc = IUSDC(zkUsdc_);
     }
 
     function onMessageReceived(
@@ -38,8 +42,6 @@ contract ZkMinterBurner {
         bytes memory data
     ) external payable {
         // Function triggered by the bridge once a message is received by the other network
-
-        // TODO: TBI
 
         require(msg.sender == address(bridge), "NOT_BRIDGE");
         require(l1Contract == originAddress, "NOT_L1_CONTRACT");
@@ -55,13 +57,12 @@ contract ZkMinterBurner {
         // which calls mint() on NativeUSDC
         // which mints new supply to the correct address.
 
-        // TODO: TBI
+        // this is redundant - the usdc contract does the same validations
+        // require(zkReceiver != address(0), "INVALID_RECEIVER");
+        // require(amount > 0, "INVALID_AMOUNT");
 
-        require(zkReceiver != address(0), "INVALID_RECEIVER");
-        require(amount > 0, "INVALID_AMOUNT");
-
-        // TODO: mint USDC.e to target address
-        // zkUsdc.mint(zkReceiver, amount)
+        // mint USDC.E to target address
+        zkUsdc.mint(zkReceiver, amount);
     }
 
     function withdraw(address l1Receiver, uint256 amount) external {
@@ -69,19 +70,16 @@ contract ZkMinterBurner {
         // which calls burn() on NativeUSDC burning the supply.
         // Message is sent to zkEVMBridge targeted to L1Escrow.
 
-        // TODO: TBI
-
         require(l1Receiver != address(0), "INVALID_RECEIVER");
-        require(amount > 0, "INVALID_AMOUNT");
+        // this is redundant - the usdc contract does the same validation
+        // require(amount > 0, "INVALID_AMOUNT");
 
-        // TODO: call USDCe.burn
-        // zkUsdc.safeTransferFrom(msg.sender, address(this), amount);
-        // zkUsdc.burn(amount)
+        // transfer the USDC.E from the user, and then burn it
+        zkUsdc.safeTransferFrom(msg.sender, address(this), amount);
+        zkUsdc.burn(amount);
 
-        // TODO: send msg to bridge w/ l1Receiver
-        // Encode message data
+        // message L1Escrow to unlock the L1_USDC and transfer it to l1Receiver
         bytes memory data = abi.encode(l1Receiver, amount);
-        // Send message data through the bridge
         bridge.bridgeMessage(l1ChainId, l1Contract, true, data); // TODO: forceUpdateGlobalExitRoot TBD
     }
 }
