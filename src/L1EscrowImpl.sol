@@ -2,29 +2,31 @@
 pragma solidity ^0.8.17;
 
 import "@zkevm/interfaces/IPolygonZkEVMBridge.sol";
-import {SafeERC20} from "@oz/token/ERC20/utils/SafeERC20.sol";
+import "@oz/access/Ownable.sol";
+import "@oz/proxy/utils/UUPSUpgradeable.sol";
+import "@oz/token/ERC20/utils/SafeERC20.sol";
 
 import {IUSDC} from "./interfaces/IUSDC.sol";
 
 // This contract will receive USDC from users on L1 and trigger BridgeMinter on the zkEVM via LxLy.
 // This contract will hold all of the backing for USDC on zkEVM.
-contract L1Escrow {
-    // TODO: upgradeable
-
+contract L1EscrowImpl is Ownable, UUPSUpgradeable {
     using SafeERC20 for IUSDC;
 
-    IPolygonZkEVMBridge public immutable bridge;
-    uint32 public immutable zkChainId;
-    address public immutable zkContract;
-    IUSDC public immutable l1Usdc;
+    // TODO: pack variables
+    IPolygonZkEVMBridge public bridge;
+    uint32 public zkChainId;
+    address public zkContract;
+    IUSDC public l1Usdc;
 
-    constructor(
-        IPolygonZkEVMBridge bridge_,
+    function initialize(
+        address bridge_,
         uint32 zkChainId_,
         address zkContract_,
         address l1Usdc_
-    ) {
-        bridge = bridge_;
+    ) external onlyOwner {
+        // TODO: use OZ's Initializable or add if(!initialized)
+        bridge = IPolygonZkEVMBridge(bridge_);
         zkChainId = zkChainId_;
         zkContract = zkContract_;
         l1Usdc = IUSDC(l1Usdc_);
@@ -60,6 +62,10 @@ contract L1Escrow {
         (address l1Addr, uint256 amount) = abi.decode(data, (address, uint256));
         _withdraw(l1Addr, amount);
     }
+
+    function _authorizeUpgrade(
+        address newImplementation
+    ) internal override onlyOwner {}
 
     function _withdraw(address l1Receiver, uint256 amount) internal {
         // Message claimed and sent to L1Escrow,

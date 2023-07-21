@@ -2,9 +2,10 @@
 pragma solidity ^0.8.17;
 
 import "@zkevm/interfaces/IPolygonZkEVMBridge.sol";
-import {Ownable} from "@oz/access/Ownable.sol";
-import {Pausable} from "@oz/security/Pausable.sol";
-import {SafeERC20} from "@oz/token/ERC20/utils/SafeERC20.sol";
+import "@oz/access/Ownable.sol";
+import "@oz/proxy/utils/UUPSUpgradeable.sol";
+import "@oz/security/Pausable.sol";
+import "@oz/token/ERC20/utils/SafeERC20.sol";
 
 import {IUSDC} from "./interfaces/IUSDC.sol";
 
@@ -13,25 +14,25 @@ import {IUSDC} from "./interfaces/IUSDC.sol";
 // This contract will also have a permissionless publicly callable function called “migrate” which when called will
 // withdraw all BridgedWrappedUSDC to L1 via the LXLY bridge. The beneficiary address will be the L1Escrow,
 // thus migrating the supply and settling the balance.
-contract NativeConverter is Ownable, Pausable {
-    // TODO: upgradeable
-
+contract NativeConverterImpl is Ownable, Pausable, UUPSUpgradeable {
     using SafeERC20 for IUSDC;
 
-    IPolygonZkEVMBridge public immutable bridge;
-    uint32 public immutable l1ChainId;
-    address public immutable l1Escrow;
-    IUSDC public immutable zkUSDCe;
-    IUSDC public immutable zkBWUSDC;
+    // TODO: pack variables
+    IPolygonZkEVMBridge public bridge;
+    uint32 public l1ChainId;
+    address public l1Escrow;
+    IUSDC public zkUSDCe;
+    IUSDC public zkBWUSDC;
 
-    constructor(
-        IPolygonZkEVMBridge bridge_,
+    function initialize(
+        address bridge_,
         uint32 l1ChainId_,
         address l1Escrow_,
         address zkUSDCe_,
         address zkBWUSDC_
-    ) {
-        bridge = bridge_;
+    ) external onlyOwner {
+        // TODO: use OZ's Initializable or add if(!initialized)
+        bridge = IPolygonZkEVMBridge(bridge_);
         l1ChainId = l1ChainId_;
         l1Escrow = l1Escrow_;
         zkUSDCe = IUSDC(zkUSDCe_);
@@ -59,8 +60,11 @@ contract NativeConverter is Ownable, Pausable {
 
         // TODO: TBD and TBI
         uint256 amount = zkBWUSDC.balanceOf(address(this));
-        // bytes memory data = abi.encode(l1Escrow, amount);
-        // bridge.bridgeMessage(l1ChainId, l1Escrow, true, data); // TODO: forceUpdateGlobalExitRoot TBD
+
+        if (amount > 0) {
+            // bytes memory data = abi.encode(l1Escrow, amount);
+            // bridge.bridgeMessage(l1ChainId, l1Escrow, true, data); // TODO: forceUpdateGlobalExitRoot TBD
+        }
     }
 
     /**
@@ -76,4 +80,8 @@ contract NativeConverter is Ownable, Pausable {
     function unpause() external onlyOwner {
         _unpause();
     }
+
+    function _authorizeUpgrade(
+        address newImplementation
+    ) internal override onlyOwner {}
 }

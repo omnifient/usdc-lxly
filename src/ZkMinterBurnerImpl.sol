@@ -2,7 +2,9 @@
 pragma solidity ^0.8.17;
 
 import "@zkevm/interfaces/IPolygonZkEVMBridge.sol";
-import {SafeERC20} from "@oz/token/ERC20/utils/SafeERC20.sol";
+import "@oz/access/Ownable.sol";
+import "@oz/proxy/utils/UUPSUpgradeable.sol";
+import "@oz/token/ERC20/utils/SafeERC20.sol";
 
 import {IUSDC} from "./interfaces/IUSDC.sol";
 
@@ -14,23 +16,23 @@ import {IUSDC} from "./interfaces/IUSDC.sol";
 // This contract will send messages to LXLY bridge on zkEVM,
 // it will hold the burner role giving it the ability to burn USDC.e based on instructions from LXLY,
 // triggering a release of assets on L1Escrow.
-contract ZkMinterBurner {
-    // TODO: upgradeable
-
+contract ZkMinterBurnerImpl is Ownable, UUPSUpgradeable {
     using SafeERC20 for IUSDC;
 
-    IPolygonZkEVMBridge public immutable bridge;
-    uint32 public immutable l1ChainId;
-    address public immutable l1Contract;
-    IUSDC public immutable zkUsdc;
+    // TODO: pack variables
+    IPolygonZkEVMBridge public bridge;
+    uint32 public l1ChainId;
+    address public l1Contract;
+    IUSDC public zkUsdc;
 
-    constructor(
-        IPolygonZkEVMBridge bridge_,
+    function initialize(
+        address bridge_,
         uint32 l1ChainId_,
         address l1Contract_,
         address zkUsdc_
-    ) {
-        bridge = bridge_;
+    ) external onlyOwner {
+        // TODO: use OZ's Initializable or add if(!initialized)
+        bridge = IPolygonZkEVMBridge(bridge_);
         l1ChainId = l1ChainId_;
         l1Contract = l1Contract_;
         zkUsdc = IUSDC(zkUsdc_);
@@ -52,19 +54,6 @@ contract ZkMinterBurner {
         _mint(zkAddr, amount);
     }
 
-    function _mint(address zkReceiver, uint256 amount) internal {
-        // Message claimed and sent to BridgeMinter,
-        // which calls mint() on NativeUSDC
-        // which mints new supply to the correct address.
-
-        // this is redundant - the usdc contract does the same validations
-        // require(zkReceiver != address(0), "INVALID_RECEIVER");
-        // require(amount > 0, "INVALID_AMOUNT");
-
-        // mint USDC.E to target address
-        zkUsdc.mint(zkReceiver, amount);
-    }
-
     function withdraw(address l1Receiver, uint256 amount) external {
         // User calls withdraw() on BridgeBurner
         // which calls burn() on NativeUSDC burning the supply.
@@ -81,5 +70,22 @@ contract ZkMinterBurner {
         // message L1Escrow to unlock the L1_USDC and transfer it to l1Receiver
         bytes memory data = abi.encode(l1Receiver, amount);
         bridge.bridgeMessage(l1ChainId, l1Contract, true, data); // TODO: forceUpdateGlobalExitRoot TBD
+    }
+
+    function _authorizeUpgrade(
+        address newImplementation
+    ) internal override onlyOwner {}
+
+    function _mint(address zkReceiver, uint256 amount) internal {
+        // Message claimed and sent to BridgeMinter,
+        // which calls mint() on NativeUSDC
+        // which mints new supply to the correct address.
+
+        // this is redundant - the usdc contract does the same validations
+        // require(zkReceiver != address(0), "INVALID_RECEIVER");
+        // require(amount > 0, "INVALID_AMOUNT");
+
+        // mint USDC.E to target address
+        zkUsdc.mint(zkReceiver, amount);
     }
 }
