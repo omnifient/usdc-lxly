@@ -4,14 +4,17 @@ pragma solidity ^0.8.17;
 import "@zkevm/interfaces/IPolygonZkEVMBridge.sol";
 import "@oz/access/Ownable.sol";
 import "@oz/proxy/utils/UUPSUpgradeable.sol";
+import "@oz/security/Pausable.sol";
 import "@oz/token/ERC20/utils/SafeERC20.sol";
 
 import {IUSDC} from "./interfaces/IUSDC.sol";
 
 // This contract will receive USDC from users on L1 and trigger BridgeMinter on the zkEVM via LxLy.
 // This contract will hold all of the backing for USDC on zkEVM.
-contract L1EscrowImpl is Ownable, UUPSUpgradeable {
+contract L1EscrowImpl is Ownable, Pausable, UUPSUpgradeable {
     using SafeERC20 for IUSDC;
+
+    event Deposit(address indexed from, address indexed to, uint256 amount);
 
     // TODO: pack variables
     IPolygonZkEVMBridge public bridge;
@@ -32,7 +35,10 @@ contract L1EscrowImpl is Ownable, UUPSUpgradeable {
         l1Usdc = IUSDC(l1Usdc_);
     }
 
-    function deposit(address zkReceiver, uint256 amount) external {
+    function deposit(
+        address zkReceiver,
+        uint256 amount
+    ) external whenNotPaused {
         // User calls deposit() on L1Escrow, L1_USDC transferred to L1Escrow
         // message sent to zkEVMBridge targeted to zkEVM’s BridgeMinter.
 
@@ -45,13 +51,15 @@ contract L1EscrowImpl is Ownable, UUPSUpgradeable {
         // tell our zk minter to mint usdc to the receiver
         bytes memory data = abi.encode(zkReceiver, amount);
         bridge.bridgeMessage(zkChainId, zkContract, true, data); // TODO: forceUpdateGlobalExitRoot TBD
+
+        emit Deposit(msg.sender, zkReceiver, amount);
     }
 
     function onMessageReceived(
         address originAddress,
         uint32 originChain,
         bytes memory data
-    ) external payable {
+    ) external payable whenNotPaused {
         // Function triggered by the bridge once a message is received by the other network
 
         require(msg.sender == address(bridge), "NOT_BRIDGE");
@@ -61,6 +69,20 @@ contract L1EscrowImpl is Ownable, UUPSUpgradeable {
         // decode message data and call withdraw
         (address l1Addr, uint256 amount) = abi.decode(data, (address, uint256));
         _withdraw(l1Addr, amount);
+    }
+
+    /**
+     * @dev called by the owner to pause, triggers stopped state
+     */
+    function pause() external onlyOwner {
+        _pause();
+    }
+
+    /**
+     * @dev called by the owner to unpause, returns to normal state
+     */
+    function unpause() external onlyOwner {
+        _unpause();
     }
 
     function _authorizeUpgrade(

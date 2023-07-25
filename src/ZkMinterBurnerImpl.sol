@@ -4,6 +4,7 @@ pragma solidity ^0.8.17;
 import "@zkevm/interfaces/IPolygonZkEVMBridge.sol";
 import "@oz/access/Ownable.sol";
 import "@oz/proxy/utils/UUPSUpgradeable.sol";
+import "@oz/security/Pausable.sol";
 import "@oz/token/ERC20/utils/SafeERC20.sol";
 
 import {IUSDC} from "./interfaces/IUSDC.sol";
@@ -16,8 +17,10 @@ import {IUSDC} from "./interfaces/IUSDC.sol";
 // This contract will send messages to LXLY bridge on zkEVM,
 // it will hold the burner role giving it the ability to burn USDC.e based on instructions from LXLY,
 // triggering a release of assets on L1Escrow.
-contract ZkMinterBurnerImpl is Ownable, UUPSUpgradeable {
+contract ZkMinterBurnerImpl is Ownable, Pausable, UUPSUpgradeable {
     using SafeERC20 for IUSDC;
+
+    event Withdraw(address indexed from, address indexed to, uint256 amount);
 
     // TODO: pack variables
     IPolygonZkEVMBridge public bridge;
@@ -42,7 +45,7 @@ contract ZkMinterBurnerImpl is Ownable, UUPSUpgradeable {
         address originAddress,
         uint32 originChain,
         bytes memory data
-    ) external payable {
+    ) external payable whenNotPaused {
         // Function triggered by the bridge once a message is received by the other network
 
         require(msg.sender == address(bridge), "NOT_BRIDGE");
@@ -54,7 +57,24 @@ contract ZkMinterBurnerImpl is Ownable, UUPSUpgradeable {
         _mint(zkAddr, amount);
     }
 
-    function withdraw(address l1Receiver, uint256 amount) external {
+    /**
+     * @dev called by the owner to pause, triggers stopped state
+     */
+    function pause() external onlyOwner {
+        _pause();
+    }
+
+    /**
+     * @dev called by the owner to unpause, returns to normal state
+     */
+    function unpause() external onlyOwner {
+        _unpause();
+    }
+
+    function withdraw(
+        address l1Receiver,
+        uint256 amount
+    ) external whenNotPaused {
         // User calls withdraw() on BridgeBurner
         // which calls burn() on NativeUSDC burning the supply.
         // Message is sent to zkEVMBridge targeted to L1Escrow.
@@ -70,6 +90,8 @@ contract ZkMinterBurnerImpl is Ownable, UUPSUpgradeable {
         // message L1Escrow to unlock the L1_USDC and transfer it to l1Receiver
         bytes memory data = abi.encode(l1Receiver, amount);
         bridge.bridgeMessage(l1ChainId, l1Contract, true, data); // TODO: forceUpdateGlobalExitRoot TBD
+
+        emit Withdraw(msg.sender, l1Receiver, amount);
     }
 
     function _authorizeUpgrade(
