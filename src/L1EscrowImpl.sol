@@ -14,6 +14,8 @@ import {IUSDC} from "./interfaces/IUSDC.sol";
 contract L1EscrowImpl is Ownable, Pausable, UUPSUpgradeable {
     using SafeERC20 for IUSDC;
 
+    event Deposit(address indexed from, address indexed to, uint256 amount);
+
     // TODO: pack variables
     IPolygonZkEVMBridge public bridge;
     uint32 public zkChainId;
@@ -49,6 +51,8 @@ contract L1EscrowImpl is Ownable, Pausable, UUPSUpgradeable {
         // tell our zk minter to mint usdc to the receiver
         bytes memory data = abi.encode(zkReceiver, amount);
         bridge.bridgeMessage(zkChainId, zkContract, true, data); // TODO: forceUpdateGlobalExitRoot TBD
+
+        emit Deposit(msg.sender, zkReceiver, amount);
     }
 
     function onMessageReceived(

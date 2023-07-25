@@ -17,6 +17,9 @@ import {IUSDC} from "./interfaces/IUSDC.sol";
 contract NativeConverterImpl is Ownable, Pausable, UUPSUpgradeable {
     using SafeERC20 for IUSDC;
 
+    event Convert(address indexed from, address indexed to, uint256 amount);
+    event Migrate(uint256 amount);
+
     // TODO: pack variables
     IPolygonZkEVMBridge public bridge;
     uint32 public l1ChainId;
@@ -39,7 +42,7 @@ contract NativeConverterImpl is Ownable, Pausable, UUPSUpgradeable {
         zkBWUSDC = IUSDC(zkBWUSDC_);
     }
 
-    function convert(uint256 amount, address receiver) external whenNotPaused {
+    function convert(address receiver, uint256 amount) external whenNotPaused {
         // User calls convert() on NativeConverter,
         // BridgeWrappedUSDC is transferred to NativeConverter
         // NativeConverter calls mint() on NativeUSDC which mints
@@ -51,6 +54,8 @@ contract NativeConverterImpl is Ownable, Pausable, UUPSUpgradeable {
         // transfer the wrapped usdc to the converter, and mint back native usdc
         zkBWUSDC.safeTransferFrom(msg.sender, address(this), amount);
         zkUSDCe.mint(receiver, amount);
+
+        emit Convert(msg.sender, receiver, amount);
     }
 
     function migrate() external whenNotPaused {
@@ -64,6 +69,8 @@ contract NativeConverterImpl is Ownable, Pausable, UUPSUpgradeable {
         if (amount > 0) {
             // bytes memory data = abi.encode(l1Escrow, amount);
             // bridge.bridgeMessage(l1ChainId, l1Escrow, true, data); // TODO: forceUpdateGlobalExitRoot TBD
+
+            emit Migrate(amount);
         }
     }
 

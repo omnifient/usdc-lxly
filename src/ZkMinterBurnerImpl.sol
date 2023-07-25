@@ -20,6 +20,8 @@ import {IUSDC} from "./interfaces/IUSDC.sol";
 contract ZkMinterBurnerImpl is Ownable, Pausable, UUPSUpgradeable {
     using SafeERC20 for IUSDC;
 
+    event Withdraw(address indexed from, address indexed to, uint256 amount);
+
     // TODO: pack variables
     IPolygonZkEVMBridge public bridge;
     uint32 public l1ChainId;
@@ -88,6 +90,8 @@ contract ZkMinterBurnerImpl is Ownable, Pausable, UUPSUpgradeable {
         // message L1Escrow to unlock the L1_USDC and transfer it to l1Receiver
         bytes memory data = abi.encode(l1Receiver, amount);
         bridge.bridgeMessage(l1ChainId, l1Contract, true, data); // TODO: forceUpdateGlobalExitRoot TBD
+
+        emit Withdraw(msg.sender, l1Receiver, amount);
     }
 
     function _authorizeUpgrade(
