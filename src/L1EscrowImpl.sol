@@ -27,8 +27,12 @@ contract L1EscrowImpl is Ownable, Pausable, UUPSUpgradeable {
         uint32 zkChainId_,
         address zkContract_,
         address l1Usdc_
-    ) external onlyOwner {
+    ) external onlyProxy {
+        require(msg.sender == _getAdmin(), "NOT_ADMIN");
+
         // TODO: use OZ's Initializable or add if(!initialized)
+        _transferOwnership(msg.sender); // TODO: arg from initialize
+
         bridge = IPolygonZkEVMBridge(bridge_);
         zkChainId = zkChainId_;
         zkContract = zkContract_;
