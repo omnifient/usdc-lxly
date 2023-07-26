@@ -63,12 +63,19 @@ contract NativeConverterImpl is Ownable, Pausable, UUPSUpgradeable {
         // have all BridgeWrappedUSDC withdrawn via the zkEVMBridge
         // moving the L1_USDC held in the zkEVMBridge to L1Escrow
 
-        // TODO: TBD and TBI
         uint256 amount = zkBWUSDC.balanceOf(address(this));
 
         if (amount > 0) {
-            // bytes memory data = abi.encode(l1Escrow, amount);
-            // bridge.bridgeMessage(l1ChainId, l1Escrow, true, data); // TODO: forceUpdateGlobalExitRoot TBD
+            zkBWUSDC.approve(address(bridge), amount);
+
+            bridge.bridgeAsset(
+                l1ChainId,
+                l1Escrow,
+                amount,
+                address(zkBWUSDC),
+                true, // forceUpdateGlobalExitRoot
+                "" // empty permitData because we're doing approve
+            );
 
             emit Migrate(amount);
         }
