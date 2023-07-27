@@ -30,7 +30,39 @@
 
 ## Testing
 
-TBD
+```bash
+# 1 start anvil (doesn't seem to like env vars)
+
+## 1.1 start L1 (ethereum mainnet) anvil
+## NOTE: using port 8001 for L1
+anvil --fork-url <https://eth-mainnet.g.alchemy.com/v2/YOUR_ALCHEMY_KEY> --chain-id 1 --port 8001 --fork-block-number 17785773
+
+## 1.2 start L2 (polygon zkevm) anvil
+## NOTE: using port 8101 for L2
+anvil --fork-url <https://polygonzkevm-mainnet.g.alchemy.com/v2/YOUR_ALCHEMY_KEY> --chain-id 1101 --port 8101 --fork-block-number 3172683
+
+# 2. deploy and initialize usdc-e to L2
+cd usdc-e/
+forge script script/DeployInit.s.sol:DeployInitUSDC --rpc-url http://localhost:8101 --broadcast -vvvv --legacy
+
+# 3. copy the output address (to be used in step 5)
+FiatTokenV2_1@0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512
+
+# 4. give minter permissions - this assumes we know the addresses
+forge script script/AddMinters.s.sol:AddMinters --rpc-url http://localhost:8101 --broadcast -vvvv --legacy
+
+# 5. paste the L2_USDC address into usdc-lxly/.env
+cd usdc-lxly/
+ADDRESS_L2_USDC=0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512
+
+# 6. make sure L1_RPC_URL and L2_RPC_URL are pointing to the local anvil nodes
+TEST_L1_RPC_URL=http://localhost:8001
+TEST_L2_RPC_URL=http://localhost:8101
+
+# 7. run the usdc-lxly tests
+cd usdc-lxly/
+forge test -vvvvv
+```
 
 ## Deployment
 
