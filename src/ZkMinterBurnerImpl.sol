@@ -1,11 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.17;
 
-import "@zkevm/interfaces/IPolygonZkEVMBridge.sol";
 import "@oz/access/Ownable.sol";
 import "@oz/proxy/utils/UUPSUpgradeable.sol";
 import "@oz/security/Pausable.sol";
 import "@oz/token/ERC20/utils/SafeERC20.sol";
+import "@zkevm/interfaces/IBridgeMessageReceiver.sol";
+import "@zkevm/interfaces/IPolygonZkEVMBridge.sol";
 
 import {IUSDC} from "./interfaces/IUSDC.sol";
 
@@ -17,7 +18,12 @@ import {IUSDC} from "./interfaces/IUSDC.sol";
 // This contract will send messages to LXLY bridge on zkEVM,
 // it will hold the burner role giving it the ability to burn USDC.e based on instructions from LXLY,
 // triggering a release of assets on L1Escrow.
-contract ZkMinterBurnerImpl is Ownable, Pausable, UUPSUpgradeable {
+contract ZkMinterBurnerImpl is
+    IBridgeMessageReceiver,
+    Ownable,
+    Pausable,
+    UUPSUpgradeable
+{
     using SafeERC20 for IUSDC;
 
     event Withdraw(address indexed from, address indexed to, uint256 amount);

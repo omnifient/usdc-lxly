@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.17;
 
-import "@zkevm/interfaces/IPolygonZkEVMBridge.sol";
 import "@oz/access/Ownable.sol";
 import "@oz/proxy/utils/UUPSUpgradeable.sol";
 import "@oz/security/Pausable.sol";
 import "@oz/token/ERC20/utils/SafeERC20.sol";
+import "@zkevm/interfaces/IPolygonZkEVMBridge.sol";
 
 import {IUSDC} from "./interfaces/IUSDC.sol";
 

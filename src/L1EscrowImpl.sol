@@ -1,17 +1,23 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.17;
 
-import "@zkevm/interfaces/IPolygonZkEVMBridge.sol";
 import "@oz/access/Ownable.sol";
 import "@oz/proxy/utils/UUPSUpgradeable.sol";
 import "@oz/security/Pausable.sol";
 import "@oz/token/ERC20/utils/SafeERC20.sol";
+import "@zkevm/interfaces/IBridgeMessageReceiver.sol";
+import "@zkevm/interfaces/IPolygonZkEVMBridge.sol";
 
 import {IUSDC} from "./interfaces/IUSDC.sol";
 
 // This contract will receive USDC from users on L1 and trigger BridgeMinter on the zkEVM via LxLy.
 // This contract will hold all of the backing for USDC on zkEVM.
-contract L1EscrowImpl is Ownable, Pausable, UUPSUpgradeable {
+contract L1EscrowImpl is
+    IBridgeMessageReceiver,
+    Ownable,
+    Pausable,
+    UUPSUpgradeable
+{
     using SafeERC20 for IUSDC;
 
     event Deposit(address indexed from, address indexed to, uint256 amount);
@@ -47,7 +53,6 @@ contract L1EscrowImpl is Ownable, Pausable, UUPSUpgradeable {
 
         // move usdc from the user to the escrow
         l1Usdc.safeTransferFrom(msg.sender, address(this), amount);
-
         // tell our zk minter to mint usdc to the receiver
         bytes memory data = abi.encode(zkReceiver, amount);
         bridge.bridgeMessage(zkChainId, zkContract, true, data); // TODO: forceUpdateGlobalExitRoot TBD
