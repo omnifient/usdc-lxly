@@ -5,6 +5,8 @@ import "lib/forge-std/src/console.sol";
 import "lib/forge-std/src/StdUtils.sol";
 import "lib/forge-std/src/Test.sol";
 
+import "../src/mocks/MockBridge.sol";
+
 import "../src/L1EscrowProxy.sol";
 import "../src/L1EscrowImpl.sol";
 import "../src/NativeConverterProxy.sol";
@@ -48,6 +50,22 @@ contract Base is Test {
     ZkMinterBurnerProxy private _minterBurnerProxy;
     ZkMinterBurnerImpl internal _minterBurner; // exposed to subclasses
 
+    /* ================= EVENTS ================= */
+    // copy of PolygonZKEVMBridge.BridgeEvent
+    event BridgeEvent(
+        uint8 leafType,
+        uint32 originNetwork,
+        address originAddress,
+        uint32 destinationNetwork,
+        address destinationAddress,
+        uint256 amount,
+        bytes metadata,
+        uint32 depositCount
+    );
+
+    // copy of L1EscrowImpl.Deposit
+    event Deposit(address indexed from, address indexed to, uint256 amount);
+
     /* ================= SETUP ================= */
     function setUp() public {
         // create the forks
@@ -67,6 +85,8 @@ contract Base is Test {
         _erc20L2Wusdc = IERC20(_l2Wusdc);
 
         // deploy and initialize contracts
+        _deployMockBridge();
+
         vm.startPrank(_owner);
         _deployL1();
         _deployL2();
@@ -74,8 +94,6 @@ contract Base is Test {
         _initL1();
         _initL2();
         vm.stopPrank();
-
-        // TODO: assign minter roles
 
         // fund alice with L1_USDC and L2_WUSDC
         _alice = vm.addr(1);
@@ -87,6 +105,47 @@ contract Base is Test {
     }
 
     /* ================= HELPERS ================= */
+    function _claimBridgeMessage(uint256 from, uint256 to) internal {
+        MockBridge b = MockBridge(_bridge);
+
+        vm.selectFork(from);
+        (
+            uint32 originNetwork,
+            address originAddress,
+            uint32 destinationNetwork,
+            address destinationAddress,
+            uint256 amount,
+            bytes memory metadata
+        ) = b.lastBridgeMessage();
+        bytes32[32] memory proof;
+
+        vm.selectFork(to);
+        b.claimMessage(
+            proof,
+            uint32(b.depositCount()),
+            "",
+            "",
+            originNetwork,
+            originAddress,
+            destinationNetwork,
+            destinationAddress,
+            amount,
+            metadata
+        );
+    }
+
+    function _deployMockBridge() internal {
+        vm.selectFork(_l1Fork);
+        MockBridge mb1 = new MockBridge();
+        bytes memory mb1Code = address(mb1).code;
+        vm.etch(_bridge, mb1Code);
+
+        vm.selectFork(_l2Fork);
+        MockBridge mb2 = new MockBridge();
+        bytes memory mb2Code = address(mb2).code;
+        vm.etch(_bridge, mb2Code);
+    }
+
     function _deployL1() internal {
         vm.selectFork(_l1Fork);
         _l1EscrowImpl = new L1EscrowImpl();
