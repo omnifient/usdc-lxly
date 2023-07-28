@@ -33,8 +33,12 @@ contract NativeConverterImpl is Ownable, Pausable, UUPSUpgradeable {
         address l1Escrow_,
         address zkUSDCe_,
         address zkBWUSDC_
-    ) external onlyOwner {
+    ) external onlyProxy {
+        require(msg.sender == _getAdmin(), "NOT_ADMIN");
+
         // TODO: use OZ's Initializable or add if(!initialized)
+        _transferOwnership(msg.sender); // TODO: arg from initialize
+
         bridge = IPolygonZkEVMBridge(bridge_);
         l1ChainId = l1ChainId_;
         l1Escrow = l1Escrow_;

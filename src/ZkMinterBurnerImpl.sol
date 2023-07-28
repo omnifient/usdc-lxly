@@ -39,8 +39,12 @@ contract ZkMinterBurnerImpl is
         uint32 l1ChainId_,
         address l1Contract_,
         address zkUsdc_
-    ) external onlyOwner {
+    ) external onlyProxy {
+        require(msg.sender == _getAdmin(), "NOT_ADMIN");
+
         // TODO: use OZ's Initializable or add if(!initialized)
+        _transferOwnership(msg.sender); // TODO: arg from initialize
+
         bridge = IPolygonZkEVMBridge(bridge_);
         l1ChainId = l1ChainId_;
         l1Contract = l1Contract_;

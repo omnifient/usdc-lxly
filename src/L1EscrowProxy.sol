@@ -5,7 +5,10 @@ import "@oz/proxy/ERC1967/ERC1967Proxy.sol";
 
 contract L1EscrowProxy is ERC1967Proxy {
     constructor(
-        address impl,
-        bytes memory data
-    ) payable ERC1967Proxy(impl, data) {}
+        address owner_,
+        address impl_,
+        bytes memory data_
+    ) payable ERC1967Proxy(impl_, data_) {
+        _changeAdmin(owner_);
+    }
 }
