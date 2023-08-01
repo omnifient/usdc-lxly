@@ -25,6 +25,7 @@ contract Base is Test {
 
     // addresses
     address internal _alice;
+    address internal _bob;
 
     address internal _owner;
     address internal _bridge;
@@ -83,6 +84,8 @@ contract Base is Test {
         _erc20L1Usdc = IERC20(_l1Usdc);
         _erc20L2Usdc = IERC20(_l2Usdc);
         _erc20L2Wusdc = IERC20(_l2Wusdc);
+        _alice = vm.addr(1);
+        _bob = vm.addr(2);
 
         // deploy and initialize contracts
         _deployMockBridge();
@@ -96,7 +99,6 @@ contract Base is Test {
         vm.stopPrank();
 
         // fund alice with L1_USDC and L2_WUSDC
-        _alice = vm.addr(1);
         vm.selectFork(_l1Fork);
         deal(_l1Usdc, _alice, _ONE_MILLION_USDC);
 
