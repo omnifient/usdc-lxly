@@ -20,6 +20,11 @@ struct BridgeMessage {
     bytes metadata;
 }
 
+/// @title A copy of PolygonZKEVMBridge (with some modifications) to be used in testing.
+/// @notice The code is a copy of PolygonZKEVMBridge.sol with slight modifications
+/// (commented the _verifyLeaf function to bypass the merkle tree verification since
+/// that's an offchain action, and added a helper struct to pass the messages around)
+/// because we cannot override internal non-virtual functions.
 contract MockBridge is DepositContract, EmergencyManager, IPolygonZkEVMBridge {
     using SafeERC20Upgradeable for IERC20Upgradeable;
 

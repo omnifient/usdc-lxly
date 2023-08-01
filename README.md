@@ -30,6 +30,8 @@
 
 ## Testing
 
+TODO: write a script to automate this
+
 ```bash
 # 1 start anvil (doesn't seem to like env vars)
 

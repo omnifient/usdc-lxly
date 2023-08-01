@@ -117,6 +117,8 @@ contract Base is Test {
             uint256 amount,
             bytes memory metadata
         ) = b.lastBridgeMessage();
+        // proof can be empty because our MockBridge bypasses the merkle tree verification
+        // i.e. _verifyLeaf is always successful
         bytes32[32] memory proof;
 
         vm.selectFork(to);
