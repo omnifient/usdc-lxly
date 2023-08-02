@@ -94,4 +94,25 @@ contract DepositMint is Base {
         vm.expectRevert();
         _l1Escrow.deposit(address(0), _toUSDC(1000));
     }
+
+    /// @notice Alice approves a 500 L1_USDC spend but tries to deposit 1000 L1_USDC to L1Escrow.
+    function testRevertInsufficientApproval() public {
+        vm.selectFork(_l1Fork);
+        vm.startPrank(_alice);
+
+        // setup
+        uint256 approvalAmount = _toUSDC(500);
+        uint256 depositAmount = _toUSDC(1000);
+
+        uint256 balance1 = _erc20L1Usdc.balanceOf(_alice);
+        _erc20L1Usdc.approve(address(_l1Escrow), approvalAmount);
+
+        // deposit to L1Escrow
+        vm.expectRevert();
+        _l1Escrow.deposit(_alice, depositAmount);
+
+        // alice's L1_USDC balance is the same
+        uint256 balance2 = _erc20L1Usdc.balanceOf(_alice);
+        assertEq(balance1, balance2);
+    }
 }
