@@ -2,9 +2,24 @@
 pragma solidity ^0.8.17;
 
 import {Base} from "./Base.sol";
-import "lib/forge-std/src/interfaces/IERC20.sol";
 
 contract DepositMint is Base {
+    function _emitDepositBridgeEvent(
+        address receiver,
+        uint256 amount
+    ) internal {
+        emit BridgeEvent(
+            1, // _LEAF_TYPE_MESSAGE
+            _l1ChainId, // Deposit always come from L1
+            address(_l1Escrow), // from
+            _l2ChainId, // Deposit always targets L2
+            address(_minterBurner), // destinationAddress
+            0, // msg.value
+            abi.encode(receiver, amount), // metadata
+            uint32(86512) // ATTN: deposit count in mainnet block 17785773
+        );
+    }
+
     /// @notice Alice deposits 1000 L1_USDC to L1Escrow, and MinterBurner mints back 1000 L2_USDC
     function testDepositToL1EscrowMintsInL2() public {
         vm.selectFork(_l1Fork);
@@ -16,8 +31,8 @@ contract DepositMint is Base {
         _erc20L1Usdc.approve(address(_l1Escrow), amount);
 
         // check that a bridge event is emitted - NOTE: checkData is false
-        vm.expectEmit(false, false, false, false, _bridge);
-        emit BridgeEvent(0, 0, address(0), 0, address(0), 0, "", 0);
+        vm.expectEmit(_bridge);
+        _emitDepositBridgeEvent(_alice, amount);
 
         // check that our deposit event is emitted
         vm.expectEmit(address(_l1Escrow));
@@ -51,7 +66,7 @@ contract DepositMint is Base {
 
         // check that a bridge event is emitted - NOTE: checkData is false
         vm.expectEmit(false, false, false, false, _bridge);
-        emit BridgeEvent(0, 0, address(0), 0, address(0), 0, "", 0);
+        _emitDepositBridgeEvent(_bob, amount);
 
         // check that our deposit event is emitted
         vm.expectEmit(address(_l1Escrow));

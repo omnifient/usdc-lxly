@@ -1,10 +1,6 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.17;
 
-import "lib/forge-std/src/console.sol";
-import "lib/forge-std/src/StdUtils.sol";
-import "lib/forge-std/src/Test.sol";
-
 import {Base} from "./Base.sol";
 
 contract WithdrawUnlock is Base {
@@ -22,6 +18,22 @@ contract WithdrawUnlock is Base {
         _depositToL1Escrow();
     }
 
+    function _emitWithdrawBridgeEvent(
+        address receiver,
+        uint256 amount
+    ) internal {
+        emit BridgeEvent(
+            1, // _LEAF_TYPE_MESSAGE
+            _l2ChainId, // Withdraw always come from L2
+            address(_minterBurner), // from
+            _l1ChainId, // Withdraw always targets L1
+            address(_l1Escrow), // destinationAddress
+            0, // msg.value
+            abi.encode(receiver, amount), // metadata
+            uint32(86512) // ATTN: deposit count in mainnet block 17785773
+        );
+    }
+
     /// @notice Alice has 1000 L2_USDC, withdraws it all, and gets back 1000 L1_USDC
     function testFullWithdrawBurnsAndUnlocksInL1() public {
         // get the initial L1 balance
@@ -35,7 +47,7 @@ contract WithdrawUnlock is Base {
 
         // check that a bridge event is emitted - NOTE: checkData is false
         vm.expectEmit(false, false, false, false, _bridge);
-        emit BridgeEvent(0, 0, address(0), 0, address(0), 0, "", 0);
+        _emitWithdrawBridgeEvent(_alice, amount);
 
         // check that our withdrawal event is emitted
         vm.expectEmit(address(_minterBurner));
@@ -70,7 +82,7 @@ contract WithdrawUnlock is Base {
 
         // check that a bridge event is emitted - NOTE: checkData is false
         vm.expectEmit(false, false, false, false, _bridge);
-        emit BridgeEvent(0, 0, address(0), 0, address(0), 0, "", 0);
+        _emitWithdrawBridgeEvent(_alice, amount);
 
         // check that our withdrawal event is emitted
         vm.expectEmit(address(_minterBurner));
@@ -105,7 +117,7 @@ contract WithdrawUnlock is Base {
 
         // check that a bridge event is emitted - NOTE: checkData is false
         vm.expectEmit(false, false, false, false, _bridge);
-        emit BridgeEvent(0, 0, address(0), 0, address(0), 0, "", 0);
+        _emitWithdrawBridgeEvent(_bob, amount);
 
         // check that our withdrawal event is emitted
         vm.expectEmit(address(_minterBurner));
