@@ -152,4 +152,23 @@ contract WithdrawUnlock is Base {
         vm.expectRevert();
         _minterBurner.withdraw(_alice, 0);
     }
+
+    /// @notice Alice approves spending 500 L2_USDC and tries to withdraw 1000 L2_USDC.
+    function testRevertWhenInsufficientApproval() public {
+        // setup the withdrawal
+        vm.selectFork(_l2Fork);
+        uint256 balance1 = _erc20L2Usdc.balanceOf(_alice);
+
+        uint256 approvalAmount = _toUSDC(500);
+        uint256 withdrawAmount = _toUSDC(1000);
+        _erc20L2Usdc.approve(address(_minterBurner), approvalAmount);
+
+        // try to withdraw the L2_USDC
+        vm.expectRevert();
+        _minterBurner.withdraw(_alice, withdrawAmount);
+
+        // alice's L2_USDC balance is the same
+        uint256 balance2 = _erc20L2Usdc.balanceOf(_alice);
+        assertEq(balance1, balance2);
+    }
 }
