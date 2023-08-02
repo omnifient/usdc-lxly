@@ -52,6 +52,8 @@ contract DepositMint is Base {
         vm.selectFork(_l2Fork);
         uint256 balance3 = _erc20L2Usdc.balanceOf(_alice);
         assertEq(balance3, amount);
+
+        _assertUsdcSupplyAndBalancesMatch();
     }
 
     /// @notice Alice deposits 1000 L1_USDC to L1Escrow for Bob, and MinterBurner mints the L2_USDC accordingly.
@@ -88,6 +90,8 @@ contract DepositMint is Base {
 
         // but bob's L2_USDC balance increased
         assertEq(_erc20L2Usdc.balanceOf(_bob), amount);
+
+        _assertUsdcSupplyAndBalancesMatch();
     }
 
     /// @notice Alice tries to deposit 0 L1_USDC to L1Escrow.
@@ -98,6 +102,8 @@ contract DepositMint is Base {
         // try to deposit 0 to L1Escrow
         vm.expectRevert();
         _l1Escrow.deposit(_alice, 0);
+
+        _assertUsdcSupplyAndBalancesMatch();
     }
 
     /// @notice Alice tries to deposit 1000 L1_USDC to L1Escrow for address zero.
@@ -105,13 +111,15 @@ contract DepositMint is Base {
         vm.selectFork(_l1Fork);
         vm.startPrank(_alice);
 
-        // try to deposit 0 to L1Escrow
+        // try to deposit 1000 to L1Escrow for address 0
         vm.expectRevert();
         _l1Escrow.deposit(address(0), _toUSDC(1000));
+
+        _assertUsdcSupplyAndBalancesMatch();
     }
 
     /// @notice Alice approves a 500 L1_USDC spend but tries to deposit 1000 L1_USDC to L1Escrow.
-    function testRevertInsufficientApproval() public {
+    function testRevertDepositWithInsufficientApproval() public {
         vm.selectFork(_l1Fork);
         vm.startPrank(_alice);
 
@@ -129,5 +137,7 @@ contract DepositMint is Base {
         // alice's L1_USDC balance is the same
         uint256 balance2 = _erc20L1Usdc.balanceOf(_alice);
         assertEq(balance1, balance2);
+
+        _assertUsdcSupplyAndBalancesMatch();
     }
 }

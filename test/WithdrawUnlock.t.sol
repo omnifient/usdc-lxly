@@ -67,6 +67,8 @@ contract WithdrawUnlock is Base {
         vm.selectFork(_l1Fork);
         uint256 l1Balance2 = _erc20L1Usdc.balanceOf(_alice);
         assertEq(l1Balance2 - l1Balance1, amount);
+
+        _assertUsdcSupplyAndBalancesMatch();
     }
 
     /// @notice Alice has 1000 L2_USDC, withdraws 75%, and gets back 750 L1_USDC
@@ -102,6 +104,8 @@ contract WithdrawUnlock is Base {
         vm.selectFork(_l1Fork);
         uint256 l1Balance2 = _erc20L1Usdc.balanceOf(_alice);
         assertEq(l1Balance2 - l1Balance1, amount);
+
+        _assertUsdcSupplyAndBalancesMatch();
     }
 
     /// @notice Alice has 1000 L2_USDC, withdraws it all to Bob, who receives 1000 L1_USDC
@@ -140,6 +144,22 @@ contract WithdrawUnlock is Base {
 
         // alice's L1_USDC balance is the same
         assertEq(_erc20L1Usdc.balanceOf(_alice), aliceL1Balance);
+
+        _assertUsdcSupplyAndBalancesMatch();
+    }
+
+    /// @notice Alice has 1000 L2_USDC and tries to withdraw to address 0.
+    function testRevertWhenWithdrawingToAddressZero() public {
+        // setup
+        vm.selectFork(_l2Fork);
+        uint256 amount = _toUSDC(1000);
+        _erc20L2Usdc.approve(address(_minterBurner), amount);
+
+        // reverts when trying to withdraw the L2_USDC
+        vm.expectRevert();
+        _minterBurner.withdraw(address(0), amount);
+
+        _assertUsdcSupplyAndBalancesMatch();
     }
 
     /// @notice Alice has 1000 L2_USDC and tries to withdraw 2000 L2_USDC.
@@ -152,6 +172,8 @@ contract WithdrawUnlock is Base {
         // reverts when trying to withdraw the L2_USDC
         vm.expectRevert();
         _minterBurner.withdraw(_alice, amount);
+
+        _assertUsdcSupplyAndBalancesMatch();
     }
 
     /// @notice Alice tries to withdraw 0 L2_USDC.
@@ -163,10 +185,12 @@ contract WithdrawUnlock is Base {
         // reverts when trying to withdraw zero
         vm.expectRevert();
         _minterBurner.withdraw(_alice, 0);
+
+        _assertUsdcSupplyAndBalancesMatch();
     }
 
     /// @notice Alice approves spending 500 L2_USDC and tries to withdraw 1000 L2_USDC.
-    function testRevertWhenInsufficientApproval() public {
+    function testRevertWithdrawWithInsufficientApproval() public {
         // setup the withdrawal
         vm.selectFork(_l2Fork);
         uint256 balance1 = _erc20L2Usdc.balanceOf(_alice);
@@ -182,5 +206,7 @@ contract WithdrawUnlock is Base {
         // alice's L2_USDC balance is the same
         uint256 balance2 = _erc20L2Usdc.balanceOf(_alice);
         assertEq(balance1, balance2);
+
+        _assertUsdcSupplyAndBalancesMatch();
     }
 }
