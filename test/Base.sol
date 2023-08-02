@@ -79,7 +79,6 @@ contract Base is Test {
         _l2ChainId = uint32(vm.envUint("L2_CHAIN_ID"));
 
         // retrieve the addresses
-        _owner = vm.envAddress("TEST_ADDRESS_OWNER");
         _bridge = vm.envAddress("ADDRESS_LXLY_BRIDGE");
         _l1Usdc = vm.envAddress("ADDRESS_L1_USDC");
         _l2Usdc = vm.envAddress("ADDRESS_L2_USDC");
@@ -87,6 +86,7 @@ contract Base is Test {
         _erc20L1Usdc = IERC20(_l1Usdc);
         _erc20L2Usdc = IERC20(_l2Usdc);
         _erc20L2Wusdc = IERC20(_l2Wusdc);
+        _owner = vm.addr(8);
         _alice = vm.addr(1);
         _bob = vm.addr(2);
 
