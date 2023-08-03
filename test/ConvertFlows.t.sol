@@ -79,7 +79,7 @@ contract Convert is Base {
         _erc20L2Wusdc.approve(address(_nativeConverter), approveAmount);
 
         // call convert
-        vm.expectRevert();
+        vm.expectRevert("ERC20: insufficient allowance");
         _nativeConverter.convert(_alice, convertAmount);
 
         // alice's L2_WUSDC balance didn't change
@@ -98,19 +98,21 @@ contract Convert is Base {
         vm.startPrank(_alice);
 
         // try to convert 0 L2_WUSDC to L2_USDC
-        vm.expectRevert();
+        _erc20L2Wusdc.approve(address(_nativeConverter), 0);
+        vm.expectRevert("INVALID_AMOUNT");
         _nativeConverter.convert(_alice, 0);
 
         _assertUsdcSupplyAndBalancesMatch();
     }
 
-    /// @notice Alice tries to deposit 1000 L1_USDC to L1Escrow for address zero.
+    /// @notice Alice tries to convert 1000 L2_WUSDC for address zero.
     function testRevertConvertingForAddressZero() public {
         vm.selectFork(_l2Fork);
         vm.startPrank(_alice);
 
         // try to convert 1000 L2_WUSDC for address 0
-        vm.expectRevert();
+        _erc20L2Wusdc.approve(address(_nativeConverter), _toUSDC(1000));
+        vm.expectRevert("INVALID_RECEIVER");
         _nativeConverter.convert(address(0), _toUSDC(1000));
 
         _assertUsdcSupplyAndBalancesMatch();

@@ -30,7 +30,7 @@ contract DepositMint is Base {
         uint256 balance1 = _erc20L1Usdc.balanceOf(_alice);
         _erc20L1Usdc.approve(address(_l1Escrow), amount);
 
-        // check that a bridge event is emitted - NOTE: checkData is false
+        // check that a bridge event is emitted
         vm.expectEmit(_bridge);
         _emitDepositBridgeEvent(_alice, amount);
 
@@ -66,7 +66,7 @@ contract DepositMint is Base {
         uint256 balance1 = _erc20L1Usdc.balanceOf(_alice);
         _erc20L1Usdc.approve(address(_l1Escrow), amount);
 
-        // check that a bridge event is emitted - NOTE: checkData is false
+        // check that a bridge event is emitted
         vm.expectEmit(false, false, false, false, _bridge);
         _emitDepositBridgeEvent(_bob, amount);
 
@@ -100,7 +100,8 @@ contract DepositMint is Base {
         vm.startPrank(_alice);
 
         // try to deposit 0 to L1Escrow
-        vm.expectRevert();
+        _erc20L1Usdc.approve(address(_l1Escrow), 0);
+        vm.expectRevert("INVALID_AMOUNT");
         _l1Escrow.deposit(_alice, 0);
 
         _assertUsdcSupplyAndBalancesMatch();
@@ -112,7 +113,8 @@ contract DepositMint is Base {
         vm.startPrank(_alice);
 
         // try to deposit 1000 to L1Escrow for address 0
-        vm.expectRevert();
+        _erc20L1Usdc.approve(address(_l1Escrow), _toUSDC(1000));
+        vm.expectRevert("INVALID_RECEIVER");
         _l1Escrow.deposit(address(0), _toUSDC(1000));
 
         _assertUsdcSupplyAndBalancesMatch();
@@ -131,7 +133,7 @@ contract DepositMint is Base {
         _erc20L1Usdc.approve(address(_l1Escrow), approvalAmount);
 
         // deposit to L1Escrow
-        vm.expectRevert();
+        vm.expectRevert("ERC20: transfer amount exceeds allowance");
         _l1Escrow.deposit(_alice, depositAmount);
 
         // alice's L1_USDC balance is the same

@@ -45,7 +45,7 @@ contract WithdrawUnlock is Base {
         uint256 amount = _toUSDC(1000);
         _erc20L2Usdc.approve(address(_minterBurner), amount);
 
-        // check that a bridge event is emitted - NOTE: checkData is false
+        // check that a bridge event is emitted
         vm.expectEmit(false, false, false, false, _bridge);
         _emitWithdrawBridgeEvent(_alice, amount);
 
@@ -82,7 +82,7 @@ contract WithdrawUnlock is Base {
         uint256 amount = _toUSDC(750);
         _erc20L2Usdc.approve(address(_minterBurner), amount);
 
-        // check that a bridge event is emitted - NOTE: checkData is false
+        // check that a bridge event is emitted
         vm.expectEmit(false, false, false, false, _bridge);
         _emitWithdrawBridgeEvent(_alice, amount);
 
@@ -119,7 +119,7 @@ contract WithdrawUnlock is Base {
         uint256 amount = _toUSDC(1000);
         _erc20L2Usdc.approve(address(_minterBurner), amount);
 
-        // check that a bridge event is emitted - NOTE: checkData is false
+        // check that a bridge event is emitted
         vm.expectEmit(false, false, false, false, _bridge);
         _emitWithdrawBridgeEvent(_bob, amount);
 
@@ -156,7 +156,7 @@ contract WithdrawUnlock is Base {
         _erc20L2Usdc.approve(address(_minterBurner), amount);
 
         // reverts when trying to withdraw the L2_USDC
-        vm.expectRevert();
+        vm.expectRevert("INVALID_RECEIVER");
         _minterBurner.withdraw(address(0), amount);
 
         _assertUsdcSupplyAndBalancesMatch();
@@ -170,7 +170,7 @@ contract WithdrawUnlock is Base {
         _erc20L2Usdc.approve(address(_minterBurner), amount);
 
         // reverts when trying to withdraw the L2_USDC
-        vm.expectRevert();
+        vm.expectRevert("ERC20: transfer amount exceeds balance");
         _minterBurner.withdraw(_alice, amount);
 
         _assertUsdcSupplyAndBalancesMatch();
@@ -183,7 +183,7 @@ contract WithdrawUnlock is Base {
         _erc20L2Usdc.approve(address(_minterBurner), 0);
 
         // reverts when trying to withdraw zero
-        vm.expectRevert();
+        vm.expectRevert("FiatToken: burn amount not greater than 0");
         _minterBurner.withdraw(_alice, 0);
 
         _assertUsdcSupplyAndBalancesMatch();
@@ -200,7 +200,7 @@ contract WithdrawUnlock is Base {
         _erc20L2Usdc.approve(address(_minterBurner), approvalAmount);
 
         // try to withdraw the L2_USDC
-        vm.expectRevert();
+        vm.expectRevert("ERC20: transfer amount exceeds allowance");
         _minterBurner.withdraw(_alice, withdrawAmount);
 
         // alice's L2_USDC balance is the same
