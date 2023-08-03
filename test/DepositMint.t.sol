@@ -2,9 +2,24 @@
 pragma solidity ^0.8.17;
 
 import {Base} from "./Base.sol";
-import "lib/forge-std/src/interfaces/IERC20.sol";
 
 contract DepositMint is Base {
+    function _emitDepositBridgeEvent(
+        address receiver,
+        uint256 amount
+    ) internal {
+        emit BridgeEvent(
+            1, // _LEAF_TYPE_MESSAGE
+            _l1ChainId, // Deposit always come from L1
+            address(_l1Escrow), // from
+            _l2ChainId, // Deposit always targets L2
+            address(_minterBurner), // destinationAddress
+            0, // msg.value
+            abi.encode(receiver, amount), // metadata
+            uint32(86512) // ATTN: deposit count in mainnet block 17785773
+        );
+    }
+
     /// @notice Alice deposits 1000 L1_USDC to L1Escrow, and MinterBurner mints back 1000 L2_USDC
     function testDepositToL1EscrowMintsInL2() public {
         vm.selectFork(_l1Fork);
@@ -16,8 +31,8 @@ contract DepositMint is Base {
         _erc20L1Usdc.approve(address(_l1Escrow), amount);
 
         // check that a bridge event is emitted - NOTE: checkData is false
-        vm.expectEmit(false, false, false, false, _bridge);
-        emit BridgeEvent(0, 0, address(0), 0, address(0), 0, "", 0);
+        vm.expectEmit(_bridge);
+        _emitDepositBridgeEvent(_alice, amount);
 
         // check that our deposit event is emitted
         vm.expectEmit(address(_l1Escrow));
@@ -37,6 +52,8 @@ contract DepositMint is Base {
         vm.selectFork(_l2Fork);
         uint256 balance3 = _erc20L2Usdc.balanceOf(_alice);
         assertEq(balance3, amount);
+
+        _assertUsdcSupplyAndBalancesMatch();
     }
 
     /// @notice Alice deposits 1000 L1_USDC to L1Escrow for Bob, and MinterBurner mints the L2_USDC accordingly.
@@ -51,7 +68,7 @@ contract DepositMint is Base {
 
         // check that a bridge event is emitted - NOTE: checkData is false
         vm.expectEmit(false, false, false, false, _bridge);
-        emit BridgeEvent(0, 0, address(0), 0, address(0), 0, "", 0);
+        _emitDepositBridgeEvent(_bob, amount);
 
         // check that our deposit event is emitted
         vm.expectEmit(address(_l1Escrow));
@@ -73,6 +90,8 @@ contract DepositMint is Base {
 
         // but bob's L2_USDC balance increased
         assertEq(_erc20L2Usdc.balanceOf(_bob), amount);
+
+        _assertUsdcSupplyAndBalancesMatch();
     }
 
     /// @notice Alice tries to deposit 0 L1_USDC to L1Escrow.
@@ -83,6 +102,8 @@ contract DepositMint is Base {
         // try to deposit 0 to L1Escrow
         vm.expectRevert();
         _l1Escrow.deposit(_alice, 0);
+
+        _assertUsdcSupplyAndBalancesMatch();
     }
 
     /// @notice Alice tries to deposit 1000 L1_USDC to L1Escrow for address zero.
@@ -90,13 +111,15 @@ contract DepositMint is Base {
         vm.selectFork(_l1Fork);
         vm.startPrank(_alice);
 
-        // try to deposit 0 to L1Escrow
+        // try to deposit 1000 to L1Escrow for address 0
         vm.expectRevert();
         _l1Escrow.deposit(address(0), _toUSDC(1000));
+
+        _assertUsdcSupplyAndBalancesMatch();
     }
 
     /// @notice Alice approves a 500 L1_USDC spend but tries to deposit 1000 L1_USDC to L1Escrow.
-    function testRevertInsufficientApproval() public {
+    function testRevertDepositWithInsufficientApproval() public {
         vm.selectFork(_l1Fork);
         vm.startPrank(_alice);
 
@@ -114,5 +137,7 @@ contract DepositMint is Base {
         // alice's L1_USDC balance is the same
         uint256 balance2 = _erc20L1Usdc.balanceOf(_alice);
         assertEq(balance1, balance2);
+
+        _assertUsdcSupplyAndBalancesMatch();
     }
 }

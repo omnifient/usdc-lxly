@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.17;
 
-import "lib/forge-std/src/console.sol";
-import "lib/forge-std/src/StdUtils.sol";
 import "lib/forge-std/src/Test.sol";
 
 import "../src/mocks/MockBridge.sol";
@@ -111,6 +109,20 @@ contract Base is Test {
     }
 
     /* ================= HELPERS ================= */
+    function _assertUsdcSupplyAndBalancesMatch() internal {
+        vm.selectFork(_l1ChainId);
+        uint256 l1EscrowBalance = _erc20L1Usdc.balanceOf(address(_l1Escrow));
+
+        vm.selectFork(_l2ChainId);
+        uint256 l2TotalSupply = _erc20L2Usdc.totalSupply();
+        uint256 wUsdcConverterBalance = _erc20L2Wusdc.balanceOf(
+            address(_nativeConverter)
+        );
+
+        // zkUsdc.totalSupply <= l1Usdc.balanceOf(l1Escrow) + bwUSDC.balanceOf(nativeConverter)
+        assertLe(l2TotalSupply, l1EscrowBalance + wUsdcConverterBalance);
+    }
+
     function _claimBridgeMessage(uint256 from, uint256 to) internal {
         MockBridge b = MockBridge(_bridge);
 
