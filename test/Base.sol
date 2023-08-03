@@ -86,6 +86,7 @@ contract Base is Test {
         _erc20L1Usdc = IERC20(_l1Usdc);
         _erc20L2Usdc = IERC20(_l2Usdc);
         _erc20L2Wusdc = IERC20(_l2Wusdc);
+        
         _owner = vm.addr(8);
         _alice = vm.addr(1);
         _bob = vm.addr(2);
