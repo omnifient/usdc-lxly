@@ -62,8 +62,14 @@ contract Base is Test {
         uint32 depositCount
     );
 
+    // copy of NativeConverterImpl.Convert
+    event Convert(address indexed from, address indexed to, uint256 amount);
+
     // copy of L1EscrowImpl.Deposit
     event Deposit(address indexed from, address indexed to, uint256 amount);
+
+    // copy of NativeConverterImpl.Migrate
+    event Migrate(uint256 amount);
 
     // copy of ZkMinterBurner.Withdraw
     event Withdraw(address indexed from, address indexed to, uint256 amount);
