@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.17;
 
-import "lib/forge-std/src/console.sol";
 import "lib/forge-std/src/Script.sol";
 
 import "../src/L1EscrowImpl.sol";
