@@ -90,7 +90,7 @@ contract Base is Test {
         _erc20L1Usdc = IERC20(_l1Usdc);
         _erc20L2Usdc = IERC20(_l2Usdc);
         _erc20L2Wusdc = IERC20(_l2Wusdc);
-        
+
         _owner = vm.addr(8);
         _alice = vm.addr(1);
         _bob = vm.addr(2);
@@ -153,6 +153,38 @@ contract Base is Test {
             "",
             originNetwork,
             originAddress,
+            destinationNetwork,
+            destinationAddress,
+            amount,
+            metadata
+        );
+    }
+
+    function _claimBridgeAsset(uint256 from, uint256 to) internal {
+        MockBridge b = MockBridge(_bridge);
+
+        vm.selectFork(from);
+        (
+            uint32 originNetwork,
+            address originTokenAddress,
+            uint32 destinationNetwork,
+            address destinationAddress,
+            uint256 amount,
+            bytes memory metadata
+        ) = b.lastBridgeMessage();
+        // proof and index can be empty because our MockBridge bypasses the merkle tree verification
+        // i.e. _verifyLeaf is always successful
+        bytes32[32] memory proof;
+        uint32 index;
+
+        vm.selectFork(to);
+        b.claimAsset(
+            proof,
+            index,
+            "",
+            "",
+            originNetwork,
+            originTokenAddress,
             destinationNetwork,
             destinationAddress,
             amount,

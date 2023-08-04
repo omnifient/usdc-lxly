@@ -251,6 +251,15 @@ contract MockBridge is DepositContract, EmergencyManager, IPolygonZkEVMBridge {
         if (forceUpdateGlobalExitRoot) {
             _updateGlobalExitRoot();
         }
+
+        lastBridgeMessage = BridgeMessage(
+            originNetwork,
+            originTokenAddress,
+            destinationNetwork,
+            destinationAddress,
+            amount,
+            metadata
+        );
     }
 
     /**
