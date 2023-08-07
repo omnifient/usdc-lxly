@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.17;
 
-import {Base} from "./Base.sol";
+import {Base} from "../Base.sol";
 
-contract Convert is Base {
+contract ConvertFlows is Base {
     /// @notice Alice converts 1000 L2_WUSDC to L2_USDC for herself.
     function testConvertsWrappedUsdcToNativeUsdc() public {
         vm.selectFork(_l2Fork);

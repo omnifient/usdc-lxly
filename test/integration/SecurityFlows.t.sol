@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.17;
 
-import {Base} from "./Base.sol";
+import {Base} from "../Base.sol";
 
 contract SecurityFlows is Base {
     /// @notice Calling L1Escrow.onMessageReceived fails

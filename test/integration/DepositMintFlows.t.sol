@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.17;
 
-import {Base} from "./Base.sol";
+import {Base} from "../Base.sol";
 
-contract DepositMint is Base {
+contract DepositMintFlows is Base {
     function _emitDepositBridgeEvent(
         address receiver,
         uint256 amount

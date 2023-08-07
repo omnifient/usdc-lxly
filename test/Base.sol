@@ -4,7 +4,6 @@ pragma solidity ^0.8.17;
 import "lib/forge-std/src/Test.sol";
 
 import "../src/mocks/MockBridge.sol";
-
 import "../src/L1EscrowProxy.sol";
 import "../src/L1EscrowImpl.sol";
 import "../src/NativeConverterProxy.sol";

@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.17;
 
-import {Base} from "./Base.sol";
+import {Base} from "../Base.sol";
 
-contract Migrate is Base {
+contract MigrateFlows is Base {
     function _emitMigrateBridgeEvent(uint256 counter) internal {
         uint256 amount = _erc20L2Wusdc.balanceOf(address(_nativeConverter));
         address receiver = address(_l1Escrow);

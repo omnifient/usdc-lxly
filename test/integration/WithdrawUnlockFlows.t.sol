@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.17;
 
-import {Base} from "./Base.sol";
+import {Base} from "../Base.sol";
 
-contract WithdrawUnlock is Base {
+contract WithdrawUnlockFlows is Base {
     function _depositToL1Escrow() internal {
         vm.selectFork(_l1Fork);
         vm.startPrank(_alice);
