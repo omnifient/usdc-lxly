@@ -9,7 +9,7 @@ contract WithdrawUnlockFlows is Base {
         vm.startPrank(_alice);
         uint256 amount = _toUSDC(1000);
         _erc20L1Usdc.approve(address(_l1Escrow), amount);
-        _l1Escrow.deposit(_alice, amount);
+        _l1Escrow.bridgeToken(_alice, amount, true);
         _claimBridgeMessage(_l1Fork, _l2Fork);
     }
 
@@ -24,9 +24,9 @@ contract WithdrawUnlockFlows is Base {
     ) internal {
         emit BridgeEvent(
             1, // _LEAF_TYPE_MESSAGE
-            _l2ChainId, // Withdraw always come from L2
+            _l2NetworkId, // Withdraw always come from L2
             address(_minterBurner), // from
-            _l1ChainId, // Withdraw always targets L1
+            _l1NetworkId, // Withdraw always targets L1
             address(_l1Escrow), // destinationAddress
             0, // msg.value
             abi.encode(receiver, amount), // metadata
@@ -54,7 +54,7 @@ contract WithdrawUnlockFlows is Base {
         emit Withdraw(_alice, _alice, amount);
 
         // burn the L2_USDC
-        _minterBurner.withdraw(_alice, amount);
+        _minterBurner.bridgeToken(_alice, amount, true);
 
         // alice's L2_USDC balance is 0
         uint256 l2Balance = _erc20L2Usdc.balanceOf(_alice);
@@ -91,7 +91,7 @@ contract WithdrawUnlockFlows is Base {
         emit Withdraw(_alice, _alice, amount);
 
         // burn the L2_USDC
-        _minterBurner.withdraw(_alice, amount);
+        _minterBurner.bridgeToken(_alice, amount, true);
 
         // alice's L2_USDC balance is 1000 - 750 = 250
         uint256 l2Balance = _erc20L2Usdc.balanceOf(_alice);
@@ -128,7 +128,7 @@ contract WithdrawUnlockFlows is Base {
         emit Withdraw(_alice, _bob, amount);
 
         // withdraw the L2_USDC to bob
-        _minterBurner.withdraw(_bob, amount);
+        _minterBurner.bridgeToken(_bob, amount, true);
 
         // alice's L2_USDC balance is 0
         uint256 l2Balance = _erc20L2Usdc.balanceOf(_alice);
@@ -157,7 +157,7 @@ contract WithdrawUnlockFlows is Base {
 
         // reverts when trying to withdraw the L2_USDC
         vm.expectRevert("INVALID_RECEIVER");
-        _minterBurner.withdraw(address(0), amount);
+        _minterBurner.bridgeToken(address(0), amount, true);
 
         _assertUsdcSupplyAndBalancesMatch();
     }
@@ -171,7 +171,7 @@ contract WithdrawUnlockFlows is Base {
 
         // reverts when trying to withdraw the L2_USDC
         vm.expectRevert("ERC20: transfer amount exceeds balance");
-        _minterBurner.withdraw(_alice, amount);
+        _minterBurner.bridgeToken(_alice, amount, true);
 
         _assertUsdcSupplyAndBalancesMatch();
     }
@@ -184,7 +184,7 @@ contract WithdrawUnlockFlows is Base {
 
         // reverts when trying to withdraw zero
         vm.expectRevert("FiatToken: burn amount not greater than 0");
-        _minterBurner.withdraw(_alice, 0);
+        _minterBurner.bridgeToken(_alice, 0, true);
 
         _assertUsdcSupplyAndBalancesMatch();
     }
@@ -201,7 +201,7 @@ contract WithdrawUnlockFlows is Base {
 
         // try to withdraw the L2_USDC
         vm.expectRevert("ERC20: transfer amount exceeds allowance");
-        _minterBurner.withdraw(_alice, withdrawAmount);
+        _minterBurner.bridgeToken(_alice, withdrawAmount, true);
 
         // alice's L2_USDC balance is the same
         uint256 balance2 = _erc20L2Usdc.balanceOf(_alice);

@@ -12,7 +12,7 @@ contract SecurityFlows is Base {
         // call with valid parameters
         bytes memory data = abi.encode(_alice, _toUSDC(1000));
         vm.expectRevert("NOT_BRIDGE");
-        _l1Escrow.onMessageReceived(address(_minterBurner), _l1ChainId, data);
+        _l1Escrow.onMessageReceived(address(_minterBurner), _l1NetworkId, data);
     }
 
     /// @notice Calling ZkMinterBurner.onMessageReceived fails
@@ -23,7 +23,7 @@ contract SecurityFlows is Base {
         // call with valid parameters
         bytes memory data = abi.encode(_alice, _toUSDC(1000));
         vm.expectRevert("NOT_BRIDGE");
-        _minterBurner.onMessageReceived(address(_l1Escrow), _l2ChainId, data);
+        _minterBurner.onMessageReceived(address(_l1Escrow), _l2NetworkId, data);
     }
 
     /// @notice Calling L1Escrow.initialize without being an admin fails
@@ -36,7 +36,7 @@ contract SecurityFlows is Base {
 
         // can't initialize because Alice is not an admin
         vm.expectRevert("NOT_ADMIN");
-        _l1Escrow.initialize(address(0), _l2ChainId, address(0), address(0));
+        _l1Escrow.initialize(address(0), _l2NetworkId, address(0), address(0));
     }
 
     /// @notice Calling ZkMinterBurner.initialize without being an admin fails
@@ -51,7 +51,7 @@ contract SecurityFlows is Base {
         vm.expectRevert("NOT_ADMIN");
         _minterBurner.initialize(
             address(0),
-            _l1ChainId,
+            _l1NetworkId,
             address(0),
             address(0)
         );
@@ -69,7 +69,7 @@ contract SecurityFlows is Base {
         vm.expectRevert("NOT_ADMIN");
         _nativeConverter.initialize(
             address(0),
-            _l1ChainId,
+            _l1NetworkId,
             address(0),
             address(0),
             address(0)

@@ -30,13 +30,13 @@ contract ZkMinterBurnerImpl is
 
     // TODO: pack variables
     IPolygonZkEVMBridge public bridge;
-    uint32 public l1ChainId;
+    uint32 public l1NetworkId;
     address public l1Contract;
     IUSDC public zkUsdc;
 
     function initialize(
         address bridge_,
-        uint32 l1ChainId_,
+        uint32 l1NetworkId_,
         address l1Contract_,
         address zkUsdc_
     ) external onlyProxy {
@@ -46,21 +46,21 @@ contract ZkMinterBurnerImpl is
         _transferOwnership(msg.sender); // TODO: arg from initialize
 
         bridge = IPolygonZkEVMBridge(bridge_);
-        l1ChainId = l1ChainId_;
+        l1NetworkId = l1NetworkId_;
         l1Contract = l1Contract_;
         zkUsdc = IUSDC(zkUsdc_);
     }
 
     function onMessageReceived(
         address originAddress,
-        uint32 originChain,
+        uint32 originNetwork,
         bytes memory data
     ) external payable whenNotPaused {
         // Function triggered by the bridge once a message is received by the other network
 
         require(msg.sender == address(bridge), "NOT_BRIDGE");
         require(l1Contract == originAddress, "NOT_L1_CONTRACT");
-        require(l1ChainId == originChain, "NOT_L1_CHAIN");
+        require(l1NetworkId == originNetwork, "NOT_L1_CHAIN");
 
         // decode message data and call mint
         (address zkAddr, uint256 amount) = abi.decode(data, (address, uint256));
@@ -81,15 +81,16 @@ contract ZkMinterBurnerImpl is
         _unpause();
     }
 
-    function withdraw(
-        address l1Receiver,
-        uint256 amount
+    function bridgeToken(
+        address destinationAddress,
+        uint256 amount,
+        bool forceUpdateGlobalExitRoot
     ) external whenNotPaused {
         // User calls withdraw() on BridgeBurner
         // which calls burn() on NativeUSDC burning the supply.
         // Message is sent to zkEVMBridge targeted to L1Escrow.
 
-        require(l1Receiver != address(0), "INVALID_RECEIVER");
+        require(destinationAddress != address(0), "INVALID_RECEIVER");
         // this is redundant - the usdc contract does the same validation
         // require(amount > 0, "INVALID_AMOUNT");
 
@@ -97,11 +98,16 @@ contract ZkMinterBurnerImpl is
         zkUsdc.safeTransferFrom(msg.sender, address(this), amount);
         zkUsdc.burn(amount);
 
-        // message L1Escrow to unlock the L1_USDC and transfer it to l1Receiver
-        bytes memory data = abi.encode(l1Receiver, amount);
-        bridge.bridgeMessage(l1ChainId, l1Contract, true, data); // TODO: forceUpdateGlobalExitRoot TBD
+        // message L1Escrow to unlock the L1_USDC and transfer it to destinationAddress
+        bytes memory data = abi.encode(destinationAddress, amount);
+        bridge.bridgeMessage(
+            l1NetworkId,
+            l1Contract,
+            forceUpdateGlobalExitRoot,
+            data
+        );
 
-        emit Withdraw(msg.sender, l1Receiver, amount);
+        emit Withdraw(msg.sender, destinationAddress, amount);
     }
 
     function _authorizeUpgrade(

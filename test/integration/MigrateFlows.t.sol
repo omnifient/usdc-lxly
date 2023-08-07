@@ -10,9 +10,9 @@ contract MigrateFlows is Base {
 
         emit BridgeEvent(
             0, // _LEAF_TYPE_ASSET
-            _l1ChainId, // originNetwork is the origin network of the underlying asset
+            _l1NetworkId, // originNetwork is the origin network of the underlying asset
             _l1Usdc, // originTokenAddress
-            _l1ChainId, // Migrate always targets L2
+            _l1NetworkId, // Migrate always targets L2
             receiver, // destinationAddress
             amount, // amount
             "", // metadata is empty when bridging wrapped assets
@@ -51,7 +51,7 @@ contract MigrateFlows is Base {
         _nativeConverter.migrate();
 
         // manually trigger the "bridging"
-        _claimBridgeAsset(_l2ChainId, _l1ChainId);
+        _claimBridgeAsset(_l2NetworkId, _l1NetworkId);
 
         // check alice no longer has the L2_WUSDC
         vm.selectFork(_l2Fork);
@@ -103,7 +103,7 @@ contract MigrateFlows is Base {
         _nativeConverter.migrate();
 
         // manually trigger the "bridging"
-        _claimBridgeAsset(_l2ChainId, _l1ChainId);
+        _claimBridgeAsset(_l2NetworkId, _l1NetworkId);
 
         // check alice no longer has the L2_WUSDC
         vm.selectFork(_l2Fork);
@@ -140,7 +140,7 @@ contract MigrateFlows is Base {
         _nativeConverter.migrate();
 
         // manually trigger the "bridging"
-        _claimBridgeAsset(_l2ChainId, _l1ChainId);
+        _claimBridgeAsset(_l2NetworkId, _l1NetworkId);
 
         // check alice no longer has the L2_WUSDC
         vm.selectFork(_l2Fork);

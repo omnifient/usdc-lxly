@@ -19,7 +19,7 @@ contract InitL1Contracts is Script {
         // initialize the l1 escrow contract through the proxy
         l1eProxy.initialize(
             vm.envAddress("ADDRESS_LXLY_BRIDGE"),
-            uint32(vm.envUint("L2_CHAIN_ID")),
+            uint32(vm.envUint("L2_NETWORK_ID")),
             vm.envAddress("ADDRESS_ZK_MINTER_BURNER_PROXY"),
             vm.envAddress("ADDRESS_L1_USDC")
         );
@@ -33,7 +33,7 @@ contract InitL2Contracts is Script {
         address lxlyBridge = vm.envAddress("ADDRESS_LXLY_BRIDGE");
         address zkUsdc = vm.envAddress("ADDRESS_L2_USDC"); // ATTN: needs to be deployed beforehand zkUsdc
         address zkWrappedUsdc = vm.envAddress("ADDRESS_L2_WUSDC");
-        uint32 polygonChainId = uint32(vm.envUint("L1_CHAIN_ID"));
+        uint32 mainnetNetworkId = uint32(vm.envUint("L1_NETWORK_ID"));
         address l1Escrow = vm.envAddress("ADDRESS_L1_ESCROW_PROXY");
 
         vm.startBroadcast(vm.envUint("DEPLOYER_PRIVATE_KEY"));
@@ -43,7 +43,7 @@ contract InitL2Contracts is Script {
             payable(vm.envAddress("ADDRESS_ZK_MINTER_BURNER_PROXY"))
         );
         // initialize the minter burner
-        zkmbProxy.initialize(lxlyBridge, polygonChainId, l1Escrow, zkUsdc);
+        zkmbProxy.initialize(lxlyBridge, mainnetNetworkId, l1Escrow, zkUsdc);
 
         // NOTE: we're just using the interface definition of the impl to fool the compiler
         NativeConverterImpl ncProxy = NativeConverterImpl(
@@ -52,7 +52,7 @@ contract InitL2Contracts is Script {
         // initialize the native converter
         ncProxy.initialize(
             lxlyBridge,
-            polygonChainId,
+            mainnetNetworkId,
             l1Escrow,
             zkUsdc,
             zkWrappedUsdc

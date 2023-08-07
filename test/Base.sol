@@ -17,8 +17,8 @@ contract Base is Test {
     /* ================= FIELDS ================= */
     uint256 internal _l1Fork;
     uint256 internal _l2Fork;
-    uint32 internal _l1ChainId;
-    uint32 internal _l2ChainId;
+    uint32 internal _l1NetworkId;
+    uint32 internal _l2NetworkId;
 
     // addresses
     address internal _alice;
@@ -78,8 +78,8 @@ contract Base is Test {
         // create the forks
         _l1Fork = vm.createFork(vm.envString("TEST_L1_RPC_URL"));
         _l2Fork = vm.createFork(vm.envString("TEST_L2_RPC_URL"));
-        _l1ChainId = uint32(vm.envUint("L1_CHAIN_ID"));
-        _l2ChainId = uint32(vm.envUint("L2_CHAIN_ID"));
+        _l1NetworkId = uint32(vm.envUint("L1_NETWORK_ID"));
+        _l2NetworkId = uint32(vm.envUint("L2_NETWORK_ID"));
 
         // retrieve the addresses
         _bridge = vm.envAddress("ADDRESS_LXLY_BRIDGE");
@@ -115,10 +115,10 @@ contract Base is Test {
 
     /* ================= HELPERS ================= */
     function _assertUsdcSupplyAndBalancesMatch() internal {
-        vm.selectFork(_l1ChainId);
+        vm.selectFork(_l1NetworkId);
         uint256 l1EscrowBalance = _erc20L1Usdc.balanceOf(address(_l1Escrow));
 
-        vm.selectFork(_l2ChainId);
+        vm.selectFork(_l2NetworkId);
         uint256 l2TotalSupply = _erc20L2Usdc.totalSupply();
         uint256 wUsdcConverterBalance = _erc20L2Wusdc.balanceOf(
             address(_nativeConverter)
@@ -231,7 +231,7 @@ contract Base is Test {
         _l1Escrow = L1EscrowImpl(address(_l1EscrowProxy));
         _l1Escrow.initialize(
             _bridge,
-            _l2ChainId,
+            _l2NetworkId,
             address(_minterBurnerProxy),
             _l1Usdc
         );
@@ -242,7 +242,7 @@ contract Base is Test {
         _minterBurner = ZkMinterBurnerImpl(address(_minterBurnerProxy));
         _minterBurner.initialize(
             _bridge,
-            _l1ChainId,
+            _l1NetworkId,
             address(_l1EscrowProxy),
             _l2Usdc
         );
@@ -250,7 +250,7 @@ contract Base is Test {
         _nativeConverter = NativeConverterImpl(address(_nativeConverterProxy));
         _nativeConverter.initialize(
             _bridge,
-            _l1ChainId,
+            _l1NetworkId,
             address(_l1EscrowProxy),
             _l2Usdc,
             _l2Wusdc

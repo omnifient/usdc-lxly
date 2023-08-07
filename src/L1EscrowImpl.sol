@@ -24,13 +24,13 @@ contract L1EscrowImpl is
 
     // TODO: pack variables
     IPolygonZkEVMBridge public bridge;
-    uint32 public zkChainId;
+    uint32 public zkNetworkId;
     address public zkContract;
     IUSDC public l1Usdc;
 
     function initialize(
         address bridge_,
-        uint32 zkChainId_,
+        uint32 zkNetworkId_,
         address zkContract_,
         address l1Usdc_
     ) external onlyProxy {
@@ -40,40 +40,46 @@ contract L1EscrowImpl is
         _transferOwnership(msg.sender); // TODO: arg from initialize
 
         bridge = IPolygonZkEVMBridge(bridge_);
-        zkChainId = zkChainId_;
+        zkNetworkId = zkNetworkId_;
         zkContract = zkContract_;
         l1Usdc = IUSDC(l1Usdc_);
     }
 
-    function deposit(
-        address zkReceiver,
-        uint256 amount
+    function bridgeToken(
+        address destinationAddress,
+        uint256 amount,
+        bool forceUpdateGlobalExitRoot
     ) external whenNotPaused {
         // User calls deposit() on L1Escrow, L1_USDC transferred to L1Escrow
         // message sent to zkEVMBridge targeted to zkEVM’s BridgeMinter.
 
-        require(zkReceiver != address(0), "INVALID_RECEIVER");
+        require(destinationAddress != address(0), "INVALID_RECEIVER");
         require(amount > 0, "INVALID_AMOUNT");
 
         // move usdc from the user to the escrow
         l1Usdc.safeTransferFrom(msg.sender, address(this), amount);
         // tell our zk minter to mint usdc to the receiver
-        bytes memory data = abi.encode(zkReceiver, amount);
-        bridge.bridgeMessage(zkChainId, zkContract, true, data); // TODO: forceUpdateGlobalExitRoot TBD
+        bytes memory data = abi.encode(destinationAddress, amount);
+        bridge.bridgeMessage(
+            zkNetworkId,
+            zkContract,
+            forceUpdateGlobalExitRoot,
+            data
+        );
 
-        emit Deposit(msg.sender, zkReceiver, amount);
+        emit Deposit(msg.sender, destinationAddress, amount);
     }
 
     function onMessageReceived(
         address originAddress,
-        uint32 originChain,
+        uint32 originNetwork,
         bytes memory data
     ) external payable whenNotPaused {
         // Function triggered by the bridge once a message is received by the other network
 
         require(msg.sender == address(bridge), "NOT_BRIDGE");
         require(zkContract == originAddress, "NOT_ZK_CONTRACT");
-        require(zkChainId == originChain, "NOT_ZK_CHAIN");
+        require(zkNetworkId == originNetwork, "NOT_ZK_CHAIN");
 
         // decode message data and call withdraw
         (address l1Addr, uint256 amount) = abi.decode(data, (address, uint256));

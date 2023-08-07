@@ -10,9 +10,9 @@ contract DepositMintFlows is Base {
     ) internal {
         emit BridgeEvent(
             1, // _LEAF_TYPE_MESSAGE
-            _l1ChainId, // Deposit always come from L1
+            _l1NetworkId, // Deposit always come from L1
             address(_l1Escrow), // from
-            _l2ChainId, // Deposit always targets L2
+            _l2NetworkId, // Deposit always targets L2
             address(_minterBurner), // destinationAddress
             0, // msg.value
             abi.encode(receiver, amount), // metadata
@@ -39,7 +39,7 @@ contract DepositMintFlows is Base {
         emit Deposit(_alice, _alice, amount);
 
         // deposit to L1Escrow
-        _l1Escrow.deposit(_alice, amount);
+        _l1Escrow.bridgeToken(_alice, amount, true);
 
         // alice's L1_USDC balance decreased
         uint256 balance2 = _erc20L1Usdc.balanceOf(_alice);
@@ -75,7 +75,7 @@ contract DepositMintFlows is Base {
         emit Deposit(_alice, _bob, amount);
 
         // deposit to L1Escrow for bob
-        _l1Escrow.deposit(_bob, amount);
+        _l1Escrow.bridgeToken(_bob, amount, true);
 
         // alice's L1_USDC balance decreased
         uint256 balance2 = _erc20L1Usdc.balanceOf(_alice);
@@ -102,7 +102,7 @@ contract DepositMintFlows is Base {
         // try to deposit 0 to L1Escrow
         _erc20L1Usdc.approve(address(_l1Escrow), 0);
         vm.expectRevert("INVALID_AMOUNT");
-        _l1Escrow.deposit(_alice, 0);
+        _l1Escrow.bridgeToken(_alice, 0, true);
 
         _assertUsdcSupplyAndBalancesMatch();
     }
@@ -115,7 +115,7 @@ contract DepositMintFlows is Base {
         // try to deposit 1000 to L1Escrow for address 0
         _erc20L1Usdc.approve(address(_l1Escrow), _toUSDC(1000));
         vm.expectRevert("INVALID_RECEIVER");
-        _l1Escrow.deposit(address(0), _toUSDC(1000));
+        _l1Escrow.bridgeToken(address(0), _toUSDC(1000), true);
 
         _assertUsdcSupplyAndBalancesMatch();
     }
@@ -134,7 +134,7 @@ contract DepositMintFlows is Base {
 
         // deposit to L1Escrow
         vm.expectRevert("ERC20: transfer amount exceeds allowance");
-        _l1Escrow.deposit(_alice, depositAmount);
+        _l1Escrow.bridgeToken(_alice, depositAmount, true);
 
         // alice's L1_USDC balance is the same
         uint256 balance2 = _erc20L1Usdc.balanceOf(_alice);

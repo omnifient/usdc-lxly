@@ -22,14 +22,14 @@ contract NativeConverterImpl is Ownable, Pausable, UUPSUpgradeable {
 
     // TODO: pack variables
     IPolygonZkEVMBridge public bridge;
-    uint32 public l1ChainId;
+    uint32 public l1NetworkId;
     address public l1Escrow;
     IUSDC public zkUSDCe;
     IUSDC public zkBWUSDC;
 
     function initialize(
         address bridge_,
-        uint32 l1ChainId_,
+        uint32 l1NetworkId_,
         address l1Escrow_,
         address zkUSDCe_,
         address zkBWUSDC_
@@ -40,7 +40,7 @@ contract NativeConverterImpl is Ownable, Pausable, UUPSUpgradeable {
         _transferOwnership(msg.sender); // TODO: arg from initialize
 
         bridge = IPolygonZkEVMBridge(bridge_);
-        l1ChainId = l1ChainId_;
+        l1NetworkId = l1NetworkId_;
         l1Escrow = l1Escrow_;
         zkUSDCe = IUSDC(zkUSDCe_);
         zkBWUSDC = IUSDC(zkBWUSDC_);
@@ -73,7 +73,7 @@ contract NativeConverterImpl is Ownable, Pausable, UUPSUpgradeable {
             zkBWUSDC.approve(address(bridge), amount);
 
             bridge.bridgeAsset(
-                l1ChainId,
+                l1NetworkId,
                 l1Escrow,
                 amount,
                 address(zkBWUSDC),
