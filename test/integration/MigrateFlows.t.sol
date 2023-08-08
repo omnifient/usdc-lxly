@@ -1,25 +1,9 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.17;
 
-import {Base} from "../Base.sol";
+import {Base, Events} from "../Base.sol";
 
 contract MigrateFlows is Base {
-    function _emitMigrateBridgeEvent(uint256 counter) internal {
-        uint256 amount = _erc20L2Wusdc.balanceOf(address(_nativeConverter));
-        address receiver = address(_l1Escrow);
-
-        emit BridgeEvent(
-            0, // _LEAF_TYPE_ASSET
-            _l1NetworkId, // originNetwork is the origin network of the underlying asset
-            _l1Usdc, // originTokenAddress
-            _l1NetworkId, // Migrate always targets L2
-            receiver, // destinationAddress
-            amount, // amount
-            "", // metadata is empty when bridging wrapped assets
-            uint32(18003 + counter) // ATTN: deposit count in mainnet block 17785773
-        );
-    }
-
     bytes private _emptyBytes;
 
     /// @notice Alice converts 1000 L2_WUSDC to L2_USDC, then calls migrate,
@@ -43,11 +27,11 @@ contract MigrateFlows is Base {
         // prepare to call NativeConverter.migrate, which will bridge the assets
         // check that a bridge event is emitted
         vm.expectEmit(_bridge);
-        _emitMigrateBridgeEvent(0);
+        _emitMigrateBridgeEvent();
 
         // check that our migrate event is emitted
         vm.expectEmit(address(_nativeConverter));
-        emit Migrate(amount);
+        emit Events.Migrate(amount);
 
         // migrate all of the L2_BWUSDC to L1
         _nativeConverter.migrate();
@@ -95,11 +79,11 @@ contract MigrateFlows is Base {
         // prepare to call NativeConverter.migrate, which will bridge the assets
         // check that a bridge event is emitted
         vm.expectEmit(_bridge);
-        _emitMigrateBridgeEvent(0);
+        _emitMigrateBridgeEvent();
 
         // check that our migrate event is emitted
         vm.expectEmit(address(_nativeConverter));
-        emit Migrate(amount1);
+        emit Events.Migrate(amount1);
 
         // migrate all of the L2_BWUSDC to L1
         _nativeConverter.migrate();
@@ -132,11 +116,11 @@ contract MigrateFlows is Base {
         // prepare to call NativeConverter.migrate, which will bridge the assets
         // check that a bridge event is emitted
         vm.expectEmit(_bridge);
-        _emitMigrateBridgeEvent(1);
+        _emitMigrateBridgeEvent();
 
         // check that our migrate event is emitted
         vm.expectEmit(address(_nativeConverter));
-        emit Migrate(amount2);
+        emit Events.Migrate(amount2);
 
         // migrate all of the L2_BWUSDC to L1
         _nativeConverter.migrate();

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.17;
 
-import {Base} from "../Base.sol";
+import {Base, Events} from "../Base.sol";
 
 contract WithdrawUnlockFlows is Base {
     function _depositToL1Escrow() internal {
@@ -18,22 +18,6 @@ contract WithdrawUnlockFlows is Base {
         _depositToL1Escrow();
     }
 
-    function _emitWithdrawBridgeEvent(
-        address receiver,
-        uint256 amount
-    ) internal {
-        emit BridgeEvent(
-            1, // _LEAF_TYPE_MESSAGE
-            _l2NetworkId, // Withdraw always come from L2
-            address(_minterBurner), // from
-            _l1NetworkId, // Withdraw always targets L1
-            address(_l1Escrow), // destinationAddress
-            0, // msg.value
-            abi.encode(receiver, amount), // metadata
-            uint32(18003) // ATTN: deposit count in mainnet block 17785773
-        );
-    }
-
     /// @notice Alice has 1000 L2_USDC, withdraws it all using approve(), and gets back 1000 L1_USDC
     function testFullWithdrawBurnsAndUnlocksInL1() public {
         // get the initial L1 balance
@@ -46,12 +30,12 @@ contract WithdrawUnlockFlows is Base {
         _erc20L2Usdc.approve(address(_minterBurner), amount);
 
         // check that a bridge event is emitted
-        vm.expectEmit(false, false, false, false, _bridge);
+        vm.expectEmit(_bridge);
         _emitWithdrawBridgeEvent(_alice, amount);
 
         // check that our withdrawal event is emitted
         vm.expectEmit(address(_minterBurner));
-        emit Withdraw(_alice, _alice, amount);
+        emit Events.Withdraw(_alice, _alice, amount);
 
         // burn the L2_USDC
         _minterBurner.bridgeToken(_alice, amount, true);
@@ -93,7 +77,7 @@ contract WithdrawUnlockFlows is Base {
 
         // check that our withdrawal event is emitted
         vm.expectEmit(address(_minterBurner));
-        emit Withdraw(_alice, _alice, amount);
+        emit Events.Withdraw(_alice, _alice, amount);
 
         // burn the L2_USDC
         _minterBurner.bridgeToken(_alice, amount, true, permitData);
@@ -151,12 +135,12 @@ contract WithdrawUnlockFlows is Base {
         _erc20L2Usdc.approve(address(_minterBurner), amount);
 
         // check that a bridge event is emitted
-        vm.expectEmit(false, false, false, false, _bridge);
+        vm.expectEmit(_bridge);
         _emitWithdrawBridgeEvent(_alice, amount);
 
         // check that our withdrawal event is emitted
         vm.expectEmit(address(_minterBurner));
-        emit Withdraw(_alice, _alice, amount);
+        emit Events.Withdraw(_alice, _alice, amount);
 
         // burn the L2_USDC
         _minterBurner.bridgeToken(_alice, amount, true);
@@ -188,12 +172,12 @@ contract WithdrawUnlockFlows is Base {
         _erc20L2Usdc.approve(address(_minterBurner), amount);
 
         // check that a bridge event is emitted
-        vm.expectEmit(false, false, false, false, _bridge);
+        vm.expectEmit(_bridge);
         _emitWithdrawBridgeEvent(_bob, amount);
 
         // check that our withdrawal event is emitted
         vm.expectEmit(address(_minterBurner));
-        emit Withdraw(_alice, _bob, amount);
+        emit Events.Withdraw(_alice, _bob, amount);
 
         // withdraw the L2_USDC to bob
         _minterBurner.bridgeToken(_bob, amount, true);
