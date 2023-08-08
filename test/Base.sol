@@ -21,8 +21,15 @@ contract Base is Test {
     uint32 internal _l2NetworkId;
 
     // addresses
+    address[] public actors;
     address internal _alice;
     address internal _bob;
+    address internal _carol;
+    address internal _dan;
+    address internal _erin;
+    address internal _frank;
+    address internal _grace;
+    address internal _henry;
 
     address internal _owner;
     address internal _bridge;
@@ -93,6 +100,12 @@ contract Base is Test {
         _owner = vm.addr(8);
         _alice = vm.addr(1);
         _bob = vm.addr(2);
+        _carol = vm.addr(3);
+        _dan = vm.addr(4);
+        _erin = vm.addr(5);
+        _frank = vm.addr(6);
+        _grace = vm.addr(7);
+        actors = [_alice, _bob, _carol, _dan, _erin, _frank, _grace];
 
         // deploy and initialize contracts
         _deployMockBridge();
@@ -223,6 +236,54 @@ contract Base is Test {
             _owner,
             address(_minterBurnerImpl),
             ""
+        );
+    }
+
+    function _emitDepositBridgeEvent(
+        address receiver,
+        uint256 amount
+    ) internal {
+        emit BridgeEvent(
+            1, // _LEAF_TYPE_MESSAGE
+            _l1NetworkId, // Deposit always come from L1
+            address(_l1Escrow), // from
+            _l2NetworkId, // Deposit always targets L2
+            address(_minterBurner), // destinationAddress
+            0, // msg.value
+            abi.encode(receiver, amount), // metadata
+            uint32(MockBridge(_bridge).depositCount())
+        );
+    }
+
+    function _emitMigrateBridgeEvent() internal {
+        uint256 amount = _erc20L2Wusdc.balanceOf(address(_nativeConverter));
+        address receiver = address(_l1Escrow);
+
+        emit BridgeEvent(
+            0, // _LEAF_TYPE_ASSET
+            _l1NetworkId, // originNetwork is the origin network of the underlying asset
+            _l1Usdc, // originTokenAddress
+            _l1NetworkId, // Migrate always targets L2
+            receiver, // destinationAddress
+            amount, // amount
+            "", // metadata is empty when bridging wrapped assets
+            uint32(MockBridge(_bridge).depositCount())
+        );
+    }
+
+    function _emitWithdrawBridgeEvent(
+        address receiver,
+        uint256 amount
+    ) internal {
+        emit BridgeEvent(
+            1, // _LEAF_TYPE_MESSAGE
+            _l2NetworkId, // Withdraw always come from L2
+            address(_minterBurner), // from
+            _l1NetworkId, // Withdraw always targets L1
+            address(_l1Escrow), // destinationAddress
+            0, // msg.value
+            abi.encode(receiver, amount), // metadata
+            uint32(MockBridge(_bridge).depositCount())
         );
     }
 

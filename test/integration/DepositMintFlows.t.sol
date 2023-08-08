@@ -4,22 +4,6 @@ pragma solidity ^0.8.17;
 import {Base} from "../Base.sol";
 
 contract DepositMintFlows is Base {
-    function _emitDepositBridgeEvent(
-        address receiver,
-        uint256 amount
-    ) internal {
-        emit BridgeEvent(
-            1, // _LEAF_TYPE_MESSAGE
-            _l1NetworkId, // Deposit always come from L1
-            address(_l1Escrow), // from
-            _l2NetworkId, // Deposit always targets L2
-            address(_minterBurner), // destinationAddress
-            0, // msg.value
-            abi.encode(receiver, amount), // metadata
-            uint32(86512) // ATTN: deposit count in mainnet block 17785773
-        );
-    }
-
     /// @notice Alice deposits 1000 L1_USDC to L1Escrow, and MinterBurner mints back 1000 L2_USDC
     function testDepositToL1EscrowMintsInL2() public {
         vm.selectFork(_l1Fork);
