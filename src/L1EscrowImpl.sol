@@ -2,6 +2,7 @@
 pragma solidity ^0.8.17;
 
 import "@oz/access/Ownable.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@oz/proxy/utils/UUPSUpgradeable.sol";
 import "@oz/security/Pausable.sol";
 import "@oz/token/ERC20/utils/SafeERC20.sol";
@@ -14,6 +15,7 @@ import {IUSDC} from "./interfaces/IUSDC.sol";
 // This contract will hold all of the backing for USDC on zkEVM.
 contract L1EscrowImpl is
     IBridgeMessageReceiver,
+    Initializable,
     Ownable,
     Pausable,
     UUPSUpgradeable
@@ -22,7 +24,6 @@ contract L1EscrowImpl is
 
     event Deposit(address indexed from, address indexed to, uint256 amount);
 
-    // TODO: pack variables
     IPolygonZkEVMBridge public bridge;
     uint32 public zkNetworkId;
     address public zkContract;
@@ -33,13 +34,12 @@ contract L1EscrowImpl is
         uint32 zkNetworkId_,
         address zkContract_,
         address l1Usdc_
-    ) external onlyProxy {
+    ) external onlyProxy initializer {
         require(msg.sender == _getAdmin(), "NOT_ADMIN");
         require(bridge_ != address(0), "INVALID_ADDRESS");
         require(zkContract_ != address(0), "INVALID_ADDRESS");
         require(l1Usdc_ != address(0), "INVALID_ADDRESS");
 
-        // TODO: use OZ's Initializable or add if(!initialized)
         _transferOwnership(msg.sender); // TODO: arg from initialize
 
         bridge = IPolygonZkEVMBridge(bridge_);

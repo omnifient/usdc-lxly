@@ -2,6 +2,7 @@
 pragma solidity ^0.8.17;
 
 import "@oz/access/Ownable.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@oz/proxy/utils/UUPSUpgradeable.sol";
 import "@oz/security/Pausable.sol";
 import "@oz/token/ERC20/utils/SafeERC20.sol";
@@ -20,6 +21,7 @@ import {IUSDC} from "./interfaces/IUSDC.sol";
 // triggering a release of assets on L1Escrow.
 contract ZkMinterBurnerImpl is
     IBridgeMessageReceiver,
+    Initializable,
     Ownable,
     Pausable,
     UUPSUpgradeable
@@ -28,7 +30,6 @@ contract ZkMinterBurnerImpl is
 
     event Withdraw(address indexed from, address indexed to, uint256 amount);
 
-    // TODO: pack variables
     IPolygonZkEVMBridge public bridge;
     uint32 public l1NetworkId;
     address public l1Contract;
@@ -39,13 +40,12 @@ contract ZkMinterBurnerImpl is
         uint32 l1NetworkId_,
         address l1Contract_,
         address zkUsdc_
-    ) external onlyProxy {
+    ) external onlyProxy initializer {
         require(msg.sender == _getAdmin(), "NOT_ADMIN");
         require(bridge_ != address(0), "INVALID_ADDRESS");
         require(l1Contract_ != address(0), "INVALID_ADDRESS");
         require(zkUsdc_ != address(0), "INVALID_ADDRESS");
 
-        // TODO: use OZ's Initializable or add if(!initialized)
         _transferOwnership(msg.sender); // TODO: arg from initialize
 
         bridge = IPolygonZkEVMBridge(bridge_);

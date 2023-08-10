@@ -2,6 +2,7 @@
 pragma solidity ^0.8.17;
 
 import "@oz/access/Ownable.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@oz/proxy/utils/UUPSUpgradeable.sol";
 import "@oz/security/Pausable.sol";
 import "@oz/token/ERC20/utils/SafeERC20.sol";
@@ -14,13 +15,17 @@ import {IUSDC} from "./interfaces/IUSDC.sol";
 // This contract will also have a permissionless publicly callable function called “migrate” which when called will
 // withdraw all BridgedWrappedUSDC to L1 via the LXLY bridge. The beneficiary address will be the L1Escrow,
 // thus migrating the supply and settling the balance.
-contract NativeConverterImpl is Ownable, Pausable, UUPSUpgradeable {
+contract NativeConverterImpl is
+    Initializable,
+    Ownable,
+    Pausable,
+    UUPSUpgradeable
+{
     using SafeERC20 for IUSDC;
 
     event Convert(address indexed from, address indexed to, uint256 amount);
     event Migrate(uint256 amount);
 
-    // TODO: pack variables
     IPolygonZkEVMBridge public bridge;
     uint32 public l1NetworkId;
     address public l1Escrow;
@@ -33,14 +38,13 @@ contract NativeConverterImpl is Ownable, Pausable, UUPSUpgradeable {
         address l1Escrow_,
         address zkUSDCe_,
         address zkBWUSDC_
-    ) external onlyProxy {
+    ) external onlyProxy initializer {
         require(msg.sender == _getAdmin(), "NOT_ADMIN");
         require(bridge_ != address(0), "INVALID_ADDRESS");
         require(l1Escrow_ != address(0), "INVALID_ADDRESS");
         require(zkUSDCe_ != address(0), "INVALID_ADDRESS");
         require(zkBWUSDC_ != address(0), "INVALID_ADDRESS");
 
-        // TODO: use OZ's Initializable or add if(!initialized)
         _transferOwnership(msg.sender); // TODO: arg from initialize
 
         bridge = IPolygonZkEVMBridge(bridge_);

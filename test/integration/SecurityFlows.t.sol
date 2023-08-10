@@ -34,8 +34,8 @@ contract SecurityFlows is Base {
         // it's initialized
         assertNotEq(address(_l1Escrow.bridge()), address(0));
 
-        // can't initialize because Alice is not an admin
-        vm.expectRevert("NOT_ADMIN");
+        // can't initialize because already initialized
+        vm.expectRevert("Initializable: contract is already initialized");
         _l1Escrow.initialize(address(0), _l2NetworkId, address(0), address(0));
     }
 
@@ -47,8 +47,8 @@ contract SecurityFlows is Base {
         // it's initialized
         assertNotEq(address(_minterBurner.bridge()), address(0));
 
-        // can't initialize because Alice is not an admin
-        vm.expectRevert("NOT_ADMIN");
+        // can't initialize because already initialized
+        vm.expectRevert("Initializable: contract is already initialized");
         _minterBurner.initialize(
             address(0),
             _l1NetworkId,
@@ -65,8 +65,8 @@ contract SecurityFlows is Base {
         // it's initialized
         assertNotEq(address(_nativeConverter.bridge()), address(0));
 
-        // can't initialize because Alice is not an admin
-        vm.expectRevert("NOT_ADMIN");
+        // can't initialize because already initialized
+        vm.expectRevert("Initializable: contract is already initialized");
         _nativeConverter.initialize(
             address(0),
             _l1NetworkId,
