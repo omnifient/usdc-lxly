@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.17;
 
-import "@oz/access/Ownable.sol";
+import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
-import "@oz/proxy/utils/UUPSUpgradeable.sol";
-import "@oz/security/Pausable.sol";
-import "@oz/token/ERC20/utils/SafeERC20.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol";
 import "@zkevm/interfaces/IPolygonZkEVMBridge.sol";
 
 import {IUSDC} from "./interfaces/IUSDC.sol";
@@ -17,11 +17,11 @@ import {IUSDC} from "./interfaces/IUSDC.sol";
 // thus migrating the supply and settling the balance.
 contract NativeConverterImpl is
     Initializable,
-    Ownable,
-    Pausable,
+    OwnableUpgradeable,
+    PausableUpgradeable,
     UUPSUpgradeable
 {
-    using SafeERC20 for IUSDC;
+    using SafeERC20Upgradeable for IUSDC;
 
     event Convert(address indexed from, address indexed to, uint256 amount);
     event Migrate(uint256 amount);
@@ -52,6 +52,10 @@ contract NativeConverterImpl is
         require(zkUSDCe_ != address(0), "INVALID_ADDRESS");
         require(zkBWUSDC_ != address(0), "INVALID_ADDRESS");
         require(owner_ != address(0), "INVALID_ADDRESS");
+
+        __Ownable_init(); // ATTN: we override this later
+        __Pausable_init(); // NOOP
+        __UUPSUpgradeable_init(); // NOOP
 
         _transferOwnership(owner_);
 
