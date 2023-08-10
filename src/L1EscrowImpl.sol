@@ -35,6 +35,9 @@ contract L1EscrowImpl is
         address l1Usdc_
     ) external onlyProxy {
         require(msg.sender == _getAdmin(), "NOT_ADMIN");
+        require(bridge_ != address(0), "INVALID_ADDRESS");
+        require(zkContract_ != address(0), "INVALID_ADDRESS");
+        require(l1Usdc_ != address(0), "INVALID_ADDRESS");
 
         // TODO: use OZ's Initializable or add if(!initialized)
         _transferOwnership(msg.sender); // TODO: arg from initialize
