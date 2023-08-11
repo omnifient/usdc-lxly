@@ -3,7 +3,7 @@ pragma solidity ^0.8.17;
 
 import "lib/forge-std/src/Test.sol";
 
-import "../scripts/DeployInitHelpers.sol";
+import {LibDeployInit} from "../scripts/DeployInitHelpers.sol";
 import "../src/mocks/MockBridge.sol";
 import "../src/L1EscrowProxy.sol";
 import "../src/L1EscrowImpl.sol";
@@ -25,7 +25,7 @@ contract Base is Test {
     address internal _alice;
     address internal _bob;
 
-    address internal _owner;
+    address private _deployerOwnerAdmin;
     address internal _bridge;
     address internal _l1Usdc;
     address internal _l2Usdc;
@@ -85,29 +85,13 @@ contract Base is Test {
         _erc20L2Usdc = IERC20(_l2Usdc);
         _erc20L2Wusdc = IERC20(_l2Wusdc);
 
-        _owner = vm.addr(8);
+        _deployerOwnerAdmin = vm.addr(8);
         _alice = vm.addr(1);
         _bob = vm.addr(2);
 
         // deploy and initialize contracts
         _deployMockBridge();
-
-        DeployInitHelpers diHelper = new DeployInitHelpers(
-            _l1Fork,
-            _l2Fork,
-            _l1NetworkId,
-            _l2NetworkId,
-            _bridge,
-            _l1Usdc,
-            _l2Usdc,
-            _l2Wusdc
-        );
-        // this makes the storage available in all chains
-        vm.makePersistent(address(diHelper));
-        (_l1Escrow, _minterBurner, _nativeConverter) = diHelper.deployInit(
-            _owner, // deployer
-            _owner // owner
-        );
+        _deployInitContracts();
 
         // fund alice with L1_USDC and L2_WUSDC
         vm.selectFork(_l1Fork);
@@ -193,6 +177,49 @@ contract Base is Test {
             amount,
             metadata
         );
+    }
+
+    function _deployInitContracts() internal {
+        vm.startPrank(_deployerOwnerAdmin);
+
+        // deploy L1 contract
+        vm.selectFork(_l1Fork);
+        address l1EscrowProxy = LibDeployInit.deployL1Contracts(
+            _deployerOwnerAdmin // admin
+        );
+
+        // deploy L2 contracts
+        vm.selectFork(_l2Fork);
+        (
+            address minterBurnerProxy,
+            address nativeConverterProxy
+        ) = LibDeployInit.deployL2Contracts(
+                _deployerOwnerAdmin // admin
+            );
+
+        // init L1 contract
+        vm.selectFork(_l1Fork);
+        _l1Escrow = LibDeployInit.initL1Contracts(
+            _l2NetworkId,
+            _bridge,
+            l1EscrowProxy,
+            minterBurnerProxy,
+            _l1Usdc
+        );
+
+        // init L2 contracts
+        vm.selectFork(_l2Fork);
+        (_minterBurner, _nativeConverter) = LibDeployInit.initL2Contracts(
+            _l1NetworkId,
+            _bridge,
+            l1EscrowProxy,
+            minterBurnerProxy,
+            nativeConverterProxy,
+            _l2Usdc,
+            _l2Wusdc
+        );
+
+        vm.stopPrank();
     }
 
     function _deployMockBridge() internal {
