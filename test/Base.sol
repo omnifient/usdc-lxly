@@ -71,8 +71,8 @@ contract Base is Test {
     /* ================= SETUP ================= */
     function setUp() public virtual {
         // create the forks
-        _l1Fork = vm.createFork(vm.envString("TEST_L1_RPC_URL"));
-        _l2Fork = vm.createFork(vm.envString("TEST_L2_RPC_URL"));
+        _l1Fork = vm.createFork(vm.envString("L1_RPC_URL"));
+        _l2Fork = vm.createFork(vm.envString("L2_RPC_URL"));
         _l1NetworkId = uint32(vm.envUint("L1_NETWORK_ID"));
         _l2NetworkId = uint32(vm.envUint("L2_NETWORK_ID"));
 
