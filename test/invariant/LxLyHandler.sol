@@ -37,6 +37,8 @@ contract LxLyHandler is Base {
         address zkReceiver,
         uint256 amount
     ) external useActor(actorIndexSeed) {
+        assertEq(0, amount);
+
         vm.selectFork(_l1Fork);
         bool execBridge = true;
 
