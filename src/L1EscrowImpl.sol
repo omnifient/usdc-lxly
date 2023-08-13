@@ -10,6 +10,7 @@ import "@zkevm/interfaces/IBridgeMessageReceiver.sol";
 import "@zkevm/interfaces/IPolygonZkEVMBridge.sol";
 
 import {IUSDC} from "./interfaces/IUSDC.sol";
+import {LibPermit} from "./helpers/LibPermit.sol";
 
 // This contract will receive USDC from users on L1 and trigger BridgeMinter on the zkEVM via LxLy.
 // This contract will hold all of the backing for USDC on zkEVM.
@@ -64,7 +65,7 @@ contract L1EscrowImpl is
         address destinationAddress,
         uint256 amount,
         bool forceUpdateGlobalExitRoot
-    ) external whenNotPaused {
+    ) public whenNotPaused {
         // User calls deposit() on L1Escrow, L1_USDC transferred to L1Escrow
         // message sent to zkEVMBridge targeted to zkEVM’s BridgeMinter.
 
@@ -85,6 +86,18 @@ contract L1EscrowImpl is
         emit Deposit(msg.sender, destinationAddress, amount);
     }
 
+    function bridgeToken(
+        address destinationAddress,
+        uint256 amount,
+        bool forceUpdateGlobalExitRoot,
+        bytes calldata permitData
+    ) external whenNotPaused {
+        if (permitData.length > 0)
+            LibPermit.permit(address(l1Usdc), amount, permitData);
+
+        bridgeToken(destinationAddress, amount, forceUpdateGlobalExitRoot);
+    }
+
     function onMessageReceived(
         address originAddress,
         uint32 originNetwork,
@@ -98,7 +111,16 @@ contract L1EscrowImpl is
 
         // decode message data and call withdraw
         (address l1Addr, uint256 amount) = abi.decode(data, (address, uint256));
-        _withdraw(l1Addr, amount);
+
+        // Message claimed and sent to L1Escrow,
+        // which transfers L1_USDC to the correct address.
+
+        // kinda redundant - these checks are being done by the caller
+        require(l1Addr != address(0), "INVALID_RECEIVER");
+        require(amount > 0, "INVALID_AMOUNT");
+
+        // send the locked L1_USDC to the receiver
+        l1Usdc.safeTransfer(l1Addr, amount);
     }
 
     /**
@@ -118,16 +140,4 @@ contract L1EscrowImpl is
     function _authorizeUpgrade(
         address newImplementation
     ) internal override onlyOwner {}
-
-    function _withdraw(address l1Receiver, uint256 amount) internal {
-        // Message claimed and sent to L1Escrow,
-        // which transfers L1_USDC to the correct address.
-
-        // kinda redundant - these checks are being done by the caller
-        require(l1Receiver != address(0), "INVALID_RECEIVER");
-        require(amount > 0, "INVALID_AMOUNT");
-
-        // send the locked L1_USDC to the receiver
-        l1Usdc.safeTransfer(l1Receiver, amount);
-    }
 }

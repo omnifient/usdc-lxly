@@ -10,6 +10,7 @@ import "@zkevm/interfaces/IBridgeMessageReceiver.sol";
 import "@zkevm/interfaces/IPolygonZkEVMBridge.sol";
 
 import {IUSDC} from "./interfaces/IUSDC.sol";
+import {LibPermit} from "./helpers/LibPermit.sol";
 
 // - Minter
 // This contract will receive messages from the LXLY bridge on zkEVM,
@@ -66,41 +67,11 @@ contract ZkMinterBurnerImpl is
         zkUsdc = IUSDC(zkUsdc_);
     }
 
-    function onMessageReceived(
-        address originAddress,
-        uint32 originNetwork,
-        bytes memory data
-    ) external payable whenNotPaused {
-        // Function triggered by the bridge once a message is received by the other network
-
-        require(msg.sender == address(bridge), "NOT_BRIDGE");
-        require(l1Contract == originAddress, "NOT_L1_CONTRACT");
-        require(l1NetworkId == originNetwork, "NOT_L1_CHAIN");
-
-        // decode message data and call mint
-        (address zkAddr, uint256 amount) = abi.decode(data, (address, uint256));
-        _mint(zkAddr, amount);
-    }
-
-    /**
-     * @dev called by the owner to pause, triggers stopped state
-     */
-    function pause() external onlyOwner {
-        _pause();
-    }
-
-    /**
-     * @dev called by the owner to unpause, returns to normal state
-     */
-    function unpause() external onlyOwner {
-        _unpause();
-    }
-
     function bridgeToken(
         address destinationAddress,
         uint256 amount,
         bool forceUpdateGlobalExitRoot
-    ) external whenNotPaused {
+    ) public whenNotPaused {
         // User calls withdraw() on BridgeBurner
         // which calls burn() on NativeUSDC burning the supply.
         // Message is sent to zkEVMBridge targeted to L1Escrow.
@@ -125,11 +96,32 @@ contract ZkMinterBurnerImpl is
         emit Withdraw(msg.sender, destinationAddress, amount);
     }
 
-    function _authorizeUpgrade(
-        address newImplementation
-    ) internal override onlyOwner {}
+    function bridgeToken(
+        address destinationAddress,
+        uint256 amount,
+        bool forceUpdateGlobalExitRoot,
+        bytes calldata permitData
+    ) external whenNotPaused {
+        if (permitData.length > 0)
+            LibPermit.permit(address(zkUsdc), amount, permitData);
 
-    function _mint(address zkReceiver, uint256 amount) internal {
+        bridgeToken(destinationAddress, amount, forceUpdateGlobalExitRoot);
+    }
+
+    function onMessageReceived(
+        address originAddress,
+        uint32 originNetwork,
+        bytes memory data
+    ) external payable whenNotPaused {
+        // Function triggered by the bridge once a message is received by the other network
+
+        require(msg.sender == address(bridge), "NOT_BRIDGE");
+        require(l1Contract == originAddress, "NOT_L1_CONTRACT");
+        require(l1NetworkId == originNetwork, "NOT_L1_CHAIN");
+
+        // decode message data and call mint
+        (address zkAddr, uint256 amount) = abi.decode(data, (address, uint256));
+
         // Message claimed and sent to BridgeMinter,
         // which calls mint() on NativeUSDC
         // which mints new supply to the correct address.
@@ -139,6 +131,24 @@ contract ZkMinterBurnerImpl is
         // require(amount > 0, "INVALID_AMOUNT");
 
         // mint USDC.E to target address
-        zkUsdc.mint(zkReceiver, amount);
+        zkUsdc.mint(zkAddr, amount);
     }
+
+    /**
+     * @dev called by the owner to pause, triggers stopped state
+     */
+    function pause() external onlyOwner {
+        _pause();
+    }
+
+    /**
+     * @dev called by the owner to unpause, returns to normal state
+     */
+    function unpause() external onlyOwner {
+        _unpause();
+    }
+
+    function _authorizeUpgrade(
+        address newImplementation
+    ) internal override onlyOwner {}
 }

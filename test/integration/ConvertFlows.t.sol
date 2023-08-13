@@ -4,6 +4,8 @@ pragma solidity ^0.8.17;
 import {Base} from "../Base.sol";
 
 contract ConvertFlows is Base {
+    bytes private _emptyBytes;
+
     /// @notice Alice converts 1000 L2_WUSDC to L2_USDC for herself.
     function testConvertsWrappedUsdcToNativeUsdc() public {
         vm.selectFork(_l2Fork);
@@ -20,7 +22,7 @@ contract ConvertFlows is Base {
         emit Convert(_alice, _alice, amount);
 
         // call convert
-        _nativeConverter.convert(_alice, amount);
+        _nativeConverter.convert(_alice, amount, _emptyBytes);
 
         // alice's L2_WUSDC balance decreased
         uint256 wrappedBalance2 = _erc20L2Wusdc.balanceOf(_alice);
@@ -51,7 +53,7 @@ contract ConvertFlows is Base {
         emit Convert(_alice, _bob, amount);
 
         // call convert
-        _nativeConverter.convert(_bob, amount);
+        _nativeConverter.convert(_bob, amount, _emptyBytes);
 
         // alice's L2_WUSDC balance decreased
         uint256 wrappedBalance2 = _erc20L2Wusdc.balanceOf(_alice);
@@ -80,7 +82,7 @@ contract ConvertFlows is Base {
 
         // call convert
         vm.expectRevert("ERC20: insufficient allowance");
-        _nativeConverter.convert(_alice, convertAmount);
+        _nativeConverter.convert(_alice, convertAmount, _emptyBytes);
 
         // alice's L2_WUSDC balance didn't change
         uint256 wrappedBalance2 = _erc20L2Wusdc.balanceOf(_alice);
@@ -100,7 +102,7 @@ contract ConvertFlows is Base {
         // try to convert 0 L2_WUSDC to L2_USDC
         _erc20L2Wusdc.approve(address(_nativeConverter), 0);
         vm.expectRevert("INVALID_AMOUNT");
-        _nativeConverter.convert(_alice, 0);
+        _nativeConverter.convert(_alice, 0, _emptyBytes);
 
         _assertUsdcSupplyAndBalancesMatch();
     }
@@ -113,7 +115,7 @@ contract ConvertFlows is Base {
         // try to convert 1000 L2_WUSDC for address 0
         _erc20L2Wusdc.approve(address(_nativeConverter), _toUSDC(1000));
         vm.expectRevert("INVALID_RECEIVER");
-        _nativeConverter.convert(address(0), _toUSDC(1000));
+        _nativeConverter.convert(address(0), _toUSDC(1000), _emptyBytes);
 
         _assertUsdcSupplyAndBalancesMatch();
     }
