@@ -48,6 +48,7 @@ contract DeployInit is Script {
         vm.selectFork(l1ForkId);
         vm.startBroadcast(vm.envUint("DEPLOYER_PRIVATE_KEY"));
         L1EscrowImpl l1Escrow = LibDeployInit.initL1Contracts(
+            owner,
             l2NetworkId,
             bridge,
             l1EscrowProxy,
@@ -63,6 +64,7 @@ contract DeployInit is Script {
             ZkMinterBurnerImpl minterBurner,
             NativeConverterImpl nativeConverter
         ) = LibDeployInit.initL2Contracts(
+                owner,
                 l1NetworkId,
                 bridge,
                 l1EscrowProxy,

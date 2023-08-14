@@ -36,6 +36,7 @@ contract L1EscrowImpl is
     }
 
     function initialize(
+        address owner_,
         address bridge_,
         uint32 zkNetworkId_,
         address zkContract_,
@@ -45,8 +46,9 @@ contract L1EscrowImpl is
         require(bridge_ != address(0), "INVALID_ADDRESS");
         require(zkContract_ != address(0), "INVALID_ADDRESS");
         require(l1Usdc_ != address(0), "INVALID_ADDRESS");
+        require(owner_ != address(0), "INVALID_ADDRESS");
 
-        _transferOwnership(msg.sender); // TODO: arg from initialize
+        _transferOwnership(owner_);
 
         bridge = IPolygonZkEVMBridge(bridge_);
         zkNetworkId = zkNetworkId_;

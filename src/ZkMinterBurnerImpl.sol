@@ -42,6 +42,7 @@ contract ZkMinterBurnerImpl is
     }
 
     function initialize(
+        address owner_,
         address bridge_,
         uint32 l1NetworkId_,
         address l1Contract_,
@@ -51,8 +52,9 @@ contract ZkMinterBurnerImpl is
         require(bridge_ != address(0), "INVALID_ADDRESS");
         require(l1Contract_ != address(0), "INVALID_ADDRESS");
         require(zkUsdc_ != address(0), "INVALID_ADDRESS");
+        require(owner_ != address(0), "INVALID_ADDRESS");
 
-        _transferOwnership(msg.sender); // TODO: arg from initialize
+        _transferOwnership(owner_);
 
         bridge = IPolygonZkEVMBridge(bridge_);
         l1NetworkId = l1NetworkId_;

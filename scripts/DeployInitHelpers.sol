@@ -54,6 +54,7 @@ library LibDeployInit {
     }
 
     function initL1Contracts(
+        address owner,
         uint32 l2NetworkId,
         address bridge,
         address l1EscrowProxy,
@@ -62,10 +63,17 @@ library LibDeployInit {
     ) internal returns (L1EscrowImpl l1Escrow) {
         // get a reference to the proxy, with the impl's abi, and then call initialize
         l1Escrow = L1EscrowImpl(l1EscrowProxy);
-        l1Escrow.initialize(bridge, l2NetworkId, minterBurnerProxy, l1Usdc);
+        l1Escrow.initialize(
+            owner,
+            bridge,
+            l2NetworkId,
+            minterBurnerProxy,
+            l1Usdc
+        );
     }
 
     function initL2Contracts(
+        address owner,
         uint32 l1NetworkId,
         address bridge,
         address l1EscrowProxy,
@@ -82,11 +90,18 @@ library LibDeployInit {
     {
         // get a reference to the proxy, with the impl's abi, and then call initialize
         minterBurner = ZkMinterBurnerImpl(minterBurnerProxy);
-        minterBurner.initialize(bridge, l1NetworkId, l1EscrowProxy, l2Usdc);
+        minterBurner.initialize(
+            owner,
+            bridge,
+            l1NetworkId,
+            l1EscrowProxy,
+            l2Usdc
+        );
 
         // get a reference to the proxy, with the impl's abi, and then call initialize
         nativeConverter = NativeConverterImpl(nativeConverterProxy);
         nativeConverter.initialize(
+            owner,
             bridge,
             l1NetworkId,
             l1EscrowProxy,
