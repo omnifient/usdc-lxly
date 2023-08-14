@@ -12,13 +12,13 @@ import "../src/ZkMinterBurnerImpl.sol";
 
 library LibDeployInit {
     function deployL1Contracts(
-        address owner
+        address admin
     ) internal returns (address l1eProxy) {
         // deploy implementation
         L1EscrowImpl l1EscrowImpl = new L1EscrowImpl();
         // deploy proxy
         L1EscrowProxy l1EscrowProxy = new L1EscrowProxy(
-            owner,
+            admin,
             address(l1EscrowImpl),
             ""
         );
@@ -28,13 +28,13 @@ library LibDeployInit {
     }
 
     function deployL2Contracts(
-        address owner
+        address admin
     ) internal returns (address mbProxy, address ncProxy) {
         // deploy implementation
         ZkMinterBurnerImpl minterBurnerImpl = new ZkMinterBurnerImpl();
         // deploy proxy
         ZkMinterBurnerProxy minterBurnerProxy = new ZkMinterBurnerProxy(
-            owner,
+            admin,
             address(minterBurnerImpl),
             ""
         );
@@ -43,7 +43,7 @@ library LibDeployInit {
         NativeConverterImpl nativeConverterImpl = new NativeConverterImpl();
         // deploy proxy
         NativeConverterProxy nativeConverterProxy = new NativeConverterProxy(
-            owner,
+            admin,
             address(nativeConverterImpl),
             ""
         );
@@ -130,7 +130,7 @@ contract DeployInitHelpers is CommonBase {
 
     function deployInit(
         address deployer,
-        address owner
+        address ownerAndAdmin
     )
         external
         returns (
@@ -143,14 +143,14 @@ contract DeployInitHelpers is CommonBase {
 
         // deploy L1 contract
         vm.selectFork(_l1ForkId);
-        address l1EscrowProxy = LibDeployInit.deployL1Contracts(owner);
+        address l1EscrowProxy = LibDeployInit.deployL1Contracts(ownerAndAdmin);
 
         // deploy L2 contracts
         vm.selectFork(_l2ForkId);
         (
             address minterBurnerProxy,
             address nativeConverterProxy
-        ) = LibDeployInit.deployL2Contracts(owner);
+        ) = LibDeployInit.deployL2Contracts(ownerAndAdmin);
 
         // init L1 contract
         vm.selectFork(_l1ForkId);

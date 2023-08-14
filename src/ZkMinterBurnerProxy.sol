@@ -5,10 +5,10 @@ import "@oz/proxy/ERC1967/ERC1967Proxy.sol";
 
 contract ZkMinterBurnerProxy is ERC1967Proxy {
     constructor(
-        address owner_,
+        address admin_,
         address impl,
         bytes memory data
     ) payable ERC1967Proxy(impl, data) {
-        _changeAdmin(owner_);
+        _changeAdmin(admin_);
     }
 }
