@@ -29,6 +29,12 @@ contract L1EscrowImpl is
     address public zkContract;
     IUSDC public l1Usdc;
 
+    constructor() {
+        // override default OZ behaviour that sets msg.sender as the owner
+        // set the owner of the implementation to an address that can not change anything
+        _transferOwnership(address(1));
+    }
+
     function initialize(
         address bridge_,
         uint32 zkNetworkId_,

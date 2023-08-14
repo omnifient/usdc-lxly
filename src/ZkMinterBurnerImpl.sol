@@ -35,6 +35,12 @@ contract ZkMinterBurnerImpl is
     address public l1Contract;
     IUSDC public zkUsdc;
 
+    constructor() {
+        // override default OZ behaviour that sets msg.sender as the owner
+        // set the owner of the implementation to an address that can not change anything
+        _transferOwnership(address(1));
+    }
+
     function initialize(
         address bridge_,
         uint32 l1NetworkId_,
