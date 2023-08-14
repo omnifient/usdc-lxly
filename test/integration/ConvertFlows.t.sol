@@ -6,7 +6,7 @@ import {Base} from "../Base.sol";
 contract ConvertFlows is Base {
     bytes private _emptyBytes;
 
-    /// @notice Alice converts 1000 L2_WUSDC to L2_USDC for herself.
+    /// @notice Alice converts 1000 L2_WUSDC to L2_USDC for herself, using approve().
     function testConvertsWrappedUsdcToNativeUsdc() public {
         vm.selectFork(_l2Fork);
         vm.startPrank(_alice);
@@ -23,6 +23,43 @@ contract ConvertFlows is Base {
 
         // call convert
         _nativeConverter.convert(_alice, amount, _emptyBytes);
+
+        // alice's L2_WUSDC balance decreased
+        uint256 wrappedBalance2 = _erc20L2Wusdc.balanceOf(_alice);
+        assertEq(wrappedBalance1 - wrappedBalance2, amount);
+
+        // alice's L2_USDC balance increased
+        assertEq(_erc20L2Usdc.balanceOf(_alice), amount);
+
+        // converter's L2_BWUSDC balance increased
+        assertEq(_erc20L2Wusdc.balanceOf(address(_nativeConverter)), amount);
+
+        _assertUsdcSupplyAndBalancesMatch();
+    }
+
+    /// @notice Alice converts 1000 L2_WUSDC to L2_USDC for herself, using permit().
+    function testConvertsWithPermit() public {
+        vm.selectFork(_l2Fork);
+        vm.startPrank(_alice);
+
+        // setup
+        uint256 wrappedBalance1 = _erc20L2Wusdc.balanceOf(_alice);
+
+        uint256 amount = _toUSDC(1000);
+
+        bytes memory permitData = _createPermitData(
+            _alice,
+            address(_nativeConverter),
+            _l2Wusdc,
+            amount
+        );
+
+        // check that our convert event is emitted
+        vm.expectEmit(address(_nativeConverter));
+        emit Convert(_alice, _alice, amount);
+
+        // call convert
+        _nativeConverter.convert(_alice, amount, permitData);
 
         // alice's L2_WUSDC balance decreased
         uint256 wrappedBalance2 = _erc20L2Wusdc.balanceOf(_alice);
