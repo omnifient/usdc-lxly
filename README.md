@@ -58,8 +58,8 @@ cd usdc-lxly/
 ADDRESS_L2_USDC=0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512
 
 # 6. make sure L1_RPC_URL and L2_RPC_URL are pointing to the local anvil nodes
-TEST_L1_RPC_URL=http://localhost:8001
-TEST_L2_RPC_URL=http://localhost:8101
+L1_RPC_URL=http://localhost:8001
+L2_RPC_URL=http://localhost:8101
 
 # 7. run the usdc-lxly tests
 cd usdc-lxly/
@@ -100,19 +100,7 @@ ADDRESS_L2_USDC=0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512
 
 # 5. deploy and initialize usdc-lxly
 cd usdc-lxly/
-
-## 5.1 deployment
-forge script scripts/1Deploy.s.sol:DeployL1Contracts --rpc-url http://localhost:8001 --broadcast -vvvv
-forge script scripts/1Deploy.s.sol:DeployL2Contracts --rpc-url http://localhost:8101 --broadcast -vvvv --legacy
-
-## 5.2 copy the output addresses to the .env
-ADDRESS_L1_ESCROW_PROXY=0xeD1DB453C3156Ff3155a97AD217b3087D5Dc5f6E
-ADDRESS_ZK_MINTER_BURNER_PROXY=0x8ce361602B935680E8DeC218b820ff5056BeB7af
-ADDRESS_NATIVE_CONVERTER_PROXY=0xb19b36b1456E65E3A6D514D3F715f204BD59f431
-
-## 5.3 initialization
-forge script scripts/2Init.s.sol:InitL1Contracts --rpc-url http://localhost:8001 --broadcast -vvvv
-forge script scripts/2Init.s.sol:InitL2Contracts --rpc-url http://localhost:8101 --broadcast -vvvv --legacy
+forge script scripts/DeployInit.s.sol:DeployInit --broadcast -vvvv
 
 # 6. give minter permissions
 cd usdc-e/

@@ -3,6 +3,7 @@ pragma solidity ^0.8.17;
 
 import "lib/forge-std/src/Test.sol";
 
+import {LibDeployInit} from "../scripts/DeployInitHelpers.sol";
 import "../src/mocks/MockBridge.sol";
 import "../src/L1EscrowProxy.sol";
 import "../src/L1EscrowImpl.sol";
@@ -24,29 +25,23 @@ contract Base is Test {
     address internal _alice;
     address internal _bob;
 
-    address internal _owner;
+    address private _deployerOwnerAdmin;
     address internal _bridge;
     address internal _l1Usdc;
     address internal _l2Usdc;
     address internal _l2Wusdc;
 
     // helper variables
-    IERC20 _erc20L1Usdc;
-    IERC20 _erc20L2Usdc;
-    IERC20 _erc20L2Wusdc;
+    IERC20 internal _erc20L1Usdc;
+    IERC20 internal _erc20L2Usdc;
+    IERC20 internal _erc20L2Wusdc;
 
     // L1 contracts
-    L1EscrowImpl private _l1EscrowImpl;
-    L1EscrowProxy private _l1EscrowProxy;
-    L1EscrowImpl internal _l1Escrow; // exposed to subclasses
+    L1EscrowImpl internal _l1Escrow;
 
     // L2 contracts
-    NativeConverterImpl private _nativeConverterImpl;
-    NativeConverterProxy private _nativeConverterProxy;
-    NativeConverterImpl internal _nativeConverter; // exposed to subclasses
-    ZkMinterBurnerImpl private _minterBurnerImpl;
-    ZkMinterBurnerProxy private _minterBurnerProxy;
-    ZkMinterBurnerImpl internal _minterBurner; // exposed to subclasses
+    ZkMinterBurnerImpl internal _minterBurner;
+    NativeConverterImpl internal _nativeConverter;
 
     /* ================= EVENTS ================= */
     // copy of PolygonZKEVMBridge.BridgeEvent
@@ -76,8 +71,8 @@ contract Base is Test {
     /* ================= SETUP ================= */
     function setUp() public virtual {
         // create the forks
-        _l1Fork = vm.createFork(vm.envString("TEST_L1_RPC_URL"));
-        _l2Fork = vm.createFork(vm.envString("TEST_L2_RPC_URL"));
+        _l1Fork = vm.createFork(vm.envString("L1_RPC_URL"));
+        _l2Fork = vm.createFork(vm.envString("L2_RPC_URL"));
         _l1NetworkId = uint32(vm.envUint("L1_NETWORK_ID"));
         _l2NetworkId = uint32(vm.envUint("L2_NETWORK_ID"));
 
@@ -90,20 +85,13 @@ contract Base is Test {
         _erc20L2Usdc = IERC20(_l2Usdc);
         _erc20L2Wusdc = IERC20(_l2Wusdc);
 
-        _owner = vm.addr(8);
+        _deployerOwnerAdmin = vm.addr(8);
         _alice = vm.addr(1);
         _bob = vm.addr(2);
 
         // deploy and initialize contracts
         _deployMockBridge();
-
-        vm.startPrank(_owner);
-        _deployL1();
-        _deployL2();
-
-        _initL1();
-        _initL2();
-        vm.stopPrank();
+        _deployInitContracts();
 
         // fund alice with L1_USDC and L2_WUSDC
         vm.selectFork(_l1Fork);
@@ -191,6 +179,51 @@ contract Base is Test {
         );
     }
 
+    function _deployInitContracts() internal {
+        vm.startPrank(_deployerOwnerAdmin);
+
+        // deploy L1 contract
+        vm.selectFork(_l1Fork);
+        address l1EscrowProxy = LibDeployInit.deployL1Contracts(
+            _deployerOwnerAdmin // admin
+        );
+
+        // deploy L2 contracts
+        vm.selectFork(_l2Fork);
+        (
+            address minterBurnerProxy,
+            address nativeConverterProxy
+        ) = LibDeployInit.deployL2Contracts(
+                _deployerOwnerAdmin // admin
+            );
+
+        // init L1 contract
+        vm.selectFork(_l1Fork);
+        _l1Escrow = LibDeployInit.initL1Contracts(
+            _deployerOwnerAdmin,
+            _l2NetworkId,
+            _bridge,
+            l1EscrowProxy,
+            minterBurnerProxy,
+            _l1Usdc
+        );
+
+        // init L2 contracts
+        vm.selectFork(_l2Fork);
+        (_minterBurner, _nativeConverter) = LibDeployInit.initL2Contracts(
+            _deployerOwnerAdmin,
+            _l1NetworkId,
+            _bridge,
+            l1EscrowProxy,
+            minterBurnerProxy,
+            nativeConverterProxy,
+            _l2Usdc,
+            _l2Wusdc
+        );
+
+        vm.stopPrank();
+    }
+
     function _deployMockBridge() internal {
         vm.selectFork(_l1Fork);
         MockBridge mb1 = new MockBridge();
@@ -201,60 +234,6 @@ contract Base is Test {
         MockBridge mb2 = new MockBridge();
         bytes memory mb2Code = address(mb2).code;
         vm.etch(_bridge, mb2Code);
-    }
-
-    function _deployL1() internal {
-        vm.selectFork(_l1Fork);
-        _l1EscrowImpl = new L1EscrowImpl();
-        _l1EscrowProxy = new L1EscrowProxy(_owner, address(_l1EscrowImpl), "");
-    }
-
-    function _deployL2() internal {
-        vm.selectFork(_l2Fork);
-        _nativeConverterImpl = new NativeConverterImpl();
-        _nativeConverterProxy = new NativeConverterProxy(
-            _owner,
-            address(_nativeConverterImpl),
-            ""
-        );
-
-        _minterBurnerImpl = new ZkMinterBurnerImpl();
-        _minterBurnerProxy = new ZkMinterBurnerProxy(
-            _owner,
-            address(_minterBurnerImpl),
-            ""
-        );
-    }
-
-    function _initL1() internal {
-        vm.selectFork(_l1Fork);
-        _l1Escrow = L1EscrowImpl(address(_l1EscrowProxy));
-        _l1Escrow.initialize(
-            _bridge,
-            _l2NetworkId,
-            address(_minterBurnerProxy),
-            _l1Usdc
-        );
-    }
-
-    function _initL2() internal {
-        vm.selectFork(_l2Fork);
-        _minterBurner = ZkMinterBurnerImpl(address(_minterBurnerProxy));
-        _minterBurner.initialize(
-            _bridge,
-            _l1NetworkId,
-            address(_l1EscrowProxy),
-            _l2Usdc
-        );
-
-        _nativeConverter = NativeConverterImpl(address(_nativeConverterProxy));
-        _nativeConverter.initialize(
-            _bridge,
-            _l1NetworkId,
-            address(_l1EscrowProxy),
-            _l2Usdc,
-            _l2Wusdc
-        );
     }
 
     function _toUSDC(uint256 v) internal pure returns (uint256) {

@@ -36,7 +36,13 @@ contract SecurityFlows is Base {
 
         // can't initialize because already initialized
         vm.expectRevert("Initializable: contract is already initialized");
-        _l1Escrow.initialize(address(0), _l2NetworkId, address(0), address(0));
+        _l1Escrow.initialize(
+            address(0),
+            address(0),
+            _l2NetworkId,
+            address(0),
+            address(0)
+        );
     }
 
     /// @notice Calling ZkMinterBurner.initialize without being an admin fails
@@ -50,6 +56,7 @@ contract SecurityFlows is Base {
         // can't initialize because already initialized
         vm.expectRevert("Initializable: contract is already initialized");
         _minterBurner.initialize(
+            address(0),
             address(0),
             _l1NetworkId,
             address(0),
@@ -68,6 +75,7 @@ contract SecurityFlows is Base {
         // can't initialize because already initialized
         vm.expectRevert("Initializable: contract is already initialized");
         _nativeConverter.initialize(
+            address(0),
             address(0),
             _l1NetworkId,
             address(0),

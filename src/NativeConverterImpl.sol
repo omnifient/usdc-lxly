@@ -32,7 +32,14 @@ contract NativeConverterImpl is
     IUSDC public zkUSDCe;
     IUSDC public zkBWUSDC;
 
+    constructor() {
+        // override default OZ behaviour that sets msg.sender as the owner
+        // set the owner of the implementation to an address that can not change anything
+        _transferOwnership(address(1));
+    }
+
     function initialize(
+        address owner_,
         address bridge_,
         uint32 l1NetworkId_,
         address l1Escrow_,
@@ -44,8 +51,9 @@ contract NativeConverterImpl is
         require(l1Escrow_ != address(0), "INVALID_ADDRESS");
         require(zkUSDCe_ != address(0), "INVALID_ADDRESS");
         require(zkBWUSDC_ != address(0), "INVALID_ADDRESS");
+        require(owner_ != address(0), "INVALID_ADDRESS");
 
-        _transferOwnership(msg.sender); // TODO: arg from initialize
+        _transferOwnership(owner_);
 
         bridge = IPolygonZkEVMBridge(bridge_);
         l1NetworkId = l1NetworkId_;
