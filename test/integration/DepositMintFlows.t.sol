@@ -97,6 +97,34 @@ contract DepositMintFlows is Base {
         _assertUsdcSupplyAndBalancesMatch();
     }
 
+    /// @notice Alice permits a 500 L1_USDC spend but tries to deposit 1000 L1_USDC to L1Escrow.
+    function testRevertDepositWithInsufficientPermit() public {
+        vm.selectFork(_l1Fork);
+        vm.startPrank(_alice);
+
+        // setup
+        uint256 approvalAmount = _toUSDC(500);
+        uint256 depositAmount = _toUSDC(1000);
+
+        uint256 balance1 = _erc20L1Usdc.balanceOf(_alice);
+        bytes memory permitData = _createPermitData(
+            _alice,
+            address(_l1Escrow),
+            _l1Usdc,
+            approvalAmount
+        );
+
+        // deposit to L1Escrow
+        vm.expectRevert(bytes4(0x03fffc4b)); // NotValidAmount()
+        _l1Escrow.bridgeToken(_alice, depositAmount, true, permitData);
+
+        // alice's L1_USDC balance is the same
+        uint256 balance2 = _erc20L1Usdc.balanceOf(_alice);
+        assertEq(balance1, balance2);
+
+        _assertUsdcSupplyAndBalancesMatch();
+    }
+
     /// @notice Alice deposits 1000 L1_USDC to L1Escrow for Bob, and MinterBurner mints the L2_USDC accordingly.
     function testDepositToAnotherAddress() public {
         vm.selectFork(_l1Fork);

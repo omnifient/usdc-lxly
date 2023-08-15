@@ -113,6 +113,32 @@ contract WithdrawUnlockFlows is Base {
         _assertUsdcSupplyAndBalancesMatch();
     }
 
+    /// @notice Alice permits spending 500 L2_USDC and tries to withdraw 1000 L2_USDC.
+    function testRevertWithdrawWithInsufficientPermit() public {
+        // setup the withdrawal
+        vm.selectFork(_l2Fork);
+        uint256 balance1 = _erc20L2Usdc.balanceOf(_alice);
+
+        uint256 approvalAmount = _toUSDC(500);
+        uint256 withdrawAmount = _toUSDC(1000);
+        bytes memory permitData = _createPermitData(
+            _alice,
+            address(_minterBurner),
+            _l2Usdc,
+            approvalAmount
+        );
+
+        // try to withdraw the L2_USDC
+        vm.expectRevert(bytes4(0x03fffc4b)); // NotValidAmount()
+        _minterBurner.bridgeToken(_alice, withdrawAmount, true, permitData);
+
+        // alice's L2_USDC balance is the same
+        uint256 balance2 = _erc20L2Usdc.balanceOf(_alice);
+        assertEq(balance1, balance2);
+
+        _assertUsdcSupplyAndBalancesMatch();
+    }
+
     /// @notice Alice has 1000 L2_USDC, withdraws 75%, and gets back 750 L1_USDC
     function testPartialWithdrawBurnsAndUnlocksInL1() public {
         // get the initial L1 balance

@@ -46,7 +46,6 @@ contract ConvertFlows is Base {
         uint256 wrappedBalance1 = _erc20L2Wusdc.balanceOf(_alice);
 
         uint256 amount = _toUSDC(1000);
-
         bytes memory permitData = _createPermitData(
             _alice,
             address(_nativeConverter),
@@ -70,6 +69,37 @@ contract ConvertFlows is Base {
 
         // converter's L2_BWUSDC balance increased
         assertEq(_erc20L2Wusdc.balanceOf(address(_nativeConverter)), amount);
+
+        _assertUsdcSupplyAndBalancesMatch();
+    }
+
+    /// @notice Alice permits a 500 L2_WUSDC spend but tries to convert 1000 L2_WUSDC.
+    function testRevertConvertWithInsufficientPermit() public {
+        vm.selectFork(_l2Fork);
+        vm.startPrank(_alice);
+
+        // setup
+        uint256 wrappedBalance1 = _erc20L2Wusdc.balanceOf(_alice);
+
+        uint256 approveAmount = _toUSDC(500);
+        uint256 convertAmount = _toUSDC(1000);
+        bytes memory permitData = _createPermitData(
+            _alice,
+            address(_nativeConverter),
+            _l2Wusdc,
+            approveAmount
+        );
+
+        // call convert
+        vm.expectRevert(bytes4(0x03fffc4b)); // NotValidAmount()
+        _nativeConverter.convert(_alice, convertAmount, permitData);
+
+        // alice's L2_WUSDC balance didn't change
+        uint256 wrappedBalance2 = _erc20L2Wusdc.balanceOf(_alice);
+        assertEq(wrappedBalance1, wrappedBalance2);
+
+        // alice's L2_USDC balance didn't change
+        assertEq(_erc20L2Usdc.balanceOf(_alice), 0);
 
         _assertUsdcSupplyAndBalancesMatch();
     }
