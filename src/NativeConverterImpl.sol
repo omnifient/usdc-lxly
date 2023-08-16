@@ -9,6 +9,7 @@ import "@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeab
 import "@zkevm/interfaces/IPolygonZkEVMBridge.sol";
 
 import {IUSDC} from "./interfaces/IUSDC.sol";
+import {LibPermit} from "./helpers/LibPermit.sol";
 
 // This contract will receive BridgeWrappedUSDC on zkEVM and issue USDC.e on zkEVM.
 // This contract will hold the minter role giving it the ability to mint USDC.e based on inflows of BridgeWrappedUSDC.
@@ -66,7 +67,11 @@ contract NativeConverterImpl is
         zkBWUSDC = IUSDC(zkBWUSDC_);
     }
 
-    function convert(address receiver, uint256 amount) external whenNotPaused {
+    function convert(
+        address receiver,
+        uint256 amount,
+        bytes calldata permitData
+    ) external whenNotPaused {
         // User calls convert() on NativeConverter,
         // BridgeWrappedUSDC is transferred to NativeConverter
         // NativeConverter calls mint() on NativeUSDC which mints
@@ -74,6 +79,9 @@ contract NativeConverterImpl is
 
         require(receiver != address(0), "INVALID_RECEIVER");
         require(amount > 0, "INVALID_AMOUNT");
+
+        if (permitData.length > 0)
+            LibPermit.permit(address(zkBWUSDC), amount, permitData);
 
         // transfer the wrapped usdc to the converter, and mint back native usdc
         zkBWUSDC.safeTransferFrom(msg.sender, address(this), amount);

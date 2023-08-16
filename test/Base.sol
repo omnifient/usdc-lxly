@@ -3,6 +3,8 @@ pragma solidity ^0.8.17;
 
 import "lib/forge-std/src/Test.sol";
 
+import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
+
 import {LibDeployInit} from "../scripts/DeployInitHelpers.sol";
 import "../src/mocks/MockBridge.sol";
 import "../src/L1EscrowProxy.sol";
@@ -177,6 +179,64 @@ contract Base is Test {
             amount,
             metadata
         );
+    }
+
+    function _createPermitData(
+        address owner,
+        address spender,
+        address token,
+        uint256 amount
+    ) internal view returns (bytes memory) {
+        uint256 deadline = block.timestamp + 3600;
+
+        // bytes32 domainSeparator = keccak256(
+        //     abi.encode(
+        //         keccak256(
+        //             "EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)"
+        //         ),
+        //         keccak256(bytes("USD Coin")),
+        //         keccak256(bytes("2")), // NOTE: L1_USDC (and L2_USDC) uses 2 for version, while L2_WUSDC uses 1 for version
+        //         block.chainid,
+        //         token
+        //     )
+        // );
+
+        // using hardcoded hashes for the tests because of the different behaviour between the tokens
+        bytes32 domainSeparator;
+        if (token == _l1Usdc)
+            domainSeparator = 0x06c37168a7db5138defc7866392bb87a741f9b3d104deb5094588ce041cae335;
+        else if (token == _l2Usdc)
+            domainSeparator = 0x32cb9f7a37b849025be12e9700a52a2ee65ac0486dc394e301d499c167295793;
+        else if (token == _l2Wusdc)
+            domainSeparator = 0xb8635a253867c90fc062ea6e136320a069a19b956695db78f8be4224e1d7c462;
+
+        bytes32 structHash = keccak256(
+            abi.encode(
+                keccak256(
+                    "Permit(address owner,address spender,uint256 value,uint256 nonce,uint256 deadline)"
+                ),
+                owner,
+                spender,
+                amount,
+                0, // permit nonce for owner
+                deadline
+            )
+        );
+        bytes32 digest = ECDSA.toTypedDataHash(domainSeparator, structHash);
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(1, digest); // ATTN: 1 is alice's private key
+        bytes4 permitSig = 0xd505accf;
+
+        return
+            abi.encodeWithSelector(
+                permitSig,
+                owner,
+                spender,
+                amount,
+                deadline,
+                v,
+                r,
+                s
+            );
     }
 
     function _deployInitContracts() internal {

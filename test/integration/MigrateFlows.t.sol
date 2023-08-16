@@ -20,6 +20,8 @@ contract MigrateFlows is Base {
         );
     }
 
+    bytes private _emptyBytes;
+
     /// @notice Alice converts 1000 L2_WUSDC to L2_USDC, then calls migrate,
     /// causing NativeConverter to bridge 1000 L2_WUSDC, resulting in 1000
     /// L1_USDC being sent to L1Escrow.
@@ -33,7 +35,7 @@ contract MigrateFlows is Base {
         uint256 balance1 = _erc20L2Wusdc.balanceOf(_alice);
         uint256 wusdcSupply1 = _erc20L2Wusdc.totalSupply();
         _erc20L2Wusdc.approve(address(_nativeConverter), amount);
-        _nativeConverter.convert(_alice, amount);
+        _nativeConverter.convert(_alice, amount, _emptyBytes);
 
         // check that NativeConverter has the L2_BWUSDC
         assertEq(_erc20L2Wusdc.balanceOf(address(_nativeConverter)), amount);
@@ -85,7 +87,7 @@ contract MigrateFlows is Base {
         uint256 balance1 = _erc20L2Wusdc.balanceOf(_alice);
         uint256 wusdcSupply1 = _erc20L2Wusdc.totalSupply();
         _erc20L2Wusdc.approve(address(_nativeConverter), amount1);
-        _nativeConverter.convert(_alice, amount1);
+        _nativeConverter.convert(_alice, amount1, _emptyBytes);
 
         // check that NativeConverter has the L2_BWUSDC
         assertEq(_erc20L2Wusdc.balanceOf(address(_nativeConverter)), amount1);
@@ -122,7 +124,7 @@ contract MigrateFlows is Base {
         // Alice converts some more wusdc to usdc
         uint256 amount2 = _toUSDC(500);
         _erc20L2Wusdc.approve(address(_nativeConverter), amount2);
-        _nativeConverter.convert(_alice, amount2);
+        _nativeConverter.convert(_alice, amount2, _emptyBytes);
 
         // check that NativeConverter has the L2_BWUSDC
         assertEq(_erc20L2Wusdc.balanceOf(address(_nativeConverter)), amount2);

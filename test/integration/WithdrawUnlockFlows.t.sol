@@ -30,11 +30,11 @@ contract WithdrawUnlockFlows is Base {
             address(_l1Escrow), // destinationAddress
             0, // msg.value
             abi.encode(receiver, amount), // metadata
-            uint32(86512) // ATTN: deposit count in mainnet block 17785773
+            uint32(18003) // ATTN: deposit count in mainnet block 17785773
         );
     }
 
-    /// @notice Alice has 1000 L2_USDC, withdraws it all, and gets back 1000 L1_USDC
+    /// @notice Alice has 1000 L2_USDC, withdraws it all using approve(), and gets back 1000 L1_USDC
     function testFullWithdrawBurnsAndUnlocksInL1() public {
         // get the initial L1 balance
         vm.selectFork(_l1Fork);
@@ -67,6 +67,74 @@ contract WithdrawUnlockFlows is Base {
         vm.selectFork(_l1Fork);
         uint256 l1Balance2 = _erc20L1Usdc.balanceOf(_alice);
         assertEq(l1Balance2 - l1Balance1, amount);
+
+        _assertUsdcSupplyAndBalancesMatch();
+    }
+
+    /// @notice Alice has 1000 L2_USDC, withdraws it all using permit(), and gets back 1000 L1_USDC
+    function testFullWithdrawBurnsWithPermitAndUnlocksInL1() public {
+        // get the initial L1 balance
+        vm.selectFork(_l1Fork);
+        uint256 l1Balance1 = _erc20L1Usdc.balanceOf(_alice);
+
+        // setup the withdrawal
+        vm.selectFork(_l2Fork);
+        uint256 amount = _toUSDC(1000);
+        bytes memory permitData = _createPermitData(
+            _alice,
+            address(_minterBurner),
+            _l2Usdc,
+            amount
+        );
+
+        // check that a bridge event is emitted
+        vm.expectEmit(_bridge);
+        _emitWithdrawBridgeEvent(_alice, amount);
+
+        // check that our withdrawal event is emitted
+        vm.expectEmit(address(_minterBurner));
+        emit Withdraw(_alice, _alice, amount);
+
+        // burn the L2_USDC
+        _minterBurner.bridgeToken(_alice, amount, true, permitData);
+
+        // alice's L2_USDC balance is 0
+        uint256 l2Balance = _erc20L2Usdc.balanceOf(_alice);
+        assertEq(l2Balance, 0);
+
+        // manually trigger the "bridging"
+        _claimBridgeMessage(_l2Fork, _l1Fork);
+
+        // alice's L1_USDC balance increased
+        vm.selectFork(_l1Fork);
+        uint256 l1Balance2 = _erc20L1Usdc.balanceOf(_alice);
+        assertEq(l1Balance2 - l1Balance1, amount);
+
+        _assertUsdcSupplyAndBalancesMatch();
+    }
+
+    /// @notice Alice permits spending 500 L2_USDC and tries to withdraw 1000 L2_USDC.
+    function testRevertWithdrawWithInsufficientPermit() public {
+        // setup the withdrawal
+        vm.selectFork(_l2Fork);
+        uint256 balance1 = _erc20L2Usdc.balanceOf(_alice);
+
+        uint256 approvalAmount = _toUSDC(500);
+        uint256 withdrawAmount = _toUSDC(1000);
+        bytes memory permitData = _createPermitData(
+            _alice,
+            address(_minterBurner),
+            _l2Usdc,
+            approvalAmount
+        );
+
+        // try to withdraw the L2_USDC
+        vm.expectRevert(bytes4(0x03fffc4b)); // NotValidAmount()
+        _minterBurner.bridgeToken(_alice, withdrawAmount, true, permitData);
+
+        // alice's L2_USDC balance is the same
+        uint256 balance2 = _erc20L2Usdc.balanceOf(_alice);
+        assertEq(balance1, balance2);
 
         _assertUsdcSupplyAndBalancesMatch();
     }
