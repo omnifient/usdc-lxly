@@ -299,7 +299,7 @@ contract Base is Test {
         vm.stopPrank();
     }
 
-    function _deployMockBridge() internal {
+    function _deployMockBridge() internal virtual {
         vm.selectFork(_l1Fork);
         MockBridge mb1 = new MockBridge();
         bytes memory mb1Code = address(mb1).code;

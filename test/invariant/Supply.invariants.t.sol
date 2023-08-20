@@ -6,6 +6,7 @@ import "lib/forge-std/src/Test.sol";
 
 import {HandlerState, LxLyHandler, Operation} from "./LxLyHandler.sol";
 import {Base} from "../Base.sol";
+import "./InvMockBridge.sol";
 
 contract Supply is Base {
     HandlerState private _state;
@@ -59,6 +60,40 @@ contract Supply is Base {
 
         excludeContract(_bridge);
         excludeContract(stateAddr);
+    }
+
+    function _deployMockBridge() internal override {
+        console.log("....... deploying mock bridge");
+        // TODO: TBI
+        bytes32 salt = "LXLY_BRIDGE";
+
+        vm.selectFork(_l1Fork);
+        InvMockBridge b1 = new InvMockBridge{salt: salt}(vm, _bridge);
+        address b1Addr = address(b1);
+        // b1.initialize(_l1NetworkId, vm, address(0), address(0), 0, address(0));
+        // fund it with L1_USDC
+        deal(_l1Usdc, b1Addr, 1000000 * _ONE_MILLION_USDC);
+
+        vm.selectFork(_l2Fork);
+        InvMockBridge b2 = new InvMockBridge{salt: salt}(vm, _bridge);
+        address b2Addr = address(b2);
+        // b2.initialize(
+        //     _l2NetworkId,
+        //     vm,
+        //     _bridge,
+        //     _l2Wusdc,
+        //     _l1NetworkId,
+        //     _l1Usdc
+        // );
+        (uint32 xx, address yy) = b2.wrappedTokenToTokenInfo(_l2Wusdc);
+        console.log("hey!", yy);
+        // fund it with L2_WUSDC
+        // deal(_l2Wusdc, b2Addr, 1000000 * _ONE_MILLION_USDC);
+
+        assert(b1Addr == b2Addr);
+        _bridge = b1Addr;
+
+        console.log("....... deployed mock bridge");
     }
 
     // the test
