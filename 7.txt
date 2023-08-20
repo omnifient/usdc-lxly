@@ -1,0 +1,812 @@
+Compiling 2 files with 0.8.17
+Solc 0.8.17 finished in 2.83s
+Compiler run [33msuccessful with warnings:[0m
+[1;33mWarning (9302)[0m[1;37m: Return value of low-level calls not used.[0m
+  [34m-->[0m src/helpers/LibPermit.sol:50:9:
+[34m   |[0m
+[34m50 |[0m         [33maddress(token).call([0m
+[34m   |[0m         [1;33m^ (Relevant source part starts here and spans across multiple lines).[0m
+
+[1;33mWarning (9302)[0m[1;37m: Return value of low-level calls not used.[0m
+   [34m-->[0m src/mocks/MockBridge.sol:744:13:
+[34m    |[0m
+[34m744 |[0m             [33maddress(token).call([0m
+[34m    |[0m             [1;33m^ (Relevant source part starts here and spans across multiple lines).[0m
+
+[1;33mWarning (9302)[0m[1;37m: Return value of low-level calls not used.[0m
+   [34m-->[0m src/mocks/MockBridge.sol:796:13:
+[34m    |[0m
+[34m796 |[0m             [33maddress(token).call([0m
+[34m    |[0m             [1;33m^ (Relevant source part starts here and spans across multiple lines).[0m
+
+[1;33mWarning (5667)[0m[1;37m: Unused function parameter. Remove or comment out the variable name to silence this warning.[0m
+   [34m-->[0m test/invariant/InvMockBridge.sol:137:9:
+[34m    |[0m
+[34m137 |[0m         [33mbool forceUpdateGlobalExitRoot[0m,
+[34m    |[0m         [1;33m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+
+[1;33mWarning (5667)[0m[1;37m: Unused function parameter. Remove or comment out the variable name to silence this warning.[0m
+   [34m-->[0m test/invariant/InvMockBridge.sol:138:9:
+[34m    |[0m
+[34m138 |[0m         [33mbytes calldata permitData[0m
+[34m    |[0m         [1;33m^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+
+[1;33mWarning (5667)[0m[1;37m: Unused function parameter. Remove or comment out the variable name to silence this warning.[0m
+   [34m-->[0m test/invariant/InvMockBridge.sol:206:9:
+[34m    |[0m
+[34m206 |[0m         [33mbool forceUpdateGlobalExitRoot[0m,
+[34m    |[0m         [1;33m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+
+[1;33mWarning (5667)[0m[1;37m: Unused function parameter. Remove or comment out the variable name to silence this warning.[0m
+   [34m-->[0m test/invariant/InvMockBridge.sol:244:9:
+[34m    |[0m
+[34m244 |[0m         [33mbytes32[_DEPOSIT_CONTRACT_TREE_DEPTH] calldata smtProof[0m,
+[34m    |[0m         [1;33m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+
+[1;33mWarning (5667)[0m[1;37m: Unused function parameter. Remove or comment out the variable name to silence this warning.[0m
+   [34m-->[0m test/invariant/InvMockBridge.sol:246:9:
+[34m    |[0m
+[34m246 |[0m         [33mbytes32 mainnetExitRoot[0m,
+[34m    |[0m         [1;33m^^^^^^^^^^^^^^^^^^^^^^^[0m
+
+[1;33mWarning (5667)[0m[1;37m: Unused function parameter. Remove or comment out the variable name to silence this warning.[0m
+   [34m-->[0m test/invariant/InvMockBridge.sol:247:9:
+[34m    |[0m
+[34m247 |[0m         [33mbytes32 rollupExitRoot[0m,
+[34m    |[0m         [1;33m^^^^^^^^^^^^^^^^^^^^^^[0m
+
+[1;33mWarning (5667)[0m[1;37m: Unused function parameter. Remove or comment out the variable name to silence this warning.[0m
+   [34m-->[0m test/invariant/InvMockBridge.sol:250:9:
+[34m    |[0m
+[34m250 |[0m         [33muint32 destinationNetwork[0m,
+[34m    |[0m         [1;33m^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+
+[1;33mWarning (5667)[0m[1;37m: Unused function parameter. Remove or comment out the variable name to silence this warning.[0m
+   [34m-->[0m test/invariant/InvMockBridge.sol:253:9:
+[34m    |[0m
+[34m253 |[0m         [33mbytes calldata metadata[0m
+[34m    |[0m         [1;33m^^^^^^^^^^^^^^^^^^^^^^^[0m
+
+[1;33mWarning (5667)[0m[1;37m: Unused function parameter. Remove or comment out the variable name to silence this warning.[0m
+   [34m-->[0m test/invariant/InvMockBridge.sol:293:9:
+[34m    |[0m
+[34m293 |[0m         [33mbytes32[_DEPOSIT_CONTRACT_TREE_DEPTH] calldata smtProof[0m,
+[34m    |[0m         [1;33m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+
+[1;33mWarning (5667)[0m[1;37m: Unused function parameter. Remove or comment out the variable name to silence this warning.[0m
+   [34m-->[0m test/invariant/InvMockBridge.sol:295:9:
+[34m    |[0m
+[34m295 |[0m         [33mbytes32 mainnetExitRoot[0m,
+[34m    |[0m         [1;33m^^^^^^^^^^^^^^^^^^^^^^^[0m
+
+[1;33mWarning (5667)[0m[1;37m: Unused function parameter. Remove or comment out the variable name to silence this warning.[0m
+   [34m-->[0m test/invariant/InvMockBridge.sol:296:9:
+[34m    |[0m
+[34m296 |[0m         [33mbytes32 rollupExitRoot[0m,
+[34m    |[0m         [1;33m^^^^^^^^^^^^^^^^^^^^^^[0m
+
+[1;33mWarning (5667)[0m[1;37m: Unused function parameter. Remove or comment out the variable name to silence this warning.[0m
+   [34m-->[0m test/invariant/InvMockBridge.sol:299:9:
+[34m    |[0m
+[34m299 |[0m         [33muint32 destinationNetwork[0m,
+[34m    |[0m         [1;33m^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+
+[1;33mWarning (2072)[0m[1;37m: Unused local variable.[0m
+  [34m-->[0m test/invariant/Supply.invariants.t.sol:88:10:
+[34m   |[0m
+[34m88 |[0m         ([33muint32 xx[0m, address yy) = b2.wrappedTokenToTokenInfo(_l2Wusdc);
+[34m   |[0m          [1;33m^^^^^^^^^[0m
+
+
+Running 1 test for test/invariant/Supply.invariants.t.sol:Supply
+[32m[PASS][0m invariantGigaTest() (runs: 256, calls: 25600, reverts: 0)
+Logs:
+  ....... deploying mock bridge
+  hey! 0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48
+  ....... deployed mock bridge
+  Bound Result 6
+  -------- migrate
+  MIGRATE Beginning: L1Escrow's Balance: 0
+  MIGRATE Ending: L1Escrow's Balance: 0
+  GIGA: l1EscrowBalance 0
+  Bound Result 2
+  -------- migrate
+  MIGRATE Beginning: L1Escrow's Balance: 0
+  MIGRATE Ending: L1Escrow's Balance: 0
+  GIGA: l1EscrowBalance 0
+  Bound Result 0
+  -------- migrate
+  MIGRATE Beginning: L1Escrow's Balance: 0
+  MIGRATE Ending: L1Escrow's Balance: 0
+  GIGA: l1EscrowBalance 0
+  Bound Result 5
+  -------- convert
+  CONVERT Beginning: L1Escrow's Balance: 0
+  CONVERT Ending: L1Escrow's Balance: 0
+  GIGA: l1EscrowBalance 0
+  Bound Result 5
+  -------- convert
+  CONVERT Beginning: L1Escrow's Balance: 0
+  CONVERT Ending: L1Escrow's Balance: 0
+  GIGA: l1EscrowBalance 0
+  Bound Result 6
+  -------- convert
+  CONVERT Beginning: L1Escrow's Balance: 0
+  CONVERT Ending: L1Escrow's Balance: 0
+  GIGA: l1EscrowBalance 0
+  Bound Result 6
+  -------- migrate
+  MIGRATE Beginning: L1Escrow's Balance: 0
+  MIGRATE Ending: L1Escrow's Balance: 0
+  GIGA: l1EscrowBalance 0
+  Bound Result 6
+  -------- convert
+  CONVERT Beginning: L1Escrow's Balance: 0
+  CONVERT Ending: L1Escrow's Balance: 0
+  GIGA: l1EscrowBalance 0
+  CONVERT: amount 2
+  CONVERT: currentActor's L2_BWUSDC balance decreased
+  CONVERT: receiver's L2_USDC balance increased
+  CONVERT: _nativeConverter L2_BWUSDC balance increased
+  CONVERT: supply and balances match
+  l2TotalSupply: 2
+  l1EscrowBalance: 0
+  wUsdcConverterBalance: 2
+  Bound Result 3
+  -------- convert
+  CONVERT Beginning: L1Escrow's Balance: 0
+  CONVERT Ending: L1Escrow's Balance: 0
+  GIGA: l1EscrowBalance 0
+  Bound Result 1
+  -------- convert
+  CONVERT Beginning: L1Escrow's Balance: 0
+  CONVERT Ending: L1Escrow's Balance: 0
+  GIGA: l1EscrowBalance 0
+  Bound Result 4
+  -------- convert
+  CONVERT Beginning: L1Escrow's Balance: 0
+  CONVERT Ending: L1Escrow's Balance: 0
+  GIGA: l1EscrowBalance 0
+  Bound Result 0
+  -------- convert
+  CONVERT Beginning: L1Escrow's Balance: 0
+  CONVERT Ending: L1Escrow's Balance: 0
+  GIGA: l1EscrowBalance 0
+  Bound Result 6
+  -------- migrate
+  MIGRATE Beginning: L1Escrow's Balance: 0
+  MIGRATE Ending: L1Escrow's Balance: 0
+  GIGA: l1EscrowBalance 0
+  MIGRATE: amount 2
+  MIGRATE: _nativeConverter L2_BWUSDC balanced decreased
+  MIGRATE: _claimBridgeAsset
+  MIGRATE: _l1Escrow's L1_USDC balanced increased
+  MIGRATE: supply and balances match
+  l2TotalSupply: 2
+  l1EscrowBalance: 2
+  wUsdcConverterBalance: 0
+  Bound Result 3
+  -------- migrate
+  MIGRATE Beginning: L1Escrow's Balance: 0
+  MIGRATE Ending: L1Escrow's Balance: 0
+  GIGA: l1EscrowBalance 0
+  Bound Result 3
+  -------- migrate
+  MIGRATE Beginning: L1Escrow's Balance: 0
+  MIGRATE Ending: L1Escrow's Balance: 0
+  GIGA: l1EscrowBalance 0
+  Bound Result 1
+  -------- convert
+  CONVERT Beginning: L1Escrow's Balance: 0
+  CONVERT Ending: L1Escrow's Balance: 0
+  GIGA: l1EscrowBalance 0
+  Bound Result 6
+  -------- migrate
+  MIGRATE Beginning: L1Escrow's Balance: 0
+  MIGRATE Ending: L1Escrow's Balance: 0
+  GIGA: l1EscrowBalance 0
+  Bound Result 3
+  -------- convert
+  CONVERT Beginning: L1Escrow's Balance: 0
+  CONVERT Ending: L1Escrow's Balance: 0
+  GIGA: l1EscrowBalance 0
+  Bound Result 1
+  -------- migrate
+  MIGRATE Beginning: L1Escrow's Balance: 0
+  MIGRATE Ending: L1Escrow's Balance: 0
+  GIGA: l1EscrowBalance 0
+  Bound Result 3
+  -------- migrate
+  MIGRATE Beginning: L1Escrow's Balance: 0
+  MIGRATE Ending: L1Escrow's Balance: 0
+  GIGA: l1EscrowBalance 0
+  Bound Result 0
+  -------- migrate
+  MIGRATE Beginning: L1Escrow's Balance: 0
+  MIGRATE Ending: L1Escrow's Balance: 0
+  GIGA: l1EscrowBalance 0
+  Bound Result 2
+  -------- convert
+  CONVERT Beginning: L1Escrow's Balance: 0
+  CONVERT Ending: L1Escrow's Balance: 0
+  GIGA: l1EscrowBalance 0
+  Bound Result 0
+  -------- migrate
+  MIGRATE Beginning: L1Escrow's Balance: 0
+  MIGRATE Ending: L1Escrow's Balance: 0
+  GIGA: l1EscrowBalance 0
+  Bound Result 4
+  -------- migrate
+  MIGRATE Beginning: L1Escrow's Balance: 0
+  MIGRATE Ending: L1Escrow's Balance: 0
+  GIGA: l1EscrowBalance 0
+  Bound Result 3
+  -------- convert
+  CONVERT Beginning: L1Escrow's Balance: 0
+  CONVERT Ending: L1Escrow's Balance: 0
+  GIGA: l1EscrowBalance 0
+  CONVERT: amount 2
+  CONVERT: currentActor's L2_BWUSDC balance decreased
+  CONVERT: receiver's L2_USDC balance increased
+  CONVERT: _nativeConverter L2_BWUSDC balance increased
+  CONVERT: supply and balances match
+  l2TotalSupply: 4
+  l1EscrowBalance: 0
+  wUsdcConverterBalance: 2
+  Error: a <= b not satisfied [uint]
+    Value a: 4
+    Value b: 2
+  Bound Result 1
+  -------- migrate
+  MIGRATE Beginning: L1Escrow's Balance: 0
+  MIGRATE Ending: L1Escrow's Balance: 0
+  GIGA: l1EscrowBalance 0
+  MIGRATE: amount 2
+  MIGRATE: _nativeConverter L2_BWUSDC balanced decreased
+  MIGRATE: _claimBridgeAsset
+  MIGRATE: _l1Escrow's L1_USDC balanced increased
+  MIGRATE: supply and balances match
+  l2TotalSupply: 4
+  l1EscrowBalance: 2
+  wUsdcConverterBalance: 0
+  Error: a <= b not satisfied [uint]
+    Value a: 4
+    Value b: 2
+  Bound Result 4
+  -------- migrate
+  MIGRATE Beginning: L1Escrow's Balance: 0
+  MIGRATE Ending: L1Escrow's Balance: 0
+  GIGA: l1EscrowBalance 0
+  Bound Result 2
+  -------- migrate
+  MIGRATE Beginning: L1Escrow's Balance: 0
+  MIGRATE Ending: L1Escrow's Balance: 0
+  GIGA: l1EscrowBalance 0
+  Bound Result 1
+  -------- convert
+  CONVERT Beginning: L1Escrow's Balance: 0
+  CONVERT Ending: L1Escrow's Balance: 0
+  GIGA: l1EscrowBalance 0
+  Bound Result 0
+  -------- migrate
+  MIGRATE Beginning: L1Escrow's Balance: 0
+  MIGRATE Ending: L1Escrow's Balance: 0
+  GIGA: l1EscrowBalance 0
+  Bound Result 4
+  -------- convert
+  CONVERT Beginning: L1Escrow's Balance: 0
+  CONVERT Ending: L1Escrow's Balance: 0
+  GIGA: l1EscrowBalance 0
+  CONVERT: amount 3
+  CONVERT: currentActor's L2_BWUSDC balance decreased
+  CONVERT: receiver's L2_USDC balance increased
+  CONVERT: _nativeConverter L2_BWUSDC balance increased
+  CONVERT: supply and balances match
+  l2TotalSupply: 7
+  l1EscrowBalance: 0
+  wUsdcConverterBalance: 3
+  Error: a <= b not satisfied [uint]
+    Value a: 7
+    Value b: 3
+  Bound Result 1
+  -------- convert
+  CONVERT Beginning: L1Escrow's Balance: 0
+  CONVERT Ending: L1Escrow's Balance: 0
+  GIGA: l1EscrowBalance 0
+  Bound Result 4
+  -------- convert
+  CONVERT Beginning: L1Escrow's Balance: 0
+  CONVERT Ending: L1Escrow's Balance: 0
+  GIGA: l1EscrowBalance 0
+  Bound Result 1
+  -------- convert
+  CONVERT Beginning: L1Escrow's Balance: 0
+  CONVERT Ending: L1Escrow's Balance: 0
+  GIGA: l1EscrowBalance 0
+  Bound Result 0
+  -------- convert
+  CONVERT Beginning: L1Escrow's Balance: 0
+  CONVERT Ending: L1Escrow's Balance: 0
+  GIGA: l1EscrowBalance 0
+  Bound Result 5
+  -------- migrate
+  MIGRATE Beginning: L1Escrow's Balance: 0
+  MIGRATE Ending: L1Escrow's Balance: 0
+  GIGA: l1EscrowBalance 0
+  MIGRATE: amount 3
+  MIGRATE: _nativeConverter L2_BWUSDC balanced decreased
+  MIGRATE: _claimBridgeAsset
+  MIGRATE: _l1Escrow's L1_USDC balanced increased
+  MIGRATE: supply and balances match
+  l2TotalSupply: 7
+  l1EscrowBalance: 3
+  wUsdcConverterBalance: 0
+  Error: a <= b not satisfied [uint]
+    Value a: 7
+    Value b: 3
+  Bound Result 0
+  -------- migrate
+  MIGRATE Beginning: L1Escrow's Balance: 0
+  MIGRATE Ending: L1Escrow's Balance: 0
+  GIGA: l1EscrowBalance 0
+  Bound Result 4
+  -------- convert
+  CONVERT Beginning: L1Escrow's Balance: 0
+  CONVERT Ending: L1Escrow's Balance: 0
+  GIGA: l1EscrowBalance 0
+  CONVERT: amount 57295445913
+  CONVERT: currentActor's L2_BWUSDC balance decreased
+  CONVERT: receiver's L2_USDC balance increased
+  CONVERT: _nativeConverter L2_BWUSDC balance increased
+  CONVERT: supply and balances match
+  l2TotalSupply: 57295445920
+  l1EscrowBalance: 0
+  wUsdcConverterBalance: 57295445913
+  Error: a <= b not satisfied [uint]
+    Value a: 57295445920
+    Value b: 57295445913
+  Bound Result 5
+  -------- convert
+  CONVERT Beginning: L1Escrow's Balance: 0
+  CONVERT Ending: L1Escrow's Balance: 0
+  GIGA: l1EscrowBalance 0
+  Bound Result 6
+  -------- migrate
+  MIGRATE Beginning: L1Escrow's Balance: 0
+  MIGRATE Ending: L1Escrow's Balance: 0
+  GIGA: l1EscrowBalance 0
+  MIGRATE: amount 57295445913
+  MIGRATE: _nativeConverter L2_BWUSDC balanced decreased
+  MIGRATE: _claimBridgeAsset
+  MIGRATE: _l1Escrow's L1_USDC balanced increased
+  MIGRATE: supply and balances match
+  l2TotalSupply: 57295445920
+  l1EscrowBalance: 57295445913
+  wUsdcConverterBalance: 0
+  Error: a <= b not satisfied [uint]
+    Value a: 57295445920
+    Value b: 57295445913
+  Bound Result 0
+  -------- migrate
+  MIGRATE Beginning: L1Escrow's Balance: 0
+  MIGRATE Ending: L1Escrow's Balance: 0
+  GIGA: l1EscrowBalance 0
+  Bound Result 3
+  -------- migrate
+  MIGRATE Beginning: L1Escrow's Balance: 0
+  MIGRATE Ending: L1Escrow's Balance: 0
+  GIGA: l1EscrowBalance 0
+  Bound Result 1
+  -------- migrate
+  MIGRATE Beginning: L1Escrow's Balance: 0
+  MIGRATE Ending: L1Escrow's Balance: 0
+  GIGA: l1EscrowBalance 0
+  Bound Result 6
+  -------- convert
+  CONVERT Beginning: L1Escrow's Balance: 0
+  CONVERT Ending: L1Escrow's Balance: 0
+  GIGA: l1EscrowBalance 0
+  Bound Result 5
+  -------- convert
+  CONVERT Beginning: L1Escrow's Balance: 0
+  CONVERT Ending: L1Escrow's Balance: 0
+  GIGA: l1EscrowBalance 0
+  CONVERT: amount 1604845570
+  CONVERT: currentActor's L2_BWUSDC balance decreased
+  CONVERT: receiver's L2_USDC balance increased
+  CONVERT: _nativeConverter L2_BWUSDC balance increased
+  CONVERT: supply and balances match
+  l2TotalSupply: 58900291490
+  l1EscrowBalance: 0
+  wUsdcConverterBalance: 1604845570
+  Error: a <= b not satisfied [uint]
+    Value a: 58900291490
+    Value b: 1604845570
+  Bound Result 0
+  -------- convert
+  CONVERT Beginning: L1Escrow's Balance: 0
+  CONVERT Ending: L1Escrow's Balance: 0
+  GIGA: l1EscrowBalance 0
+  CONVERT: amount 3308905100
+  CONVERT: currentActor's L2_BWUSDC balance decreased
+  CONVERT: receiver's L2_USDC balance increased
+  CONVERT: _nativeConverter L2_BWUSDC balance increased
+  CONVERT: supply and balances match
+  l2TotalSupply: 62209196590
+  l1EscrowBalance: 0
+  wUsdcConverterBalance: 4913750670
+  Error: a <= b not satisfied [uint]
+    Value a: 62209196590
+    Value b: 4913750670
+  Bound Result 3
+  -------- migrate
+  MIGRATE Beginning: L1Escrow's Balance: 0
+  MIGRATE Ending: L1Escrow's Balance: 0
+  GIGA: l1EscrowBalance 0
+  MIGRATE: amount 4913750670
+  MIGRATE: _nativeConverter L2_BWUSDC balanced decreased
+  MIGRATE: _claimBridgeAsset
+  MIGRATE: _l1Escrow's L1_USDC balanced increased
+  MIGRATE: supply and balances match
+  l2TotalSupply: 62209196590
+  l1EscrowBalance: 4913750670
+  wUsdcConverterBalance: 0
+  Error: a <= b not satisfied [uint]
+    Value a: 62209196590
+    Value b: 4913750670
+  Bound Result 3
+  -------- convert
+  CONVERT Beginning: L1Escrow's Balance: 0
+  CONVERT Ending: L1Escrow's Balance: 0
+  GIGA: l1EscrowBalance 0
+  Bound Result 0
+  -------- convert
+  CONVERT Beginning: L1Escrow's Balance: 0
+  CONVERT Ending: L1Escrow's Balance: 0
+  GIGA: l1EscrowBalance 0
+  Bound Result 5
+  -------- migrate
+  MIGRATE Beginning: L1Escrow's Balance: 0
+  MIGRATE Ending: L1Escrow's Balance: 0
+  GIGA: l1EscrowBalance 0
+  Bound Result 4
+  -------- convert
+  CONVERT Beginning: L1Escrow's Balance: 0
+  CONVERT Ending: L1Escrow's Balance: 0
+  GIGA: l1EscrowBalance 0
+  Bound Result 6
+  -------- convert
+  CONVERT Beginning: L1Escrow's Balance: 0
+  CONVERT Ending: L1Escrow's Balance: 0
+  GIGA: l1EscrowBalance 0
+  Bound Result 0
+  -------- migrate
+  MIGRATE Beginning: L1Escrow's Balance: 0
+  MIGRATE Ending: L1Escrow's Balance: 0
+  GIGA: l1EscrowBalance 0
+  Bound Result 6
+  -------- convert
+  CONVERT Beginning: L1Escrow's Balance: 0
+  CONVERT Ending: L1Escrow's Balance: 0
+  GIGA: l1EscrowBalance 0
+  Bound Result 0
+  -------- migrate
+  MIGRATE Beginning: L1Escrow's Balance: 0
+  MIGRATE Ending: L1Escrow's Balance: 0
+  GIGA: l1EscrowBalance 0
+  Bound Result 3
+  -------- migrate
+  MIGRATE Beginning: L1Escrow's Balance: 0
+  MIGRATE Ending: L1Escrow's Balance: 0
+  GIGA: l1EscrowBalance 0
+  Bound Result 2
+  -------- migrate
+  MIGRATE Beginning: L1Escrow's Balance: 0
+  MIGRATE Ending: L1Escrow's Balance: 0
+  GIGA: l1EscrowBalance 0
+  Bound Result 6
+  -------- migrate
+  MIGRATE Beginning: L1Escrow's Balance: 0
+  MIGRATE Ending: L1Escrow's Balance: 0
+  GIGA: l1EscrowBalance 0
+  Bound Result 6
+  -------- convert
+  CONVERT Beginning: L1Escrow's Balance: 0
+  CONVERT Ending: L1Escrow's Balance: 0
+  GIGA: l1EscrowBalance 0
+  Bound Result 4
+  -------- convert
+  CONVERT Beginning: L1Escrow's Balance: 0
+  CONVERT Ending: L1Escrow's Balance: 0
+  GIGA: l1EscrowBalance 0
+  CONVERT: amount 2
+  CONVERT: currentActor's L2_BWUSDC balance decreased
+  CONVERT: receiver's L2_USDC balance increased
+  CONVERT: _nativeConverter L2_BWUSDC balance increased
+  CONVERT: supply and balances match
+  l2TotalSupply: 62209196592
+  l1EscrowBalance: 0
+  wUsdcConverterBalance: 2
+  Error: a <= b not satisfied [uint]
+    Value a: 62209196592
+    Value b: 2
+  Bound Result 3
+  -------- convert
+  CONVERT Beginning: L1Escrow's Balance: 0
+  CONVERT Ending: L1Escrow's Balance: 0
+  GIGA: l1EscrowBalance 0
+  Bound Result 3
+  -------- migrate
+  MIGRATE Beginning: L1Escrow's Balance: 0
+  MIGRATE Ending: L1Escrow's Balance: 0
+  GIGA: l1EscrowBalance 0
+  MIGRATE: amount 2
+  MIGRATE: _nativeConverter L2_BWUSDC balanced decreased
+  MIGRATE: _claimBridgeAsset
+  MIGRATE: _l1Escrow's L1_USDC balanced increased
+  MIGRATE: supply and balances match
+  l2TotalSupply: 62209196592
+  l1EscrowBalance: 2
+  wUsdcConverterBalance: 0
+  Error: a <= b not satisfied [uint]
+    Value a: 62209196592
+    Value b: 2
+  Bound Result 5
+  -------- convert
+  CONVERT Beginning: L1Escrow's Balance: 0
+  CONVERT Ending: L1Escrow's Balance: 0
+  GIGA: l1EscrowBalance 0
+  Bound Result 3
+  -------- convert
+  CONVERT Beginning: L1Escrow's Balance: 0
+  CONVERT Ending: L1Escrow's Balance: 0
+  GIGA: l1EscrowBalance 0
+  Bound Result 5
+  -------- migrate
+  MIGRATE Beginning: L1Escrow's Balance: 0
+  MIGRATE Ending: L1Escrow's Balance: 0
+  GIGA: l1EscrowBalance 0
+  Bound Result 0
+  -------- migrate
+  MIGRATE Beginning: L1Escrow's Balance: 0
+  MIGRATE Ending: L1Escrow's Balance: 0
+  GIGA: l1EscrowBalance 0
+  Bound Result 2
+  -------- migrate
+  MIGRATE Beginning: L1Escrow's Balance: 0
+  MIGRATE Ending: L1Escrow's Balance: 0
+  GIGA: l1EscrowBalance 0
+  Bound Result 0
+  -------- migrate
+  MIGRATE Beginning: L1Escrow's Balance: 0
+  MIGRATE Ending: L1Escrow's Balance: 0
+  GIGA: l1EscrowBalance 0
+  Bound Result 4
+  -------- migrate
+  MIGRATE Beginning: L1Escrow's Balance: 0
+  MIGRATE Ending: L1Escrow's Balance: 0
+  GIGA: l1EscrowBalance 0
+  Bound Result 0
+  -------- migrate
+  MIGRATE Beginning: L1Escrow's Balance: 0
+  MIGRATE Ending: L1Escrow's Balance: 0
+  GIGA: l1EscrowBalance 0
+  Bound Result 6
+  -------- convert
+  CONVERT Beginning: L1Escrow's Balance: 0
+  CONVERT Ending: L1Escrow's Balance: 0
+  GIGA: l1EscrowBalance 0
+  Bound Result 5
+  -------- migrate
+  MIGRATE Beginning: L1Escrow's Balance: 0
+  MIGRATE Ending: L1Escrow's Balance: 0
+  GIGA: l1EscrowBalance 0
+  Bound Result 2
+  -------- migrate
+  MIGRATE Beginning: L1Escrow's Balance: 0
+  MIGRATE Ending: L1Escrow's Balance: 0
+  GIGA: l1EscrowBalance 0
+  Bound Result 3
+  -------- migrate
+  MIGRATE Beginning: L1Escrow's Balance: 0
+  MIGRATE Ending: L1Escrow's Balance: 0
+  GIGA: l1EscrowBalance 0
+  Bound Result 6
+  -------- convert
+  CONVERT Beginning: L1Escrow's Balance: 0
+  CONVERT Ending: L1Escrow's Balance: 0
+  GIGA: l1EscrowBalance 0
+  CONVERT: amount 3
+  CONVERT: currentActor's L2_BWUSDC balance decreased
+  CONVERT: receiver's L2_USDC balance increased
+  CONVERT: _nativeConverter L2_BWUSDC balance increased
+  CONVERT: supply and balances match
+  l2TotalSupply: 62209196595
+  l1EscrowBalance: 0
+  wUsdcConverterBalance: 3
+  Error: a <= b not satisfied [uint]
+    Value a: 62209196595
+    Value b: 3
+  Bound Result 3
+  -------- migrate
+  MIGRATE Beginning: L1Escrow's Balance: 0
+  MIGRATE Ending: L1Escrow's Balance: 0
+  GIGA: l1EscrowBalance 0
+  MIGRATE: amount 3
+  MIGRATE: _nativeConverter L2_BWUSDC balanced decreased
+  MIGRATE: _claimBridgeAsset
+  MIGRATE: _l1Escrow's L1_USDC balanced increased
+  MIGRATE: supply and balances match
+  l2TotalSupply: 62209196595
+  l1EscrowBalance: 3
+  wUsdcConverterBalance: 0
+  Error: a <= b not satisfied [uint]
+    Value a: 62209196595
+    Value b: 3
+  Bound Result 3
+  -------- migrate
+  MIGRATE Beginning: L1Escrow's Balance: 0
+  MIGRATE Ending: L1Escrow's Balance: 0
+  GIGA: l1EscrowBalance 0
+  Bound Result 1
+  -------- migrate
+  MIGRATE Beginning: L1Escrow's Balance: 0
+  MIGRATE Ending: L1Escrow's Balance: 0
+  GIGA: l1EscrowBalance 0
+  Bound Result 2
+  -------- convert
+  CONVERT Beginning: L1Escrow's Balance: 0
+  CONVERT Ending: L1Escrow's Balance: 0
+  GIGA: l1EscrowBalance 0
+  Bound Result 3
+  -------- convert
+  CONVERT Beginning: L1Escrow's Balance: 0
+  CONVERT Ending: L1Escrow's Balance: 0
+  GIGA: l1EscrowBalance 0
+  CONVERT: amount 19
+  CONVERT: currentActor's L2_BWUSDC balance decreased
+  CONVERT: receiver's L2_USDC balance increased
+  CONVERT: _nativeConverter L2_BWUSDC balance increased
+  CONVERT: supply and balances match
+  l2TotalSupply: 62209196614
+  l1EscrowBalance: 0
+  wUsdcConverterBalance: 19
+  Error: a <= b not satisfied [uint]
+    Value a: 62209196614
+    Value b: 19
+  Bound Result 2
+  -------- convert
+  CONVERT Beginning: L1Escrow's Balance: 0
+  CONVERT Ending: L1Escrow's Balance: 0
+  GIGA: l1EscrowBalance 0
+  Bound Result 4
+  -------- convert
+  CONVERT Beginning: L1Escrow's Balance: 0
+  CONVERT Ending: L1Escrow's Balance: 0
+  GIGA: l1EscrowBalance 0
+  Bound Result 0
+  -------- migrate
+  MIGRATE Beginning: L1Escrow's Balance: 0
+  MIGRATE Ending: L1Escrow's Balance: 0
+  GIGA: l1EscrowBalance 0
+  MIGRATE: amount 19
+  MIGRATE: _nativeConverter L2_BWUSDC balanced decreased
+  MIGRATE: _claimBridgeAsset
+  MIGRATE: _l1Escrow's L1_USDC balanced increased
+  MIGRATE: supply and balances match
+  l2TotalSupply: 62209196614
+  l1EscrowBalance: 19
+  wUsdcConverterBalance: 0
+  Error: a <= b not satisfied [uint]
+    Value a: 62209196614
+    Value b: 19
+  Bound Result 1
+  -------- convert
+  CONVERT Beginning: L1Escrow's Balance: 0
+  CONVERT Ending: L1Escrow's Balance: 0
+  GIGA: l1EscrowBalance 0
+  Bound Result 4
+  -------- convert
+  CONVERT Beginning: L1Escrow's Balance: 0
+  CONVERT Ending: L1Escrow's Balance: 0
+  GIGA: l1EscrowBalance 0
+  Bound Result 0
+  -------- migrate
+  MIGRATE Beginning: L1Escrow's Balance: 0
+  MIGRATE Ending: L1Escrow's Balance: 0
+  GIGA: l1EscrowBalance 0
+  Bound Result 3
+  -------- migrate
+  MIGRATE Beginning: L1Escrow's Balance: 0
+  MIGRATE Ending: L1Escrow's Balance: 0
+  GIGA: l1EscrowBalance 0
+  Bound Result 0
+  -------- convert
+  CONVERT Beginning: L1Escrow's Balance: 0
+  CONVERT Ending: L1Escrow's Balance: 0
+  GIGA: l1EscrowBalance 0
+  Bound Result 1
+  -------- convert
+  CONVERT Beginning: L1Escrow's Balance: 0
+  CONVERT Ending: L1Escrow's Balance: 0
+  GIGA: l1EscrowBalance 0
+  CONVERT: amount 378
+  CONVERT: currentActor's L2_BWUSDC balance decreased
+  CONVERT: receiver's L2_USDC balance increased
+  CONVERT: _nativeConverter L2_BWUSDC balance increased
+  CONVERT: supply and balances match
+  l2TotalSupply: 62209196992
+  l1EscrowBalance: 0
+  wUsdcConverterBalance: 378
+  Error: a <= b not satisfied [uint]
+    Value a: 62209196992
+    Value b: 378
+  Bound Result 3
+  -------- migrate
+  MIGRATE Beginning: L1Escrow's Balance: 0
+  MIGRATE Ending: L1Escrow's Balance: 0
+  GIGA: l1EscrowBalance 0
+  MIGRATE: amount 378
+  MIGRATE: _nativeConverter L2_BWUSDC balanced decreased
+  MIGRATE: _claimBridgeAsset
+  MIGRATE: _l1Escrow's L1_USDC balanced increased
+  MIGRATE: supply and balances match
+  l2TotalSupply: 62209196992
+  l1EscrowBalance: 378
+  wUsdcConverterBalance: 0
+  Error: a <= b not satisfied [uint]
+    Value a: 62209196992
+    Value b: 378
+  Bound Result 2
+  -------- migrate
+  MIGRATE Beginning: L1Escrow's Balance: 0
+  MIGRATE Ending: L1Escrow's Balance: 0
+  GIGA: l1EscrowBalance 0
+  Bound Result 1
+  -------- convert
+  CONVERT Beginning: L1Escrow's Balance: 0
+  CONVERT Ending: L1Escrow's Balance: 0
+  GIGA: l1EscrowBalance 0
+  Bound Result 5
+  -------- migrate
+  MIGRATE Beginning: L1Escrow's Balance: 0
+  MIGRATE Ending: L1Escrow's Balance: 0
+  GIGA: l1EscrowBalance 0
+  Bound Result 1
+  -------- migrate
+  MIGRATE Beginning: L1Escrow's Balance: 0
+  MIGRATE Ending: L1Escrow's Balance: 0
+  GIGA: l1EscrowBalance 0
+  Bound Result 0
+  -------- migrate
+  MIGRATE Beginning: L1Escrow's Balance: 0
+  MIGRATE Ending: L1Escrow's Balance: 0
+  GIGA: l1EscrowBalance 0
+  Bound Result 1
+  -------- migrate
+  MIGRATE Beginning: L1Escrow's Balance: 0
+  MIGRATE Ending: L1Escrow's Balance: 0
+  GIGA: l1EscrowBalance 0
+  Bound Result 5
+  -------- convert
+  CONVERT Beginning: L1Escrow's Balance: 0
+  CONVERT Ending: L1Escrow's Balance: 0
+  GIGA: l1EscrowBalance 0
+  Bound Result 4
+  -------- migrate
+  MIGRATE Beginning: L1Escrow's Balance: 0
+  MIGRATE Ending: L1Escrow's Balance: 0
+  GIGA: l1EscrowBalance 0
+  Bound Result 5
+  -------- migrate
+  MIGRATE Beginning: L1Escrow's Balance: 0
+  MIGRATE Ending: L1Escrow's Balance: 0
+  GIGA: l1EscrowBalance 0
+  Bound Result 5
+  -------- convert
+  CONVERT Beginning: L1Escrow's Balance: 0
+  CONVERT Ending: L1Escrow's Balance: 0
+  GIGA: l1EscrowBalance 0
+
+Test result: [32mok[0m. 1 passed; 0 failed; 0 skipped; finished in 30.65s
+Ran 1 test suites: 1 tests passed, 0 failed, 0 skipped (1 total tests)

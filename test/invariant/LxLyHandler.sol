@@ -319,6 +319,10 @@ contract LxLyHandler is CommonBase, StdCheats, StdUtils, DSTest {
         uint256 amount
     ) external useActor(actorIndexSeed) {
         console.log("-------- convert");
+        console.log(
+            "CONVERT Beginning: L1Escrow's Balance: %s",
+            _getL1USDCBalance(address(_l1Escrow))
+        );
 
         _state.setConverting();
         _state.setContinueExecution(false);
@@ -353,10 +357,19 @@ contract LxLyHandler is CommonBase, StdCheats, StdUtils, DSTest {
 
         bytes memory emptyPermitData;
         _nativeConverter.convert(receiver, amount, emptyPermitData);
+        console.log(
+            "CONVERT Ending: L1Escrow's Balance: %s",
+            _getL1USDCBalance(address(_l1Escrow))
+        );
     }
 
     function migrate(uint256 actorIndexSeed) external useActor(actorIndexSeed) {
         console.log("-------- migrate");
+
+        console.log(
+            "MIGRATE Beginning: L1Escrow's Balance: %s",
+            _getL1USDCBalance(address(_l1Escrow))
+        );
 
         _state.setMigrating();
         _state.setBalancesBefores(_getL1USDCBalance(address(_l1Escrow)), 0);
@@ -364,6 +377,8 @@ contract LxLyHandler is CommonBase, StdCheats, StdUtils, DSTest {
 
         vm.selectFork(_l2Fork);
         uint256 amount = _getL2WUSDCBalance(address(_nativeConverter));
+
+        _state.setAmount(amount);
 
         if (amount == 0) {
             _state.setContinueExecution(false);
@@ -388,6 +403,11 @@ contract LxLyHandler is CommonBase, StdCheats, StdUtils, DSTest {
 
         // message to bridge the l2_bwusdc
         _nativeConverter.migrate();
+
+        console.log(
+            "MIGRATE Ending: L1Escrow's Balance: %s",
+            _getL1USDCBalance(address(_l1Escrow))
+        );
     }
 
     // HELPERS

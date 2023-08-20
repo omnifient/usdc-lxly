@@ -147,6 +147,7 @@ contract InvMockBridge {
             require(msg.value == 0, "MSG_VALUE_NOT_ZERO");
 
             TokenInformation memory tokenInfo = wrappedTokenToTokenInfo[token];
+
             console.log("yyyyyyy fork", vm.activeFork());
             console.log("xxxxxxx token", token);
             console.log(
@@ -157,6 +158,7 @@ contract InvMockBridge {
                 "xxxxxxx tokenInfo origin network",
                 tokenInfo.originNetwork
             );
+
             if (tokenInfo.originTokenAddress != address(0)) {
                 // The token is a wrapped token from another network
 
@@ -170,7 +172,6 @@ contract InvMockBridge {
                     // changePrank(realBridge);
                     vm.stopPrank();
                     vm.startPrank(realBridge);
-                    console.log("swapping pranks", currentSender, realBridge);
                     TokenWrapped(token).burn(msg.sender, amount);
                     // changePrank(currentSender);
                     vm.stopPrank();

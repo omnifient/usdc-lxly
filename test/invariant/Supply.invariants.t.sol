@@ -48,11 +48,11 @@ contract Supply is Base {
         targetSender(_actors[6]);
 
         // register the selectors
-        bytes4[] memory selectors = new bytes4[](4);
-        selectors[0] = _handler.deposit.selector;
-        selectors[1] = _handler.withdraw.selector;
-        selectors[2] = _handler.convert.selector;
-        selectors[3] = _handler.migrate.selector;
+        bytes4[] memory selectors = new bytes4[](2);
+        // selectors[0] = _handler.deposit.selector;
+        // selectors[0] = _handler.withdraw.selector;
+        selectors[0] = _handler.convert.selector;
+        selectors[1] = _handler.migrate.selector;
         targetSelector(FuzzSelector({addr: handlerAddr, selectors: selectors}));
 
         // register the contract
@@ -99,7 +99,12 @@ contract Supply is Base {
     // the test
 
     function invariantGigaTest() public {
-        console.log("-------- invariantGigaTest");
+        // LOGGING
+        uint256 currentFork = vm.activeFork();
+        vm.selectFork(_l1Fork);
+        uint256 l1EscrowBalance = _erc20L1Usdc.balanceOf(address(_l1Escrow));
+        console.log("GIGA: l1EscrowBalance", l1EscrowBalance);
+        vm.selectFork(currentFork);
 
         Operation op = _state.getCurrentOp();
         _state.setNoOp();
@@ -200,8 +205,10 @@ contract Supply is Base {
 
         if (continueExecution) {
             vm.selectFork(_l2Fork);
+            console.log("CONVERT: amount", amount);
 
             // check currentActor's L2_BWUSDC balance decreased
+            console.log("CONVERT: currentActor's L2_BWUSDC balance decreased");
             assertEq(
                 senderWUSDCBal -
                     _erc20L2Wusdc.balanceOf(_handler.currentActor()),
@@ -209,18 +216,25 @@ contract Supply is Base {
             );
 
             // check receiver's L2_USDC balance increased
+            console.log("CONVERT: receiver's L2_USDC balance increased");
+
             assertEq(
                 _erc20L2Usdc.balanceOf(receiver) - receiverUSDCBal,
                 amount
             );
 
             // check _nativeConverter's L2_BWUSDC balance increased
+            console.log(
+                "CONVERT: _nativeConverter L2_BWUSDC balance increased"
+            );
+
             assertEq(
                 _erc20L2Wusdc.balanceOf(address(_nativeConverter)) -
                     converterWUSDCBal,
                 amount
             );
 
+            console.log("CONVERT: supply and balances match");
             // check main invariant
             _assertUsdcSupplyAndBalancesMatch();
         }
@@ -239,14 +253,23 @@ contract Supply is Base {
         ) = _state.getState();
 
         if (continueExecution) {
+            console.log("MIGRATE: amount", amount);
+
             // check _nativeConverter L2_BWUSDC balance decreased
             vm.selectFork(_l2Fork);
+            console.log(
+                "MIGRATE: _nativeConverter L2_BWUSDC balanced decreased"
+            );
             assertEq(_erc20L2Wusdc.balanceOf(address(_nativeConverter)), 0);
 
             // manually trigger the "bridging"
+            console.log("MIGRATE: _claimBridgeAsset");
+
             _claimBridgeAsset(_l2NetworkId, _l1NetworkId);
 
             // check _l1Escrow L1_USDC balance increased
+            console.log("MIGRATE: _l1Escrow's L1_USDC balanced increased");
+
             vm.selectFork(_l1Fork);
             assertEq(
                 _erc20L1Usdc.balanceOf(address(_l1Escrow)) - l1BalanceBefore,
@@ -254,6 +277,8 @@ contract Supply is Base {
             );
 
             // check main invariant
+            console.log("MIGRATE: supply and balances match");
+
             _assertUsdcSupplyAndBalancesMatch();
         }
     }

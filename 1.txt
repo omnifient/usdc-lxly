@@ -1,0 +1,648 @@
+Compiling 12 files with 0.8.17
+Solc 0.8.17 finished in 5.36s
+Compiler run [33msuccessful with warnings:[0m
+[1;33mWarning (9302)[0m[1;37m: Return value of low-level calls not used.[0m
+  [34m-->[0m src/helpers/LibPermit.sol:50:9:
+[34m   |[0m
+[34m50 |[0m         [33maddress(token).call([0m
+[34m   |[0m         [1;33m^ (Relevant source part starts here and spans across multiple lines).[0m
+
+[1;33mWarning (9302)[0m[1;37m: Return value of low-level calls not used.[0m
+   [34m-->[0m src/mocks/MockBridge.sol:744:13:
+[34m    |[0m
+[34m744 |[0m             [33maddress(token).call([0m
+[34m    |[0m             [1;33m^ (Relevant source part starts here and spans across multiple lines).[0m
+
+[1;33mWarning (9302)[0m[1;37m: Return value of low-level calls not used.[0m
+   [34m-->[0m src/mocks/MockBridge.sol:796:13:
+[34m    |[0m
+[34m796 |[0m             [33maddress(token).call([0m
+[34m    |[0m             [1;33m^ (Relevant source part starts here and spans across multiple lines).[0m
+
+[1;33mWarning (5667)[0m[1;37m: Unused function parameter. Remove or comment out the variable name to silence this warning.[0m
+   [34m-->[0m test/invariant/InvMockBridge.sol:137:9:
+[34m    |[0m
+[34m137 |[0m         [33mbool forceUpdateGlobalExitRoot[0m,
+[34m    |[0m         [1;33m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+
+[1;33mWarning (5667)[0m[1;37m: Unused function parameter. Remove or comment out the variable name to silence this warning.[0m
+   [34m-->[0m test/invariant/InvMockBridge.sol:138:9:
+[34m    |[0m
+[34m138 |[0m         [33mbytes calldata permitData[0m
+[34m    |[0m         [1;33m^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+
+[1;33mWarning (5667)[0m[1;37m: Unused function parameter. Remove or comment out the variable name to silence this warning.[0m
+   [34m-->[0m test/invariant/InvMockBridge.sol:206:9:
+[34m    |[0m
+[34m206 |[0m         [33mbool forceUpdateGlobalExitRoot[0m,
+[34m    |[0m         [1;33m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+
+[1;33mWarning (5667)[0m[1;37m: Unused function parameter. Remove or comment out the variable name to silence this warning.[0m
+   [34m-->[0m test/invariant/InvMockBridge.sol:244:9:
+[34m    |[0m
+[34m244 |[0m         [33mbytes32[_DEPOSIT_CONTRACT_TREE_DEPTH] calldata smtProof[0m,
+[34m    |[0m         [1;33m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+
+[1;33mWarning (5667)[0m[1;37m: Unused function parameter. Remove or comment out the variable name to silence this warning.[0m
+   [34m-->[0m test/invariant/InvMockBridge.sol:246:9:
+[34m    |[0m
+[34m246 |[0m         [33mbytes32 mainnetExitRoot[0m,
+[34m    |[0m         [1;33m^^^^^^^^^^^^^^^^^^^^^^^[0m
+
+[1;33mWarning (5667)[0m[1;37m: Unused function parameter. Remove or comment out the variable name to silence this warning.[0m
+   [34m-->[0m test/invariant/InvMockBridge.sol:247:9:
+[34m    |[0m
+[34m247 |[0m         [33mbytes32 rollupExitRoot[0m,
+[34m    |[0m         [1;33m^^^^^^^^^^^^^^^^^^^^^^[0m
+
+[1;33mWarning (5667)[0m[1;37m: Unused function parameter. Remove or comment out the variable name to silence this warning.[0m
+   [34m-->[0m test/invariant/InvMockBridge.sol:250:9:
+[34m    |[0m
+[34m250 |[0m         [33muint32 destinationNetwork[0m,
+[34m    |[0m         [1;33m^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+
+[1;33mWarning (5667)[0m[1;37m: Unused function parameter. Remove or comment out the variable name to silence this warning.[0m
+   [34m-->[0m test/invariant/InvMockBridge.sol:253:9:
+[34m    |[0m
+[34m253 |[0m         [33mbytes calldata metadata[0m
+[34m    |[0m         [1;33m^^^^^^^^^^^^^^^^^^^^^^^[0m
+
+[1;33mWarning (5667)[0m[1;37m: Unused function parameter. Remove or comment out the variable name to silence this warning.[0m
+   [34m-->[0m test/invariant/InvMockBridge.sol:293:9:
+[34m    |[0m
+[34m293 |[0m         [33mbytes32[_DEPOSIT_CONTRACT_TREE_DEPTH] calldata smtProof[0m,
+[34m    |[0m         [1;33m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+
+[1;33mWarning (5667)[0m[1;37m: Unused function parameter. Remove or comment out the variable name to silence this warning.[0m
+   [34m-->[0m test/invariant/InvMockBridge.sol:295:9:
+[34m    |[0m
+[34m295 |[0m         [33mbytes32 mainnetExitRoot[0m,
+[34m    |[0m         [1;33m^^^^^^^^^^^^^^^^^^^^^^^[0m
+
+[1;33mWarning (5667)[0m[1;37m: Unused function parameter. Remove or comment out the variable name to silence this warning.[0m
+   [34m-->[0m test/invariant/InvMockBridge.sol:296:9:
+[34m    |[0m
+[34m296 |[0m         [33mbytes32 rollupExitRoot[0m,
+[34m    |[0m         [1;33m^^^^^^^^^^^^^^^^^^^^^^[0m
+
+[1;33mWarning (5667)[0m[1;37m: Unused function parameter. Remove or comment out the variable name to silence this warning.[0m
+   [34m-->[0m test/invariant/InvMockBridge.sol:299:9:
+[34m    |[0m
+[34m299 |[0m         [33muint32 destinationNetwork[0m,
+[34m    |[0m         [1;33m^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+
+[1;33mWarning (2072)[0m[1;37m: Unused local variable.[0m
+  [34m-->[0m test/invariant/Supply.invariants.t.sol:88:10:
+[34m   |[0m
+[34m88 |[0m         ([33muint32 xx[0m, address yy) = b2.wrappedTokenToTokenInfo(_l2Wusdc);
+[34m   |[0m          [1;33m^^^^^^^^^[0m
+
+
+Running 1 test for test/invariant/Supply.invariants.t.sol:Supply
+[32m[PASS][0m invariantGigaTest() (runs: 256, calls: 25600, reverts: 0)
+Logs:
+  ....... deploying mock bridge
+  hey! 0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48
+  ....... deployed mock bridge
+  Bound Result 3
+  -------- migrate
+  MIGRATE: amount 0
+  -------- invariantGigaTest
+  Bound Result 0
+  -------- convert
+  CONVERT: amount 60826216082061044908932451049788556671559588974297092
+  -------- invariantGigaTest
+  Bound Result 6
+  -------- convert
+  CONVERT: amount 1128553038178035026764908
+  -------- invariantGigaTest
+  Bound Result 0
+  -------- convert
+  CONVERT: amount 4810276868
+  -------- invariantGigaTest
+  CONVERT: currentActor's L2_BWUSDC balance decreased
+  CONVERT: receiver's L2_USDC balance increased
+  CONVERT: _nativeConverter L2_BWUSDC balance increased
+  CONVERT: supply and balances match
+  Bound Result 3
+  -------- convert
+  CONVERT: amount 2869235482836952574880585837904579927679480759009527
+  -------- invariantGigaTest
+  Bound Result 2
+  -------- convert
+  CONVERT: amount 18455667298416970606471178
+  -------- invariantGigaTest
+  Bound Result 0
+  -------- migrate
+  MIGRATE: amount 4810276868
+  -------- invariantGigaTest
+  MIGRATE: _nativeConverter L2_BWUSDC balanced decreased
+  MIGRATE: _claimBridgeAsset
+  MIGRATE: _l1Escrow's L1_USDC balanced increased
+  Error: a == b not satisfied [uint]
+        Left: 4810276868
+       Right: 18455667298416970606471178
+  MIGRATE: supply and balances match
+  Bound Result 5
+  -------- migrate
+  MIGRATE: amount 0
+  -------- invariantGigaTest
+  Bound Result 3
+  -------- convert
+  CONVERT: amount 13067770869949479902866878788191888549679857666
+  -------- invariantGigaTest
+  Bound Result 1
+  -------- convert
+  CONVERT: amount 115792089237316195423570985008687907853269984665640564039457584007913129639932
+  -------- invariantGigaTest
+  Bound Result 1
+  -------- convert
+  CONVERT: amount 4345778817899491039256552371461608362678957768403310351489760402393797698128
+  -------- invariantGigaTest
+  Bound Result 3
+  -------- convert
+  CONVERT: amount 1360920170873051412425504271283071733113573253275244138391936508710180
+  -------- invariantGigaTest
+  Bound Result 4
+  -------- migrate
+  MIGRATE: amount 0
+  -------- invariantGigaTest
+  Bound Result 3
+  -------- convert
+  CONVERT: amount 115792089237316195423570985008687907853269984665640564039457584007913129639932
+  -------- invariantGigaTest
+  Bound Result 1
+  -------- convert
+  CONVERT: amount 1
+  -------- invariantGigaTest
+  CONVERT: currentActor's L2_BWUSDC balance decreased
+  CONVERT: receiver's L2_USDC balance increased
+  CONVERT: _nativeConverter L2_BWUSDC balance increased
+  CONVERT: supply and balances match
+  Error: a <= b not satisfied [uint]
+    Value a: 4810276869
+    Value b: 1
+  Bound Result 3
+  -------- convert
+  CONVERT: amount 15
+  -------- invariantGigaTest
+  CONVERT: currentActor's L2_BWUSDC balance decreased
+  CONVERT: receiver's L2_USDC balance increased
+  CONVERT: _nativeConverter L2_BWUSDC balance increased
+  CONVERT: supply and balances match
+  Error: a <= b not satisfied [uint]
+    Value a: 4810276884
+    Value b: 16
+  Bound Result 1
+  -------- convert
+  CONVERT: amount 998875467689
+  -------- invariantGigaTest
+  CONVERT: currentActor's L2_BWUSDC balance decreased
+  CONVERT: receiver's L2_USDC balance increased
+  CONVERT: _nativeConverter L2_BWUSDC balance increased
+  CONVERT: supply and balances match
+  Error: a <= b not satisfied [uint]
+    Value a: 1003685744573
+    Value b: 998875467705
+  Bound Result 0
+  -------- migrate
+  MIGRATE: amount 998875467705
+  -------- invariantGigaTest
+  MIGRATE: _nativeConverter L2_BWUSDC balanced decreased
+  MIGRATE: _claimBridgeAsset
+  MIGRATE: _l1Escrow's L1_USDC balanced increased
+  Error: a == b not satisfied [uint]
+        Left: 998875467705
+       Right: 998875467689
+  MIGRATE: supply and balances match
+  Error: a <= b not satisfied [uint]
+    Value a: 1003685744573
+    Value b: 998875467705
+  Bound Result 3
+  -------- migrate
+  MIGRATE: amount 0
+  -------- invariantGigaTest
+  Bound Result 4
+  -------- convert
+  CONVERT: amount 3
+  -------- invariantGigaTest
+  CONVERT: currentActor's L2_BWUSDC balance decreased
+  CONVERT: receiver's L2_USDC balance increased
+  CONVERT: _nativeConverter L2_BWUSDC balance increased
+  CONVERT: supply and balances match
+  Error: a <= b not satisfied [uint]
+    Value a: 1003685744576
+    Value b: 3
+  Bound Result 5
+  -------- convert
+  CONVERT: amount 115792089237316195423570985008687907853269984665640564039457584007913129639933
+  -------- invariantGigaTest
+  Bound Result 5
+  -------- convert
+  CONVERT: amount 115792089237316195423570985008687907853269984665640564039457584007913129639934
+  -------- invariantGigaTest
+  Bound Result 0
+  -------- convert
+  CONVERT: amount 115792089237316195423570985008687907853269984665640564039457584007913129639932
+  -------- invariantGigaTest
+  Bound Result 6
+  -------- convert
+  CONVERT: amount 1
+  -------- invariantGigaTest
+  CONVERT: currentActor's L2_BWUSDC balance decreased
+  CONVERT: receiver's L2_USDC balance increased
+  CONVERT: _nativeConverter L2_BWUSDC balance increased
+  CONVERT: supply and balances match
+  Error: a <= b not satisfied [uint]
+    Value a: 1003685744577
+    Value b: 4
+  Bound Result 0
+  -------- convert
+  CONVERT: amount 115792089237316195423570985008687907853269984665640564039457584007913129639933
+  -------- invariantGigaTest
+  Bound Result 6
+  -------- convert
+  CONVERT: amount 0
+  -------- invariantGigaTest
+  Bound Result 2
+  -------- convert
+  CONVERT: amount 682640576884664441738608623216495057425251076
+  -------- invariantGigaTest
+  Bound Result 0
+  -------- convert
+  CONVERT: amount 78036227897460895585570700159346390690676127638093828
+  -------- invariantGigaTest
+  Bound Result 0
+  -------- convert
+  CONVERT: amount 18857
+  -------- invariantGigaTest
+  CONVERT: currentActor's L2_BWUSDC balance decreased
+  CONVERT: receiver's L2_USDC balance increased
+  CONVERT: _nativeConverter L2_BWUSDC balance increased
+  CONVERT: supply and balances match
+  Error: a <= b not satisfied [uint]
+    Value a: 1003685763434
+    Value b: 18861
+  Bound Result 5
+  -------- migrate
+  MIGRATE: amount 18861
+  -------- invariantGigaTest
+  MIGRATE: _nativeConverter L2_BWUSDC balanced decreased
+  MIGRATE: _claimBridgeAsset
+  MIGRATE: _l1Escrow's L1_USDC balanced increased
+  Error: a == b not satisfied [uint]
+        Left: 18861
+       Right: 18857
+  MIGRATE: supply and balances match
+  Error: a <= b not satisfied [uint]
+    Value a: 1003685763434
+    Value b: 18861
+  Bound Result 2
+  -------- convert
+  CONVERT: amount 4168
+  -------- invariantGigaTest
+  CONVERT: currentActor's L2_BWUSDC balance decreased
+  CONVERT: receiver's L2_USDC balance increased
+  CONVERT: _nativeConverter L2_BWUSDC balance increased
+  CONVERT: supply and balances match
+  Error: a <= b not satisfied [uint]
+    Value a: 1003685767602
+    Value b: 4168
+  Bound Result 1
+  -------- migrate
+  MIGRATE: amount 4168
+  -------- invariantGigaTest
+  MIGRATE: _nativeConverter L2_BWUSDC balanced decreased
+  MIGRATE: _claimBridgeAsset
+  MIGRATE: _l1Escrow's L1_USDC balanced increased
+  MIGRATE: supply and balances match
+  Error: a <= b not satisfied [uint]
+    Value a: 1003685767602
+    Value b: 4168
+  Bound Result 1
+  -------- convert
+  CONVERT: amount 21215072246115386906377721484008917442994356507767460303020238
+  -------- invariantGigaTest
+  Bound Result 2
+  -------- migrate
+  MIGRATE: amount 0
+  -------- invariantGigaTest
+  Bound Result 1
+  -------- convert
+  CONVERT: amount 115792089237316195423570985008687907853269984665640564039457584007913129639935
+  -------- invariantGigaTest
+  Bound Result 3
+  -------- convert
+  CONVERT: amount 3
+  -------- invariantGigaTest
+  CONVERT: currentActor's L2_BWUSDC balance decreased
+  CONVERT: receiver's L2_USDC balance increased
+  CONVERT: _nativeConverter L2_BWUSDC balance increased
+  CONVERT: supply and balances match
+  Error: a <= b not satisfied [uint]
+    Value a: 1003685767605
+    Value b: 3
+  Bound Result 3
+  -------- migrate
+  MIGRATE: amount 3
+  -------- invariantGigaTest
+  MIGRATE: _nativeConverter L2_BWUSDC balanced decreased
+  MIGRATE: _claimBridgeAsset
+  MIGRATE: _l1Escrow's L1_USDC balanced increased
+  MIGRATE: supply and balances match
+  Error: a <= b not satisfied [uint]
+    Value a: 1003685767605
+    Value b: 3
+  Bound Result 0
+  -------- migrate
+  MIGRATE: amount 0
+  -------- invariantGigaTest
+  Bound Result 2
+  -------- convert
+  CONVERT: amount 115792089237316195423570985008687907853269984665640564039457584007913129639933
+  -------- invariantGigaTest
+  Bound Result 3
+  -------- migrate
+  MIGRATE: amount 0
+  -------- invariantGigaTest
+  Bound Result 5
+  -------- convert
+  CONVERT: amount 20148154339579300
+  -------- invariantGigaTest
+  Bound Result 4
+  -------- migrate
+  MIGRATE: amount 0
+  -------- invariantGigaTest
+  Bound Result 0
+  -------- migrate
+  MIGRATE: amount 0
+  -------- invariantGigaTest
+  Bound Result 4
+  -------- migrate
+  MIGRATE: amount 0
+  -------- invariantGigaTest
+  Bound Result 6
+  -------- convert
+  CONVERT: amount 115792089237316195423570985008687907853269984665640564039457584007913129639932
+  -------- invariantGigaTest
+  Bound Result 0
+  -------- migrate
+  MIGRATE: amount 0
+  -------- invariantGigaTest
+  Bound Result 3
+  -------- convert
+  CONVERT: amount 115792089237316195423570985008687907853269984665640564039457584007913129639933
+  -------- invariantGigaTest
+  Bound Result 3
+  -------- migrate
+  MIGRATE: amount 0
+  -------- invariantGigaTest
+  Bound Result 5
+  -------- convert
+  CONVERT: amount 9111363519218961218357912
+  -------- invariantGigaTest
+  Bound Result 1
+  -------- convert
+  CONVERT: amount 115792089237316195423570985008687907853269984665640564039457584007913129639932
+  -------- invariantGigaTest
+  Bound Result 6
+  -------- migrate
+  MIGRATE: amount 0
+  -------- invariantGigaTest
+  Bound Result 3
+  -------- migrate
+  MIGRATE: amount 0
+  -------- invariantGigaTest
+  Bound Result 3
+  -------- convert
+  CONVERT: amount 215122066065813697181518335138442435621
+  -------- invariantGigaTest
+  Bound Result 1
+  -------- convert
+  CONVERT: amount 115792089237316195423570985008687907853269984665640564039457584007913129639932
+  -------- invariantGigaTest
+  Bound Result 3
+  -------- convert
+  CONVERT: amount 11926254799052535869331
+  -------- invariantGigaTest
+  Bound Result 1
+  -------- convert
+  CONVERT: amount 0
+  -------- invariantGigaTest
+  Bound Result 4
+  -------- migrate
+  MIGRATE: amount 0
+  -------- invariantGigaTest
+  Bound Result 4
+  -------- convert
+  CONVERT: amount 0
+  -------- invariantGigaTest
+  Bound Result 5
+  -------- migrate
+  MIGRATE: amount 0
+  -------- invariantGigaTest
+  Bound Result 1
+  -------- migrate
+  MIGRATE: amount 0
+  -------- invariantGigaTest
+  Bound Result 1
+  -------- migrate
+  MIGRATE: amount 0
+  -------- invariantGigaTest
+  Bound Result 0
+  -------- convert
+  CONVERT: amount 115792089237316195423570985008687907853269984665640564039457584007913129639934
+  -------- invariantGigaTest
+  Bound Result 3
+  -------- convert
+  CONVERT: amount 137788
+  -------- invariantGigaTest
+  CONVERT: currentActor's L2_BWUSDC balance decreased
+  CONVERT: receiver's L2_USDC balance increased
+  CONVERT: _nativeConverter L2_BWUSDC balance increased
+  CONVERT: supply and balances match
+  Error: a <= b not satisfied [uint]
+    Value a: 1003685905393
+    Value b: 137788
+  Bound Result 0
+  -------- migrate
+  MIGRATE: amount 137788
+  -------- invariantGigaTest
+  MIGRATE: _nativeConverter L2_BWUSDC balanced decreased
+  MIGRATE: _claimBridgeAsset
+  MIGRATE: _l1Escrow's L1_USDC balanced increased
+  MIGRATE: supply and balances match
+  Error: a <= b not satisfied [uint]
+    Value a: 1003685905393
+    Value b: 137788
+  Bound Result 5
+  -------- migrate
+  MIGRATE: amount 0
+  -------- invariantGigaTest
+  Bound Result 0
+  -------- migrate
+  MIGRATE: amount 0
+  -------- invariantGigaTest
+  Bound Result 3
+  -------- migrate
+  MIGRATE: amount 0
+  -------- invariantGigaTest
+  Bound Result 5
+  -------- convert
+  CONVERT: amount 21797945553958864233305738459585674616941850195752503632178272575892158939137
+  -------- invariantGigaTest
+  Bound Result 4
+  -------- migrate
+  MIGRATE: amount 0
+  -------- invariantGigaTest
+  Bound Result 2
+  -------- convert
+  CONVERT: amount 69099458694125665064912955647929198808665784777528749494288066511118283654052
+  -------- invariantGigaTest
+  Bound Result 1
+  -------- convert
+  CONVERT: amount 986039499654
+  -------- invariantGigaTest
+  Bound Result 0
+  -------- migrate
+  MIGRATE: amount 0
+  -------- invariantGigaTest
+  Bound Result 3
+  -------- migrate
+  MIGRATE: amount 0
+  -------- invariantGigaTest
+  Bound Result 4
+  -------- convert
+  CONVERT: amount 1648
+  -------- invariantGigaTest
+  CONVERT: currentActor's L2_BWUSDC balance decreased
+  CONVERT: receiver's L2_USDC balance increased
+  CONVERT: _nativeConverter L2_BWUSDC balance increased
+  CONVERT: supply and balances match
+  Error: a <= b not satisfied [uint]
+    Value a: 1003685907041
+    Value b: 1648
+  Bound Result 6
+  -------- convert
+  CONVERT: amount 4202693
+  -------- invariantGigaTest
+  CONVERT: currentActor's L2_BWUSDC balance decreased
+  CONVERT: receiver's L2_USDC balance increased
+  CONVERT: _nativeConverter L2_BWUSDC balance increased
+  CONVERT: supply and balances match
+  Error: a <= b not satisfied [uint]
+    Value a: 1003690109734
+    Value b: 4204341
+  Bound Result 5
+  -------- migrate
+  MIGRATE: amount 4204341
+  -------- invariantGigaTest
+  MIGRATE: _nativeConverter L2_BWUSDC balanced decreased
+  MIGRATE: _claimBridgeAsset
+  MIGRATE: _l1Escrow's L1_USDC balanced increased
+  Error: a == b not satisfied [uint]
+        Left: 4204341
+       Right: 4202693
+  MIGRATE: supply and balances match
+  Error: a <= b not satisfied [uint]
+    Value a: 1003690109734
+    Value b: 4204341
+  Bound Result 2
+  -------- convert
+  CONVERT: amount 21885245627793482265202568028845902996675333
+  -------- invariantGigaTest
+  Bound Result 5
+  -------- migrate
+  MIGRATE: amount 0
+  -------- invariantGigaTest
+  Bound Result 5
+  -------- migrate
+  MIGRATE: amount 0
+  -------- invariantGigaTest
+  Bound Result 5
+  -------- migrate
+  MIGRATE: amount 0
+  -------- invariantGigaTest
+  Bound Result 3
+  -------- migrate
+  MIGRATE: amount 0
+  -------- invariantGigaTest
+  Bound Result 4
+  -------- migrate
+  MIGRATE: amount 0
+  -------- invariantGigaTest
+  Bound Result 3
+  -------- convert
+  CONVERT: amount 24059516778892631751178407077154643761242476198885930810144858534813562712119
+  -------- invariantGigaTest
+  Bound Result 0
+  -------- migrate
+  MIGRATE: amount 0
+  -------- invariantGigaTest
+  Bound Result 0
+  -------- migrate
+  MIGRATE: amount 0
+  -------- invariantGigaTest
+  Bound Result 2
+  -------- migrate
+  MIGRATE: amount 0
+  -------- invariantGigaTest
+  Bound Result 3
+  -------- migrate
+  MIGRATE: amount 0
+  -------- invariantGigaTest
+  Bound Result 6
+  -------- convert
+  CONVERT: amount 0
+  -------- invariantGigaTest
+  Bound Result 5
+  -------- migrate
+  MIGRATE: amount 0
+  -------- invariantGigaTest
+  Bound Result 3
+  -------- convert
+  CONVERT: amount 23003849926785810610566551144626632581899199073379
+  -------- invariantGigaTest
+  Bound Result 3
+  -------- migrate
+  MIGRATE: amount 0
+  -------- invariantGigaTest
+  Bound Result 1
+  -------- migrate
+  MIGRATE: amount 0
+  -------- invariantGigaTest
+  Bound Result 6
+  -------- convert
+  CONVERT: amount 33731060475148
+  -------- invariantGigaTest
+  Bound Result 0
+  -------- migrate
+  MIGRATE: amount 0
+  -------- invariantGigaTest
+  Bound Result 2
+  -------- convert
+  CONVERT: amount 115792089237316195423570985008687907853269984665640564039457584007913129639935
+  -------- invariantGigaTest
+  Bound Result 3
+  -------- migrate
+  MIGRATE: amount 0
+  -------- invariantGigaTest
+  Bound Result 1
+  -------- migrate
+  MIGRATE: amount 0
+  -------- invariantGigaTest
+  Bound Result 3
+  -------- convert
+  CONVERT: amount 5311711170499956311470703007730210471667247548091546353376954166547025
+  -------- invariantGigaTest
+  Bound Result 6
+  -------- migrate
+  MIGRATE: amount 0
+  -------- invariantGigaTest
+  Bound Result 4
+  -------- convert
+  CONVERT: amount 24066611828981713876068500157747722894540766440028066625243700490253985906688
+  -------- invariantGigaTest
+
+Test result: [32mok[0m. 1 passed; 0 failed; 0 skipped; finished in 24.04s
+Ran 1 test suites: 1 tests passed, 0 failed, 0 skipped (1 total tests)

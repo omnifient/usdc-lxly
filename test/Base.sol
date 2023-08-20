@@ -121,6 +121,7 @@ contract Base is Test {
     /* ================= HELPERS ================= */
     function _assertUsdcSupplyAndBalancesMatch() internal {
         vm.selectFork(_l1Fork);
+
         uint256 l1EscrowBalance = _erc20L1Usdc.balanceOf(address(_l1Escrow));
 
         vm.selectFork(_l2Fork);
@@ -128,6 +129,10 @@ contract Base is Test {
         uint256 wUsdcConverterBalance = _erc20L2Wusdc.balanceOf(
             address(_nativeConverter)
         );
+
+        console.log("l2TotalSupply: %s", l2TotalSupply);
+        console.log("l1EscrowBalance: %s", l1EscrowBalance);
+        console.log("wUsdcConverterBalance: %s", wUsdcConverterBalance);
 
         // zkUsdc.totalSupply <= l1Usdc.balanceOf(l1Escrow) + bwUSDC.balanceOf(nativeConverter)
         assertLe(l2TotalSupply, l1EscrowBalance + wUsdcConverterBalance);
