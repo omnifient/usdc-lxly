@@ -1,0 +1,477 @@
+No files changed, compilation skipped
+
+Running 1 test for test/invariant/Supply.invariants.t.sol:Supply
+[31m[FAIL. Reason: Contract 0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512 does not exist on active fork with id `0`
+        But exists on non active forks: `[1]`]
+	[Sequence]
+		sender=0xe57bfe9f44b819898f47bf37e5af72a0783e1141 addr=[test/invariant/LxLyHandler.sol:LxLyHandler]0x5991a2df15a8f6a256d3ec51e99254cd3fb576a9 calldata=convert(uint256,address,uint256), args=[115792089237316195423570985008687907853269984665640564039457584007913129639933 [2;49;39m[1.157e77][0m, 0x6747432151632af5a2Feea9fc10AA0e624103560, 115792089237316195423570985008687907853269984665640564039457584007913129639935 [2;49;39m[1.157e77][0m]
+		sender=0x6813eb9362372eef6200f3b1dbc3f819671cba69 addr=[test/invariant/LxLyHandler.sol:LxLyHandler]0x5991a2df15a8f6a256d3ec51e99254cd3fb576a9 calldata=migrate(uint256), args=[1701]
+		sender=0xe1ab8145f7e55dc933d51a18c793f901a3a0b276 addr=[test/invariant/LxLyHandler.sol:LxLyHandler]0x5991a2df15a8f6a256d3ec51e99254cd3fb576a9 calldata=convert(uint256,address,uint256), args=[6506, 0xA7Eb6C5c2b19043f60Ba4F10eCF32795841f60dc, 2]
+
+[0m invariantGigaTest() (runs: 1, calls: 3, reverts: 1)
+Logs:
+  ....... deploying mock bridge
+  hey! 0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48
+  ....... deployed mock bridge
+  Bound Result 4
+  -------- convert
+  Bound Result 0
+  -------- migrate
+  Bound Result 3
+  -------- convert
+  Bound Result 3
+  -------- convert
+
+Traces:
+  [192553] [32mLxLyHandler[0m::[32mconvert[0m(115792089237316195423570985008687907853269984665640564039457584007913129639933 [2;49;39m[1.157e77][0m, 0x6747432151632af5a2Feea9fc10AA0e624103560, 115792089237316195423570985008687907853269984665640564039457584007913129639935 [2;49;39m[1.157e77][0m) [33m[0m
+    ├─ [0] [32mconsole[0m::[32mlog[0m(Bound Result, 4) [33m[staticcall][0m
+    │   └─ [32m← [0m()
+    ├─ [0] [34mVM[0m::[34mstartPrank[0m(0xe1AB8145F7E55DC933d51a18c793F901A3A0b276) [33m[0m
+    │   └─ [34m← [0m()
+    ├─ [0] [32mconsole[0m::[32mlog[0m(-------- convert) [33m[staticcall][0m
+    │   └─ [32m← [0m()
+    ├─ [28225] [32mHandlerState[0m::[32msetConverting[0m() [33m[0m
+    │   ├─ [0] [34mVM[0m::[34mactiveFork[0m() [33m[staticcall][0m
+    │   │   └─ [34m← [0m1
+    │   ├─ [0] [34mVM[0m::[34mselectFork[0m(0) [33m[0m
+    │   │   └─ [34m← [0m()
+    │   ├─ [0] [34mVM[0m::[34mselectFork[0m(1) [33m[0m
+    │   │   └─ [34m← [0m()
+    │   └─ [32m← [0m()
+    ├─ [2389] [32mHandlerState[0m::[32msetContinueExecution[0m(false) [33m[0m
+    │   ├─ [0] [34mVM[0m::[34mactiveFork[0m() [33m[staticcall][0m
+    │   │   └─ [34m← [0m1
+    │   ├─ [0] [34mVM[0m::[34mselectFork[0m(0) [33m[0m
+    │   │   └─ [34m← [0m()
+    │   ├─ [0] [34mVM[0m::[34mselectFork[0m(1) [33m[0m
+    │   │   └─ [34m← [0m()
+    │   └─ [32m← [0m()
+    ├─ [24194] [32mHandlerState[0m::[32msetAmount[0m(115792089237316195423570985008687907853269984665640564039457584007913129639935 [2;49;39m[1.157e77][0m) [33m[0m
+    │   ├─ [0] [34mVM[0m::[34mactiveFork[0m() [33m[staticcall][0m
+    │   │   └─ [34m← [0m1
+    │   ├─ [0] [34mVM[0m::[34mselectFork[0m(0) [33m[0m
+    │   │   └─ [34m← [0m()
+    │   ├─ [0] [34mVM[0m::[34mselectFork[0m(1) [33m[0m
+    │   │   └─ [34m← [0m()
+    │   └─ [32m← [0m()
+    ├─ [2359] [32mHandlerState[0m::[32msetReceiver[0m(0x6747432151632af5a2Feea9fc10AA0e624103560) [33m[0m
+    │   ├─ [0] [34mVM[0m::[34mactiveFork[0m() [33m[staticcall][0m
+    │   │   └─ [34m← [0m1
+    │   ├─ [0] [34mVM[0m::[34mselectFork[0m(0) [33m[0m
+    │   │   └─ [34m← [0m()
+    │   ├─ [0] [34mVM[0m::[34mselectFork[0m(1) [33m[0m
+    │   │   └─ [34m← [0m()
+    │   └─ [32m← [0m()
+    ├─ [0] [34mVM[0m::[34mactiveFork[0m() [33m[staticcall][0m
+    │   └─ [34m← [0m1
+    ├─ [2562] [32m0xA8CE8aee21bC2A48a5EF670afCc9274C7bbbC035[0m::[32mbalanceOf[0m(0xe1AB8145F7E55DC933d51a18c793F901A3A0b276) [33m[staticcall][0m
+    │   └─ [32m← [0m0x000000000000000000000000000000000000000000000000000000e8d4a51000
+    ├─ [0] [34mVM[0m::[34mactiveFork[0m() [33m[staticcall][0m
+    │   └─ [34m← [0m1
+    ├─ [2553] [32m0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512[0m::[32mbalanceOf[0m(0x6747432151632af5a2Feea9fc10AA0e624103560) [33m[staticcall][0m
+    │   └─ [32m← [0m0x0000000000000000000000000000000000000000000000000000000000000000
+    ├─ [0] [34mVM[0m::[34mactiveFork[0m() [33m[staticcall][0m
+    │   └─ [34m← [0m1
+    ├─ [2562] [32m0xA8CE8aee21bC2A48a5EF670afCc9274C7bbbC035[0m::[32mbalanceOf[0m(NativeConverterProxy: [0xC7Bbbb1e8796f1aA4d5bcaeDDD0c26Ef2eE97f8C]) [33m[staticcall][0m
+    │   └─ [32m← [0m0x0000000000000000000000000000000000000000000000000000000000000000
+    ├─ [28705] [32mHandlerState[0m::[32msetBalances[0m(1000000000000 [2;49;39m[1e12][0m, 0, 0) [33m[0m
+    │   ├─ [0] [34mVM[0m::[34mactiveFork[0m() [33m[staticcall][0m
+    │   │   └─ [34m← [0m1
+    │   ├─ [0] [34mVM[0m::[34mselectFork[0m(0) [33m[0m
+    │   │   └─ [34m← [0m()
+    │   ├─ [0] [34mVM[0m::[34mselectFork[0m(1) [33m[0m
+    │   │   └─ [34m← [0m()
+    │   └─ [32m← [0m()
+    ├─ [0] [34mVM[0m::[34mselectFork[0m(1) [33m[0m
+    │   └─ [34m← [0m()
+    ├─ [24627] [32m0xA8CE8aee21bC2A48a5EF670afCc9274C7bbbC035[0m::[32mapprove[0m(NativeConverterProxy: [0xC7Bbbb1e8796f1aA4d5bcaeDDD0c26Ef2eE97f8C], 115792089237316195423570985008687907853269984665640564039457584007913129639935 [2;49;39m[1.157e77][0m) [33m[0m
+    │   ├─ emit [36mApproval[0m(owner: 0xe1AB8145F7E55DC933d51a18c793F901A3A0b276, spender: NativeConverterProxy: [0xC7Bbbb1e8796f1aA4d5bcaeDDD0c26Ef2eE97f8C], value: 115792089237316195423570985008687907853269984665640564039457584007913129639935 [2;49;39m[1.157e77][0m)
+    │   └─ [32m← [0m0x0000000000000000000000000000000000000000000000000000000000000001
+    ├─ [0] [34mVM[0m::[34mactiveFork[0m() [33m[staticcall][0m
+    │   └─ [34m← [0m1
+    ├─ [562] [32m0xA8CE8aee21bC2A48a5EF670afCc9274C7bbbC035[0m::[32mbalanceOf[0m(0xe1AB8145F7E55DC933d51a18c793F901A3A0b276) [33m[staticcall][0m
+    │   └─ [32m← [0m0x000000000000000000000000000000000000000000000000000000e8d4a51000
+    ├─ [0] [34mVM[0m::[34mexpectRevert[0m(ERC20: transfer amount exceeds balance) [33m[0m
+    │   └─ [34m← [0m()
+    ├─ [12288] [31mNativeConverterProxy[0m::[31mconvert[0m(0x6747432151632af5a2Feea9fc10AA0e624103560, 115792089237316195423570985008687907853269984665640564039457584007913129639935 [2;49;39m[1.157e77][0m, 0x) [33m[0m
+    │   ├─ [7362] [31mNativeConverterImpl[0m::[31mconvert[0m(0x6747432151632af5a2Feea9fc10AA0e624103560, 115792089237316195423570985008687907853269984665640564039457584007913129639935 [2;49;39m[1.157e77][0m, 0x) [33m[delegatecall][0m
+    │   │   ├─ [1211] [31m0xA8CE8aee21bC2A48a5EF670afCc9274C7bbbC035[0m::[31mtransferFrom[0m(0xe1AB8145F7E55DC933d51a18c793F901A3A0b276, NativeConverterProxy: [0xC7Bbbb1e8796f1aA4d5bcaeDDD0c26Ef2eE97f8C], 115792089237316195423570985008687907853269984665640564039457584007913129639935 [2;49;39m[1.157e77][0m) [33m[0m
+    │   │   │   └─ [31m← [0m"ERC20: transfer amount exceeds balance"
+    │   │   └─ [31m← [0m"ERC20: transfer amount exceeds balance"
+    │   └─ [31m← [0m"ERC20: transfer amount exceeds balance"
+    ├─ [2268] [32mHandlerState[0m::[32mgetCurrentOp[0m() [33m[0m
+    │   ├─ [0] [34mVM[0m::[34mactiveFork[0m() [33m[staticcall][0m
+    │   │   └─ [34m← [0m1
+    │   ├─ [0] [34mVM[0m::[34mselectFork[0m(0) [33m[0m
+    │   │   └─ [34m← [0m()
+    │   ├─ [0] [34mVM[0m::[34mselectFork[0m(1) [33m[0m
+    │   │   └─ [34m← [0m()
+    │   └─ [32m← [0m3
+    ├─ [2227] [32mHandlerState[0m::[32msetNoOp[0m() [33m[0m
+    │   ├─ [0] [34mVM[0m::[34mactiveFork[0m() [33m[staticcall][0m
+    │   │   └─ [34m← [0m1
+    │   ├─ [0] [34mVM[0m::[34mselectFork[0m(0) [33m[0m
+    │   │   └─ [34m← [0m()
+    │   ├─ [0] [34mVM[0m::[34mselectFork[0m(1) [33m[0m
+    │   │   └─ [34m← [0m()
+    │   └─ [32m← [0m()
+    ├─ [7027] [32mHandlerState[0m::[32mgetState[0m() [33m[0m
+    │   ├─ [0] [34mVM[0m::[34mactiveFork[0m() [33m[staticcall][0m
+    │   │   └─ [34m← [0m1
+    │   ├─ [0] [34mVM[0m::[34mselectFork[0m(0) [33m[0m
+    │   │   └─ [34m← [0m()
+    │   ├─ [0] [34mVM[0m::[34mselectFork[0m(1) [33m[0m
+    │   │   └─ [34m← [0m()
+    │   └─ [32m← [0mfalse, 0x6747432151632af5a2Feea9fc10AA0e624103560, 115792089237316195423570985008687907853269984665640564039457584007913129639935 [2;49;39m[1.157e77][0m, 0, 0, 1000000000000 [2;49;39m[1e12][0m, 0, 0
+    ├─ [0] [34mVM[0m::[34mstopPrank[0m() [33m[0m
+    │   └─ [34m← [0m()
+    └─ [32m← [0m()
+
+  [79085] [32mLxLyHandler[0m::[32mmigrate[0m(1701) [33m[0m
+    ├─ [0] [32mconsole[0m::[32mlog[0m(Bound Result, 0) [33m[staticcall][0m
+    │   └─ [32m← [0m()
+    ├─ [0] [34mVM[0m::[34mstartPrank[0m(0x7E5F4552091A69125d5DfCb7b8C2659029395Bdf) [33m[0m
+    │   └─ [34m← [0m()
+    ├─ [0] [32mconsole[0m::[32mlog[0m(-------- migrate) [33m[staticcall][0m
+    │   └─ [32m← [0m()
+    ├─ [6259] [32mHandlerState[0m::[32msetMigrating[0m() [33m[0m
+    │   ├─ [0] [34mVM[0m::[34mactiveFork[0m() [33m[staticcall][0m
+    │   │   └─ [34m← [0m1
+    │   ├─ [0] [34mVM[0m::[34mselectFork[0m(0) [33m[0m
+    │   │   └─ [34m← [0m()
+    │   ├─ [0] [34mVM[0m::[34mselectFork[0m(1) [33m[0m
+    │   │   └─ [34m← [0m()
+    │   └─ [32m← [0m()
+    ├─ [0] [34mVM[0m::[34mactiveFork[0m() [33m[staticcall][0m
+    │   └─ [34m← [0m1
+    ├─ [0] [34mVM[0m::[34mselectFork[0m(0) [33m[0m
+    │   └─ [34m← [0m()
+    ├─ [3315] [32m0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48[0m::[32mbalanceOf[0m(L1EscrowProxy: [0x19DDf514f42b1B9e4E9F7f29c832f389504A2363]) [33m[staticcall][0m
+    │   ├─ [2529] [32m0xa2327a938Febf5FEC13baCFb16Ae10EcBc4cbDCF[0m::[32mbalanceOf[0m(L1EscrowProxy: [0x19DDf514f42b1B9e4E9F7f29c832f389504A2363]) [33m[delegatecall][0m
+    │   │   └─ [32m← [0m0x0000000000000000000000000000000000000000000000000000000000000000
+    │   └─ [32m← [0m0x0000000000000000000000000000000000000000000000000000000000000000
+    ├─ [0] [34mVM[0m::[34mselectFork[0m(1) [33m[0m
+    │   └─ [34m← [0m()
+    ├─ [2304] [32mHandlerState[0m::[32msetBalancesBefores[0m(0, 0) [33m[0m
+    │   ├─ [0] [34mVM[0m::[34mactiveFork[0m() [33m[staticcall][0m
+    │   │   └─ [34m← [0m1
+    │   ├─ [0] [34mVM[0m::[34mselectFork[0m(0) [33m[0m
+    │   │   └─ [34m← [0m()
+    │   ├─ [0] [34mVM[0m::[34mselectFork[0m(1) [33m[0m
+    │   │   └─ [34m← [0m()
+    │   └─ [32m← [0m()
+    ├─ [2389] [32mHandlerState[0m::[32msetContinueExecution[0m(true) [33m[0m
+    │   ├─ [0] [34mVM[0m::[34mactiveFork[0m() [33m[staticcall][0m
+    │   │   └─ [34m← [0m1
+    │   ├─ [0] [34mVM[0m::[34mselectFork[0m(0) [33m[0m
+    │   │   └─ [34m← [0m()
+    │   ├─ [0] [34mVM[0m::[34mselectFork[0m(1) [33m[0m
+    │   │   └─ [34m← [0m()
+    │   └─ [32m← [0m()
+    ├─ [0] [34mVM[0m::[34mselectFork[0m(1) [33m[0m
+    │   └─ [34m← [0m()
+    ├─ [0] [34mVM[0m::[34mactiveFork[0m() [33m[staticcall][0m
+    │   └─ [34m← [0m1
+    ├─ [2562] [32m0xA8CE8aee21bC2A48a5EF670afCc9274C7bbbC035[0m::[32mbalanceOf[0m(NativeConverterProxy: [0xC7Bbbb1e8796f1aA4d5bcaeDDD0c26Ef2eE97f8C]) [33m[staticcall][0m
+    │   └─ [32m← [0m0x0000000000000000000000000000000000000000000000000000000000000000
+    ├─ [2389] [32mHandlerState[0m::[32msetContinueExecution[0m(false) [33m[0m
+    │   ├─ [0] [34mVM[0m::[34mactiveFork[0m() [33m[staticcall][0m
+    │   │   └─ [34m← [0m1
+    │   ├─ [0] [34mVM[0m::[34mselectFork[0m(0) [33m[0m
+    │   │   └─ [34m← [0m()
+    │   ├─ [0] [34mVM[0m::[34mselectFork[0m(1) [33m[0m
+    │   │   └─ [34m← [0m()
+    │   └─ [32m← [0m()
+    ├─ [10337] [32mNativeConverterProxy[0m::[32mmigrate[0m() [33m[0m
+    │   ├─ [5445] [32mNativeConverterImpl[0m::[32mmigrate[0m() [33m[delegatecall][0m
+    │   │   ├─ [562] [32m0xA8CE8aee21bC2A48a5EF670afCc9274C7bbbC035[0m::[32mbalanceOf[0m(NativeConverterProxy: [0xC7Bbbb1e8796f1aA4d5bcaeDDD0c26Ef2eE97f8C]) [33m[staticcall][0m
+    │   │   │   └─ [32m← [0m0x0000000000000000000000000000000000000000000000000000000000000000
+    │   │   └─ [32m← [0m()
+    │   └─ [32m← [0m()
+    ├─ [2268] [32mHandlerState[0m::[32mgetCurrentOp[0m() [33m[0m
+    │   ├─ [0] [34mVM[0m::[34mactiveFork[0m() [33m[staticcall][0m
+    │   │   └─ [34m← [0m1
+    │   ├─ [0] [34mVM[0m::[34mselectFork[0m(0) [33m[0m
+    │   │   └─ [34m← [0m()
+    │   ├─ [0] [34mVM[0m::[34mselectFork[0m(1) [33m[0m
+    │   │   └─ [34m← [0m()
+    │   └─ [32m← [0m4
+    ├─ [2227] [32mHandlerState[0m::[32msetNoOp[0m() [33m[0m
+    │   ├─ [0] [34mVM[0m::[34mactiveFork[0m() [33m[staticcall][0m
+    │   │   └─ [34m← [0m1
+    │   ├─ [0] [34mVM[0m::[34mselectFork[0m(0) [33m[0m
+    │   │   └─ [34m← [0m()
+    │   ├─ [0] [34mVM[0m::[34mselectFork[0m(1) [33m[0m
+    │   │   └─ [34m← [0m()
+    │   └─ [32m← [0m()
+    ├─ [3027] [32mHandlerState[0m::[32mgetState[0m() [33m[0m
+    │   ├─ [0] [34mVM[0m::[34mactiveFork[0m() [33m[staticcall][0m
+    │   │   └─ [34m← [0m1
+    │   ├─ [0] [34mVM[0m::[34mselectFork[0m(0) [33m[0m
+    │   │   └─ [34m← [0m()
+    │   ├─ [0] [34mVM[0m::[34mselectFork[0m(1) [33m[0m
+    │   │   └─ [34m← [0m()
+    │   └─ [32m← [0mfalse, 0x6747432151632af5a2Feea9fc10AA0e624103560, 115792089237316195423570985008687907853269984665640564039457584007913129639935 [2;49;39m[1.157e77][0m, 0, 0, 1000000000000 [2;49;39m[1e12][0m, 0, 0
+    ├─ [0] [34mVM[0m::[34mstopPrank[0m() [33m[0m
+    │   └─ [34m← [0m()
+    └─ [32m← [0m()
+
+  [191311] [31mLxLyHandler[0m::[31mconvert[0m(6506, 0xA7Eb6C5c2b19043f60Ba4F10eCF32795841f60dc, 2) [33m[0m
+    ├─ [0] [32mconsole[0m::[32mlog[0m(Bound Result, 3) [33m[staticcall][0m
+    │   └─ [32m← [0m()
+    ├─ [0] [34mVM[0m::[34mstartPrank[0m(0x1efF47bc3a10a45D4B230B5d10E37751FE6AA718) [33m[0m
+    │   └─ [34m← [0m()
+    ├─ [0] [32mconsole[0m::[32mlog[0m(-------- convert) [33m[staticcall][0m
+    │   └─ [32m← [0m()
+    ├─ [6325] [32mHandlerState[0m::[32msetConverting[0m() [33m[0m
+    │   ├─ [0] [34mVM[0m::[34mactiveFork[0m() [33m[staticcall][0m
+    │   │   └─ [34m← [0m1
+    │   ├─ [0] [34mVM[0m::[34mselectFork[0m(0) [33m[0m
+    │   │   └─ [34m← [0m()
+    │   ├─ [0] [34mVM[0m::[34mselectFork[0m(1) [33m[0m
+    │   │   └─ [34m← [0m()
+    │   └─ [32m← [0m()
+    ├─ [2389] [32mHandlerState[0m::[32msetContinueExecution[0m(false) [33m[0m
+    │   ├─ [0] [34mVM[0m::[34mactiveFork[0m() [33m[staticcall][0m
+    │   │   └─ [34m← [0m1
+    │   ├─ [0] [34mVM[0m::[34mselectFork[0m(0) [33m[0m
+    │   │   └─ [34m← [0m()
+    │   ├─ [0] [34mVM[0m::[34mselectFork[0m(1) [33m[0m
+    │   │   └─ [34m← [0m()
+    │   └─ [32m← [0m()
+    ├─ [2194] [32mHandlerState[0m::[32msetAmount[0m(2) [33m[0m
+    │   ├─ [0] [34mVM[0m::[34mactiveFork[0m() [33m[staticcall][0m
+    │   │   └─ [34m← [0m1
+    │   ├─ [0] [34mVM[0m::[34mselectFork[0m(0) [33m[0m
+    │   │   └─ [34m← [0m()
+    │   ├─ [0] [34mVM[0m::[34mselectFork[0m(1) [33m[0m
+    │   │   └─ [34m← [0m()
+    │   └─ [32m← [0m()
+    ├─ [2359] [32mHandlerState[0m::[32msetReceiver[0m(0xA7Eb6C5c2b19043f60Ba4F10eCF32795841f60dc) [33m[0m
+    │   ├─ [0] [34mVM[0m::[34mactiveFork[0m() [33m[staticcall][0m
+    │   │   └─ [34m← [0m1
+    │   ├─ [0] [34mVM[0m::[34mselectFork[0m(0) [33m[0m
+    │   │   └─ [34m← [0m()
+    │   ├─ [0] [34mVM[0m::[34mselectFork[0m(1) [33m[0m
+    │   │   └─ [34m← [0m()
+    │   └─ [32m← [0m()
+    ├─ [0] [34mVM[0m::[34mactiveFork[0m() [33m[staticcall][0m
+    │   └─ [34m← [0m1
+    ├─ [2562] [32m0xA8CE8aee21bC2A48a5EF670afCc9274C7bbbC035[0m::[32mbalanceOf[0m(0x1efF47bc3a10a45D4B230B5d10E37751FE6AA718) [33m[staticcall][0m
+    │   └─ [32m← [0m0x000000000000000000000000000000000000000000000000000000e8d4a51000
+    ├─ [0] [34mVM[0m::[34mactiveFork[0m() [33m[staticcall][0m
+    │   └─ [34m← [0m1
+    ├─ [2553] [32m0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512[0m::[32mbalanceOf[0m(0xA7Eb6C5c2b19043f60Ba4F10eCF32795841f60dc) [33m[staticcall][0m
+    │   └─ [32m← [0m0x0000000000000000000000000000000000000000000000000000000000000000
+    ├─ [0] [34mVM[0m::[34mactiveFork[0m() [33m[staticcall][0m
+    │   └─ [34m← [0m1
+    ├─ [2562] [32m0xA8CE8aee21bC2A48a5EF670afCc9274C7bbbC035[0m::[32mbalanceOf[0m(NativeConverterProxy: [0xC7Bbbb1e8796f1aA4d5bcaeDDD0c26Ef2eE97f8C]) [33m[staticcall][0m
+    │   └─ [32m← [0m0x0000000000000000000000000000000000000000000000000000000000000000
+    ├─ [2505] [32mHandlerState[0m::[32msetBalances[0m(1000000000000 [2;49;39m[1e12][0m, 0, 0) [33m[0m
+    │   ├─ [0] [34mVM[0m::[34mactiveFork[0m() [33m[staticcall][0m
+    │   │   └─ [34m← [0m1
+    │   ├─ [0] [34mVM[0m::[34mselectFork[0m(0) [33m[0m
+    │   │   └─ [34m← [0m()
+    │   ├─ [0] [34mVM[0m::[34mselectFork[0m(1) [33m[0m
+    │   │   └─ [34m← [0m()
+    │   └─ [32m← [0m()
+    ├─ [0] [34mVM[0m::[34mselectFork[0m(1) [33m[0m
+    │   └─ [34m← [0m()
+    ├─ [24627] [32m0xA8CE8aee21bC2A48a5EF670afCc9274C7bbbC035[0m::[32mapprove[0m(NativeConverterProxy: [0xC7Bbbb1e8796f1aA4d5bcaeDDD0c26Ef2eE97f8C], 2) [33m[0m
+    │   ├─ emit [36mApproval[0m(owner: 0x1efF47bc3a10a45D4B230B5d10E37751FE6AA718, spender: NativeConverterProxy: [0xC7Bbbb1e8796f1aA4d5bcaeDDD0c26Ef2eE97f8C], value: 2)
+    │   └─ [32m← [0m0x0000000000000000000000000000000000000000000000000000000000000001
+    ├─ [0] [34mVM[0m::[34mactiveFork[0m() [33m[staticcall][0m
+    │   └─ [34m← [0m1
+    ├─ [562] [32m0xA8CE8aee21bC2A48a5EF670afCc9274C7bbbC035[0m::[32mbalanceOf[0m(0x1efF47bc3a10a45D4B230B5d10E37751FE6AA718) [33m[staticcall][0m
+    │   └─ [32m← [0m0x000000000000000000000000000000000000000000000000000000e8d4a51000
+    ├─ [2389] [32mHandlerState[0m::[32msetContinueExecution[0m(true) [33m[0m
+    │   ├─ [0] [34mVM[0m::[34mactiveFork[0m() [33m[staticcall][0m
+    │   │   └─ [34m← [0m1
+    │   ├─ [0] [34mVM[0m::[34mselectFork[0m(0) [33m[0m
+    │   │   └─ [34m← [0m()
+    │   ├─ [0] [34mVM[0m::[34mselectFork[0m(1) [33m[0m
+    │   │   └─ [34m← [0m()
+    │   └─ [32m← [0m()
+    ├─ [0] [34mVM[0m::[34mexpectEmit[0m(NativeConverterProxy: [0xC7Bbbb1e8796f1aA4d5bcaeDDD0c26Ef2eE97f8C]) [33m[0m
+    │   └─ [34m← [0m()
+    ├─ emit [36mConvert[0m(from: 0x1efF47bc3a10a45D4B230B5d10E37751FE6AA718, to: 0xA7Eb6C5c2b19043f60Ba4F10eCF32795841f60dc, amount: 2)
+    ├─ [84993] [32mNativeConverterProxy[0m::[32mconvert[0m(0xA7Eb6C5c2b19043f60Ba4F10eCF32795841f60dc, 2, 0x) [33m[0m
+    │   ├─ [80083] [32mNativeConverterImpl[0m::[32mconvert[0m(0xA7Eb6C5c2b19043f60Ba4F10eCF32795841f60dc, 2, 0x) [33m[delegatecall][0m
+    │   │   ├─ [22701] [32m0xA8CE8aee21bC2A48a5EF670afCc9274C7bbbC035[0m::[32mtransferFrom[0m(0x1efF47bc3a10a45D4B230B5d10E37751FE6AA718, NativeConverterProxy: [0xC7Bbbb1e8796f1aA4d5bcaeDDD0c26Ef2eE97f8C], 2) [33m[0m
+    │   │   │   ├─ emit [36mApproval[0m(owner: 0x1efF47bc3a10a45D4B230B5d10E37751FE6AA718, spender: NativeConverterProxy: [0xC7Bbbb1e8796f1aA4d5bcaeDDD0c26Ef2eE97f8C], value: 0)
+    │   │   │   ├─ emit [36mTransfer[0m(from: 0x1efF47bc3a10a45D4B230B5d10E37751FE6AA718, to: NativeConverterProxy: [0xC7Bbbb1e8796f1aA4d5bcaeDDD0c26Ef2eE97f8C], value: 2)
+    │   │   │   └─ [32m← [0m0x0000000000000000000000000000000000000000000000000000000000000001
+    │   │   ├─ [60808] [32m0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512[0m::[32mmint[0m(0xA7Eb6C5c2b19043f60Ba4F10eCF32795841f60dc, 2) [33m[0m
+    │   │   │   ├─ emit [36mMint[0m(param0: NativeConverterProxy: [0xC7Bbbb1e8796f1aA4d5bcaeDDD0c26Ef2eE97f8C], param1: 0xA7Eb6C5c2b19043f60Ba4F10eCF32795841f60dc, param2: 2)
+    │   │   │   ├─ emit [36mTransfer[0m(from: 0x0000000000000000000000000000000000000000, to: 0xA7Eb6C5c2b19043f60Ba4F10eCF32795841f60dc, value: 2)
+    │   │   │   └─ [32m← [0m0x0000000000000000000000000000000000000000000000000000000000000001
+    │   │   ├─ emit [36mConvert[0m(from: 0x1efF47bc3a10a45D4B230B5d10E37751FE6AA718, to: 0xA7Eb6C5c2b19043f60Ba4F10eCF32795841f60dc, amount: 2)
+    │   │   └─ [32m← [0m()
+    │   └─ [32m← [0m()
+    ├─ [2268] [32mHandlerState[0m::[32mgetCurrentOp[0m() [33m[0m
+    │   ├─ [0] [34mVM[0m::[34mactiveFork[0m() [33m[staticcall][0m
+    │   │   └─ [34m← [0m1
+    │   ├─ [0] [34mVM[0m::[34mselectFork[0m(0) [33m[0m
+    │   │   └─ [34m← [0m()
+    │   ├─ [0] [34mVM[0m::[34mselectFork[0m(1) [33m[0m
+    │   │   └─ [34m← [0m()
+    │   └─ [32m← [0m3
+    ├─ [2227] [32mHandlerState[0m::[32msetNoOp[0m() [33m[0m
+    │   ├─ [0] [34mVM[0m::[34mactiveFork[0m() [33m[staticcall][0m
+    │   │   └─ [34m← [0m1
+    │   ├─ [0] [34mVM[0m::[34mselectFork[0m(0) [33m[0m
+    │   │   └─ [34m← [0m()
+    │   ├─ [0] [34mVM[0m::[34mselectFork[0m(1) [33m[0m
+    │   │   └─ [34m← [0m()
+    │   └─ [32m← [0m()
+    ├─ [3027] [32mHandlerState[0m::[32mgetState[0m() [33m[0m
+    │   ├─ [0] [34mVM[0m::[34mactiveFork[0m() [33m[staticcall][0m
+    │   │   └─ [34m← [0m1
+    │   ├─ [0] [34mVM[0m::[34mselectFork[0m(0) [33m[0m
+    │   │   └─ [34m← [0m()
+    │   ├─ [0] [34mVM[0m::[34mselectFork[0m(1) [33m[0m
+    │   │   └─ [34m← [0m()
+    │   └─ [32m← [0mtrue, 0xA7Eb6C5c2b19043f60Ba4F10eCF32795841f60dc, 2, 0, 0, 1000000000000 [2;49;39m[1e12][0m, 0, 0
+    ├─ [0] [34mVM[0m::[34mselectFork[0m(0) [33m[0m
+    │   └─ [34m← [0m()
+    ├─ [0] [32m0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512[0m::[32mbalanceOf[0m(L1EscrowProxy: [0x19DDf514f42b1B9e4E9F7f29c832f389504A2363]) [33m[staticcall][0m
+    │   └─ [32m← [0m()
+    └─ [31m← [0m"EvmError: Revert"
+
+  [223311] [31mLxLyHandler[0m::[31mconvert[0m(6506, 0xA7Eb6C5c2b19043f60Ba4F10eCF32795841f60dc, 2) [33m[0m
+    ├─ [0] [32mconsole[0m::[32mlog[0m(Bound Result, 3) [33m[staticcall][0m
+    │   └─ [32m← [0m()
+    ├─ [0] [34mVM[0m::[34mstartPrank[0m(0x1efF47bc3a10a45D4B230B5d10E37751FE6AA718) [33m[0m
+    │   └─ [34m← [0m()
+    ├─ [0] [32mconsole[0m::[32mlog[0m(-------- convert) [33m[staticcall][0m
+    │   └─ [32m← [0m()
+    ├─ [11125] [32mHandlerState[0m::[32msetConverting[0m() [33m[0m
+    │   ├─ [0] [34mVM[0m::[34mactiveFork[0m() [33m[staticcall][0m
+    │   │   └─ [34m← [0m1
+    │   ├─ [0] [34mVM[0m::[34mselectFork[0m(0) [33m[0m
+    │   │   └─ [34m← [0m()
+    │   ├─ [0] [34mVM[0m::[34mselectFork[0m(1) [33m[0m
+    │   │   └─ [34m← [0m()
+    │   └─ [32m← [0m()
+    ├─ [2389] [32mHandlerState[0m::[32msetContinueExecution[0m(false) [33m[0m
+    │   ├─ [0] [34mVM[0m::[34mactiveFork[0m() [33m[staticcall][0m
+    │   │   └─ [34m← [0m1
+    │   ├─ [0] [34mVM[0m::[34mselectFork[0m(0) [33m[0m
+    │   │   └─ [34m← [0m()
+    │   ├─ [0] [34mVM[0m::[34mselectFork[0m(1) [33m[0m
+    │   │   └─ [34m← [0m()
+    │   └─ [32m← [0m()
+    ├─ [7094] [32mHandlerState[0m::[32msetAmount[0m(2) [33m[0m
+    │   ├─ [0] [34mVM[0m::[34mactiveFork[0m() [33m[staticcall][0m
+    │   │   └─ [34m← [0m1
+    │   ├─ [0] [34mVM[0m::[34mselectFork[0m(0) [33m[0m
+    │   │   └─ [34m← [0m()
+    │   ├─ [0] [34mVM[0m::[34mselectFork[0m(1) [33m[0m
+    │   │   └─ [34m← [0m()
+    │   └─ [32m← [0m()
+    ├─ [2359] [32mHandlerState[0m::[32msetReceiver[0m(0xA7Eb6C5c2b19043f60Ba4F10eCF32795841f60dc) [33m[0m
+    │   ├─ [0] [34mVM[0m::[34mactiveFork[0m() [33m[staticcall][0m
+    │   │   └─ [34m← [0m1
+    │   ├─ [0] [34mVM[0m::[34mselectFork[0m(0) [33m[0m
+    │   │   └─ [34m← [0m()
+    │   ├─ [0] [34mVM[0m::[34mselectFork[0m(1) [33m[0m
+    │   │   └─ [34m← [0m()
+    │   └─ [32m← [0m()
+    ├─ [0] [34mVM[0m::[34mactiveFork[0m() [33m[staticcall][0m
+    │   └─ [34m← [0m1
+    ├─ [2562] [32m0xA8CE8aee21bC2A48a5EF670afCc9274C7bbbC035[0m::[32mbalanceOf[0m(0x1efF47bc3a10a45D4B230B5d10E37751FE6AA718) [33m[staticcall][0m
+    │   └─ [32m← [0m0x000000000000000000000000000000000000000000000000000000e8d4a51000
+    ├─ [0] [34mVM[0m::[34mactiveFork[0m() [33m[staticcall][0m
+    │   └─ [34m← [0m1
+    ├─ [2553] [32m0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512[0m::[32mbalanceOf[0m(0xA7Eb6C5c2b19043f60Ba4F10eCF32795841f60dc) [33m[staticcall][0m
+    │   └─ [32m← [0m0x0000000000000000000000000000000000000000000000000000000000000000
+    ├─ [0] [34mVM[0m::[34mactiveFork[0m() [33m[staticcall][0m
+    │   └─ [34m← [0m1
+    ├─ [2562] [32m0xA8CE8aee21bC2A48a5EF670afCc9274C7bbbC035[0m::[32mbalanceOf[0m(NativeConverterProxy: [0xC7Bbbb1e8796f1aA4d5bcaeDDD0c26Ef2eE97f8C]) [33m[staticcall][0m
+    │   └─ [32m← [0m0x0000000000000000000000000000000000000000000000000000000000000000
+    ├─ [8805] [32mHandlerState[0m::[32msetBalances[0m(1000000000000 [2;49;39m[1e12][0m, 0, 0) [33m[0m
+    │   ├─ [0] [34mVM[0m::[34mactiveFork[0m() [33m[staticcall][0m
+    │   │   └─ [34m← [0m1
+    │   ├─ [0] [34mVM[0m::[34mselectFork[0m(0) [33m[0m
+    │   │   └─ [34m← [0m()
+    │   ├─ [0] [34mVM[0m::[34mselectFork[0m(1) [33m[0m
+    │   │   └─ [34m← [0m()
+    │   └─ [32m← [0m()
+    ├─ [0] [34mVM[0m::[34mselectFork[0m(1) [33m[0m
+    │   └─ [34m← [0m()
+    ├─ [24627] [32m0xA8CE8aee21bC2A48a5EF670afCc9274C7bbbC035[0m::[32mapprove[0m(NativeConverterProxy: [0xC7Bbbb1e8796f1aA4d5bcaeDDD0c26Ef2eE97f8C], 2) [33m[0m
+    │   ├─ emit [36mApproval[0m(owner: 0x1efF47bc3a10a45D4B230B5d10E37751FE6AA718, spender: NativeConverterProxy: [0xC7Bbbb1e8796f1aA4d5bcaeDDD0c26Ef2eE97f8C], value: 2)
+    │   └─ [32m← [0m0x0000000000000000000000000000000000000000000000000000000000000001
+    ├─ [0] [34mVM[0m::[34mactiveFork[0m() [33m[staticcall][0m
+    │   └─ [34m← [0m1
+    ├─ [562] [32m0xA8CE8aee21bC2A48a5EF670afCc9274C7bbbC035[0m::[32mbalanceOf[0m(0x1efF47bc3a10a45D4B230B5d10E37751FE6AA718) [33m[staticcall][0m
+    │   └─ [32m← [0m0x000000000000000000000000000000000000000000000000000000e8d4a51000
+    ├─ [2389] [32mHandlerState[0m::[32msetContinueExecution[0m(true) [33m[0m
+    │   ├─ [0] [34mVM[0m::[34mactiveFork[0m() [33m[staticcall][0m
+    │   │   └─ [34m← [0m1
+    │   ├─ [0] [34mVM[0m::[34mselectFork[0m(0) [33m[0m
+    │   │   └─ [34m← [0m()
+    │   ├─ [0] [34mVM[0m::[34mselectFork[0m(1) [33m[0m
+    │   │   └─ [34m← [0m()
+    │   └─ [32m← [0m()
+    ├─ [0] [34mVM[0m::[34mexpectEmit[0m(NativeConverterProxy: [0xC7Bbbb1e8796f1aA4d5bcaeDDD0c26Ef2eE97f8C]) [33m[0m
+    │   └─ [34m← [0m()
+    ├─ emit [36mConvert[0m(from: 0x1efF47bc3a10a45D4B230B5d10E37751FE6AA718, to: 0xA7Eb6C5c2b19043f60Ba4F10eCF32795841f60dc, amount: 2)
+    ├─ [84993] [32mNativeConverterProxy[0m::[32mconvert[0m(0xA7Eb6C5c2b19043f60Ba4F10eCF32795841f60dc, 2, 0x) [33m[0m
+    │   ├─ [80083] [32mNativeConverterImpl[0m::[32mconvert[0m(0xA7Eb6C5c2b19043f60Ba4F10eCF32795841f60dc, 2, 0x) [33m[delegatecall][0m
+    │   │   ├─ [22701] [32m0xA8CE8aee21bC2A48a5EF670afCc9274C7bbbC035[0m::[32mtransferFrom[0m(0x1efF47bc3a10a45D4B230B5d10E37751FE6AA718, NativeConverterProxy: [0xC7Bbbb1e8796f1aA4d5bcaeDDD0c26Ef2eE97f8C], 2) [33m[0m
+    │   │   │   ├─ emit [36mApproval[0m(owner: 0x1efF47bc3a10a45D4B230B5d10E37751FE6AA718, spender: NativeConverterProxy: [0xC7Bbbb1e8796f1aA4d5bcaeDDD0c26Ef2eE97f8C], value: 0)
+    │   │   │   ├─ emit [36mTransfer[0m(from: 0x1efF47bc3a10a45D4B230B5d10E37751FE6AA718, to: NativeConverterProxy: [0xC7Bbbb1e8796f1aA4d5bcaeDDD0c26Ef2eE97f8C], value: 2)
+    │   │   │   └─ [32m← [0m0x0000000000000000000000000000000000000000000000000000000000000001
+    │   │   ├─ [60808] [32m0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512[0m::[32mmint[0m(0xA7Eb6C5c2b19043f60Ba4F10eCF32795841f60dc, 2) [33m[0m
+    │   │   │   ├─ emit [36mMint[0m(param0: NativeConverterProxy: [0xC7Bbbb1e8796f1aA4d5bcaeDDD0c26Ef2eE97f8C], param1: 0xA7Eb6C5c2b19043f60Ba4F10eCF32795841f60dc, param2: 2)
+    │   │   │   ├─ emit [36mTransfer[0m(from: 0x0000000000000000000000000000000000000000, to: 0xA7Eb6C5c2b19043f60Ba4F10eCF32795841f60dc, value: 2)
+    │   │   │   └─ [32m← [0m0x0000000000000000000000000000000000000000000000000000000000000001
+    │   │   ├─ emit [36mConvert[0m(from: 0x1efF47bc3a10a45D4B230B5d10E37751FE6AA718, to: 0xA7Eb6C5c2b19043f60Ba4F10eCF32795841f60dc, amount: 2)
+    │   │   └─ [32m← [0m()
+    │   └─ [32m← [0m()
+    ├─ [2268] [32mHandlerState[0m::[32mgetCurrentOp[0m() [33m[0m
+    │   ├─ [0] [34mVM[0m::[34mactiveFork[0m() [33m[staticcall][0m
+    │   │   └─ [34m← [0m1
+    │   ├─ [0] [34mVM[0m::[34mselectFork[0m(0) [33m[0m
+    │   │   └─ [34m← [0m()
+    │   ├─ [0] [34mVM[0m::[34mselectFork[0m(1) [33m[0m
+    │   │   └─ [34m← [0m()
+    │   └─ [32m← [0m3
+    ├─ [2227] [32mHandlerState[0m::[32msetNoOp[0m() [33m[0m
+    │   ├─ [0] [34mVM[0m::[34mactiveFork[0m() [33m[staticcall][0m
+    │   │   └─ [34m← [0m1
+    │   ├─ [0] [34mVM[0m::[34mselectFork[0m(0) [33m[0m
+    │   │   └─ [34m← [0m()
+    │   ├─ [0] [34mVM[0m::[34mselectFork[0m(1) [33m[0m
+    │   │   └─ [34m← [0m()
+    │   └─ [32m← [0m()
+    ├─ [7027] [32mHandlerState[0m::[32mgetState[0m() [33m[0m
+    │   ├─ [0] [34mVM[0m::[34mactiveFork[0m() [33m[staticcall][0m
+    │   │   └─ [34m← [0m1
+    │   ├─ [0] [34mVM[0m::[34mselectFork[0m(0) [33m[0m
+    │   │   └─ [34m← [0m()
+    │   ├─ [0] [34mVM[0m::[34mselectFork[0m(1) [33m[0m
+    │   │   └─ [34m← [0m()
+    │   └─ [32m← [0mtrue, 0xA7Eb6C5c2b19043f60Ba4F10eCF32795841f60dc, 2, 0, 0, 1000000000000 [2;49;39m[1e12][0m, 0, 0
+    ├─ [0] [34mVM[0m::[34mselectFork[0m(0) [33m[0m
+    │   └─ [34m← [0m()
+    ├─ [0] [32m0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512[0m::[32mbalanceOf[0m(L1EscrowProxy: [0x19DDf514f42b1B9e4E9F7f29c832f389504A2363]) [33m[staticcall][0m
+    │   └─ [32m← [0m()
+    └─ [31m← [0m"EvmError: Revert"
+
+Test result: [31mFAILED[0m. 0 passed; 1 failed; 0 skipped; finished in 841.34ms
+Ran 1 test suites: 0 tests passed, 1 failed, 0 skipped (1 total tests)
+
+Failing tests:
+Encountered 1 failing test in test/invariant/Supply.invariants.t.sol:Supply
+[31m[FAIL. Reason: Contract 0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512 does not exist on active fork with id `0`
+        But exists on non active forks: `[1]`]
+	[Sequence]
+		sender=0xe57bfe9f44b819898f47bf37e5af72a0783e1141 addr=[test/invariant/LxLyHandler.sol:LxLyHandler]0x5991a2df15a8f6a256d3ec51e99254cd3fb576a9 calldata=convert(uint256,address,uint256), args=[115792089237316195423570985008687907853269984665640564039457584007913129639933 [2;49;39m[1.157e77][0m, 0x6747432151632af5a2Feea9fc10AA0e624103560, 115792089237316195423570985008687907853269984665640564039457584007913129639935 [2;49;39m[1.157e77][0m]
+		sender=0x6813eb9362372eef6200f3b1dbc3f819671cba69 addr=[test/invariant/LxLyHandler.sol:LxLyHandler]0x5991a2df15a8f6a256d3ec51e99254cd3fb576a9 calldata=migrate(uint256), args=[1701]
+		sender=0xe1ab8145f7e55dc933d51a18c793f901a3a0b276 addr=[test/invariant/LxLyHandler.sol:LxLyHandler]0x5991a2df15a8f6a256d3ec51e99254cd3fb576a9 calldata=convert(uint256,address,uint256), args=[6506, 0xA7Eb6C5c2b19043f60Ba4F10eCF32795841f60dc, 2]
+
+[0m invariantGigaTest() (runs: 1, calls: 3, reverts: 1)
+
+Encountered a total of [31m1[0m failing tests, [32m0[0m tests succeeded

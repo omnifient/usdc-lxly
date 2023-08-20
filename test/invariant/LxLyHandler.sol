@@ -254,6 +254,10 @@ contract LxLyHandler is CommonBase, StdCheats, StdUtils, DSTest {
 
         // deposit + message to mint
         _l1Escrow.bridgeToken(zkReceiver, amount, true);
+
+        Operation op = _state.getCurrentOp();
+        _state.setNoOp();
+        if (op == Operation.DEPOSITING) _assertDepositConditionals();
     }
 
     function withdraw(
@@ -353,6 +357,11 @@ contract LxLyHandler is CommonBase, StdCheats, StdUtils, DSTest {
 
         bytes memory emptyPermitData;
         _nativeConverter.convert(receiver, amount, emptyPermitData);
+
+        Operation op = _state.getCurrentOp();
+        _state.setNoOp();
+
+        if (op == Operation.CONVERTING) _assertConvertConditionals();
     }
 
     function migrate(uint256 actorIndexSeed) external useActor(actorIndexSeed) {
@@ -388,6 +397,10 @@ contract LxLyHandler is CommonBase, StdCheats, StdUtils, DSTest {
 
         // message to bridge the l2_bwusdc
         _nativeConverter.migrate();
+
+        Operation op = _state.getCurrentOp();
+        _state.setNoOp();
+        if (op == Operation.MIGRATING) _assertMigrateConditionals();
     }
 
     // HELPERS
@@ -408,5 +421,232 @@ contract LxLyHandler is CommonBase, StdCheats, StdUtils, DSTest {
         address addr
     ) internal useFork(_l2Fork) returns (uint256) {
         return _erc20L2Wusdc.balanceOf(addr);
+    }
+
+    function _assertUsdcSupplyAndBalancesMatch() internal {
+        vm.selectFork(_l1Fork);
+        uint256 l1EscrowBalance = _erc20L1Usdc.balanceOf(address(_l1Escrow));
+
+        vm.selectFork(_l2Fork);
+        uint256 l2TotalSupply = _erc20L2Usdc.totalSupply();
+        uint256 wUsdcConverterBalance = _erc20L2Wusdc.balanceOf(
+            address(_nativeConverter)
+        );
+
+        // zkUsdc.totalSupply <= l1Usdc.balanceOf(l1Escrow) + bwUSDC.balanceOf(nativeConverter)
+        console.log(
+            "INVARIANT CHECK: l2TotalSupply == l1EscrowBalance + wUsdcConverterBalance"
+        );
+        assertLe(l2TotalSupply, l1EscrowBalance + wUsdcConverterBalance);
+    }
+
+    function _claimBridgeMessage(uint256 from, uint256 to) internal {
+        MockBridge b = MockBridge(_bridge);
+
+        vm.selectFork(from);
+        (
+            uint32 originNetwork,
+            address originAddress,
+            uint32 destinationNetwork,
+            address destinationAddress,
+            uint256 amount,
+            bytes memory metadata
+        ) = b.lastBridgeMessage();
+        // proof can be empty because our MockBridge bypasses the merkle tree verification
+        // i.e. _verifyLeaf is always successful
+        bytes32[32] memory proof;
+
+        vm.selectFork(to);
+        b.claimMessage(
+            proof,
+            uint32(b.depositCount()),
+            "",
+            "",
+            originNetwork,
+            originAddress,
+            destinationNetwork,
+            destinationAddress,
+            amount,
+            metadata
+        );
+    }
+
+    function _assertDepositConditionals() private {
+        (
+            bool continueExecution,
+            address receiver,
+            uint256 amount,
+            uint256 l1BalanceBefore,
+            uint256 l2BalanceBefore,
+            ,
+            ,
+
+        ) = _state.getState();
+
+        if (continueExecution) {
+            // check currentActor's L1_USDC balance decreased
+            console.log("DEPOSIT: currentActor's L1_USDC balance decreased");
+            vm.selectFork(_l1Fork);
+            assertEq(
+                l1BalanceBefore - _erc20L1Usdc.balanceOf(currentActor),
+                amount
+            );
+
+            // manually trigger the "bridging"
+            _claimBridgeMessage(_l1Fork, _l2Fork);
+
+            // check zkReceiver's L2_USDC balance increased
+            vm.selectFork(_l2Fork);
+            assertEq(
+                _erc20L2Usdc.balanceOf(receiver) - l2BalanceBefore,
+                amount
+            );
+
+            // check main invariant
+            _assertUsdcSupplyAndBalancesMatch();
+        }
+    }
+
+    function _assertConvertConditionals() private {
+        (
+            bool continueExecution,
+            address receiver,
+            uint256 amount,
+            ,
+            ,
+            uint256 senderWUSDCBal,
+            uint256 receiverUSDCBal,
+            uint256 converterWUSDCBal
+        ) = _state.getState();
+
+        if (continueExecution) {
+            console.log("CONVERT: amount: %s", amount);
+
+            vm.selectFork(_l1Fork);
+            console.log(
+                "CONVERT: l1Escrow's L1USDC balance before claim: %s",
+                _erc20L1Usdc.balanceOf(address(_l1Escrow))
+            );
+
+            vm.selectFork(_l2Fork);
+
+            // check currentActor's L2_BWUSDC balance decreased
+            console.log("CONVERT: currentActor's L2_BWUSDC balance decreased");
+            assertEq(
+                senderWUSDCBal - _erc20L2Wusdc.balanceOf(currentActor),
+                amount
+            );
+
+            // check receiver's L2_USDC balance increased
+            console.log("CONVERT: receiver's L2_USDC balance increased");
+
+            assertEq(
+                _erc20L2Usdc.balanceOf(receiver) - receiverUSDCBal,
+                amount
+            );
+
+            console.log(
+                "CONVERT: _nativeConverter's L2_BWUSDC balance increased"
+            );
+            // check _nativeConverter's L2_BWUSDC balance increased
+            assertEq(
+                _erc20L2Wusdc.balanceOf(address(_nativeConverter)) -
+                    converterWUSDCBal,
+                amount
+            );
+
+            vm.selectFork(_l1Fork);
+            console.log(
+                "CONVERT: l1Escrow's L1USDC balance before claim: %s",
+                _erc20L1Usdc.balanceOf(address(_l1Escrow))
+            );
+
+            vm.selectFork(_l2Fork);
+
+            // check main invariant
+            _assertUsdcSupplyAndBalancesMatch();
+        }
+    }
+
+    function _assertMigrateConditionals() private {
+        (
+            bool continueExecution,
+            ,
+            uint256 amount,
+            uint256 l1BalanceBefore,
+            ,
+            ,
+            ,
+
+        ) = _state.getState();
+
+        if (continueExecution) {
+            console.log("MIGRATE: amount: %s", amount);
+            vm.selectFork(_l1Fork);
+            console.log(
+                "MIGRATE: l1Escrow's L1USDC balance before claim: %s",
+                _erc20L1Usdc.balanceOf(address(_l1Escrow))
+            );
+            // check _nativeConverter L2_BWUSDC balance decreased
+            vm.selectFork(_l2Fork);
+            console.log(
+                "MIGRATE: _nativeConverter L2_BWUSDC balance decreased"
+            );
+
+            assertEq(_erc20L2Wusdc.balanceOf(address(_nativeConverter)), 0);
+
+            // manually trigger the "bridging"
+            _claimBridgeAsset(_l2NetworkId, _l1NetworkId);
+
+            // check _l1Escrow L1_USDC balance increased
+            vm.selectFork(_l1Fork);
+            console.log("MIGRATE: _l1Escrow L1_USDC balance increased");
+
+            assertEq(
+                _erc20L1Usdc.balanceOf(address(_l1Escrow)) - l1BalanceBefore,
+                amount
+            );
+
+            // check main invariant
+            _assertUsdcSupplyAndBalancesMatch();
+
+            vm.selectFork(_l1Fork);
+            console.log(
+                "MIGRATE: l1Escrow's L1USDC balance after claim: %s",
+                _erc20L1Usdc.balanceOf(address(_l1Escrow))
+            );
+        }
+    }
+
+    function _claimBridgeAsset(uint256 from, uint256 to) internal {
+        MockBridge b = MockBridge(_bridge);
+
+        vm.selectFork(from);
+        (
+            uint32 originNetwork,
+            address originTokenAddress,
+            uint32 destinationNetwork,
+            address destinationAddress,
+            uint256 amount,
+            bytes memory metadata
+        ) = b.lastBridgeMessage();
+        // proof and index can be empty because our MockBridge bypasses the merkle tree verification
+        // i.e. _verifyLeaf is always successful
+        bytes32[32] memory proof;
+        uint32 index;
+
+        vm.selectFork(to);
+        b.claimAsset(
+            proof,
+            index,
+            "",
+            "",
+            originNetwork,
+            originTokenAddress,
+            destinationNetwork,
+            destinationAddress,
+            amount,
+            metadata
+        );
     }
 }

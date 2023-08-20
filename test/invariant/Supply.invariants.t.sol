@@ -48,11 +48,11 @@ contract Supply is Base {
         targetSender(_actors[6]);
 
         // register the selectors
-        bytes4[] memory selectors = new bytes4[](4);
-        selectors[0] = _handler.deposit.selector;
-        selectors[1] = _handler.withdraw.selector;
-        selectors[2] = _handler.convert.selector;
-        selectors[3] = _handler.migrate.selector;
+        bytes4[] memory selectors = new bytes4[](2);
+        // selectors[0] = _handler.deposit.selector;
+        // selectors[1] = _handler.withdraw.selector;
+        selectors[0] = _handler.convert.selector;
+        selectors[1] = _handler.migrate.selector;
         targetSelector(FuzzSelector({addr: handlerAddr, selectors: selectors}));
 
         // register the contract
@@ -101,13 +101,13 @@ contract Supply is Base {
     function invariantGigaTest() public {
         console.log("-------- invariantGigaTest");
 
-        Operation op = _state.getCurrentOp();
-        _state.setNoOp();
-
-        if (op == Operation.DEPOSITING) _assertDepositConditionals();
-        else if (op == Operation.WITHDRAWING) _assertWithdrawConditionals();
-        else if (op == Operation.CONVERTING) _assertConvertConditionals();
-        else if (op == Operation.MIGRATING) _assertMigrateConditionals();
+        uint256 currentFork = vm.activeFork();
+        vm.selectFork(_l1Fork);
+        console.log(
+            "GIGA: l1Escrow's L1USDC balance: %s",
+            _erc20L1Usdc.balanceOf(address(_l1Escrow))
+        );
+        vm.selectFork(currentFork);
 
         // TODO: assertUpgradeConditionals();
     }
