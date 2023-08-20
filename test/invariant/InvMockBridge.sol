@@ -162,6 +162,10 @@ contract InvMockBridge {
 
                 // Burn tokens
                 if (realBridge != address(0)) {
+                    // in order to burn tokens, we need the msg.sender to be
+                    // the real bridge, so we swap the msg.senders only
+                    // to do the burn, then switch back to the
+                    // forge-provided msg.sender
                     address currentSender = msg.sender;
                     // changePrank(realBridge);
                     vm.stopPrank();

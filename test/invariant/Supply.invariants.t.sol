@@ -15,7 +15,7 @@ contract Supply is Base {
     function setUp() public override {
         // initialize base
         super.setUp();
-        super._fundActorsAndBridge();
+        super._fundActors();
 
         // create and init the handler
         _state = new HandlerState(vm, _l1Fork);
