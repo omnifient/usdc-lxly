@@ -23,6 +23,12 @@ enum Operation {
     MIGRATING
 }
 
+enum FuzzyFunding {
+    NO_FUND,
+    SAME_AMOUNT,
+    GREATER_AMOUNT
+}
+
 contract HandlerState {
     Vm private _vm;
     uint256 private _stateFork;
@@ -133,6 +139,7 @@ contract HandlerState {
 
 contract LxLyHandler is CommonBase, StdCheats, StdUtils, DSTest {
     address public currentActor;
+
     HandlerState internal _state;
 
     uint256 internal _l1Fork;
@@ -194,6 +201,7 @@ contract LxLyHandler is CommonBase, StdCheats, StdUtils, DSTest {
 
     function deposit(
         uint256 actorIndexSeed,
+        uint256 fundingIndexSeed,
         address zkReceiver,
         uint256 amount
     ) external useActor(actorIndexSeed) {
@@ -201,6 +209,16 @@ contract LxLyHandler is CommonBase, StdCheats, StdUtils, DSTest {
         console.log("receiver", zkReceiver);
         console.log("amount", amount);
         _printBalances();
+
+        // fuzz the balance of the currentActor to [0|amount|amount+1]
+        fuzzActorBalance(
+            fundingIndexSeed,
+            amount,
+            _l1Fork,
+            address(_erc20L1Usdc),
+            currentActor
+        );
+        console.log("l1usdc balance", _getL1USDCBalance(currentActor));
 
         _state.setDepositing();
         _state.setContinueExecution(true);
@@ -263,6 +281,9 @@ contract LxLyHandler is CommonBase, StdCheats, StdUtils, DSTest {
         console.log("amount", amount);
         _printBalances();
 
+        // TODO / TBD: funding with L2_USDC means that we'd need to change totalSupply
+        // and fund L1_USDC to the L1Escrow (or L2_WUSDC to NativeConverter)
+
         _state.setWithdrawing();
         _state.setContinueExecution(true);
         _state.setAmount(amount);
@@ -316,6 +337,7 @@ contract LxLyHandler is CommonBase, StdCheats, StdUtils, DSTest {
 
     function convert(
         uint256 actorIndexSeed,
+        uint256 fundingIndexSeed,
         address receiver,
         uint256 amount
     ) external useActor(actorIndexSeed) {
@@ -323,6 +345,16 @@ contract LxLyHandler is CommonBase, StdCheats, StdUtils, DSTest {
         console.log("receiver", receiver);
         console.log("amount", amount);
         _printBalances();
+
+        // fuzz the balance of the currentActor to [0|amount|amount+1]
+        fuzzActorBalance(
+            fundingIndexSeed,
+            amount,
+            _l2Fork,
+            address(_erc20L2Wusdc),
+            currentActor
+        );
+        console.log("l2wusdc balance", _getL2WUSDCBalance(currentActor));
 
         _state.setConverting();
         _state.setContinueExecution(false);
@@ -400,6 +432,38 @@ contract LxLyHandler is CommonBase, StdCheats, StdUtils, DSTest {
     }
 
     // HELPERS
+
+    function fuzzActorBalance(
+        uint256 fundingSeed,
+        uint256 amount,
+        uint256 forkId,
+        address token,
+        address actor
+    ) internal {
+        console.log("in fuzz actor balance");
+        FuzzyFunding ff = FuzzyFunding(bound(fundingSeed, 0, 2));
+
+        // cap the max funding amount because USDC has a limit
+        uint256 MAX_FUNDING = 10 ** 12; // type(uint256).max;
+        if (amount > MAX_FUNDING) amount = MAX_FUNDING;
+
+        uint256 fundingAmount = 0;
+        if (ff == FuzzyFunding.SAME_AMOUNT) {
+            console.log("same amount");
+            fundingAmount = amount;
+        } else if (ff == FuzzyFunding.GREATER_AMOUNT) {
+            console.log("greater amount");
+            fundingAmount = amount + 1;
+        } else {
+            console.log("no amount");
+            assert(ff == FuzzyFunding.NO_FUND);
+        }
+
+        vm.selectFork(forkId);
+        deal(token, actor, fundingAmount);
+    }
+
+    // BALANCE HELPERS
 
     modifier useFork(uint256 fork) {
         uint256 currentFork = vm.activeFork();
