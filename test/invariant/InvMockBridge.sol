@@ -5,7 +5,6 @@ import "@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeab
 // import "@openzeppelin/contracts-upgradeable/token/ERC20/extensions/IERC20MetadataUpgradeable.sol";
 import "lib/zkevm-contracts/contracts/interfaces/IBridgeMessageReceiver.sol";
 import "lib/zkevm-contracts/contracts/lib/TokenWrapped.sol";
-import "lib/forge-std/src/console.sol";
 import "lib/forge-std/src/Vm.sol";
 
 struct BridgeMessage {
@@ -75,26 +74,6 @@ contract InvMockBridge {
         }
     }
 
-    // function initialize(
-    //     uint32 _networkID,
-    //     Vm _vm,
-    //     address _realBridge,
-    //     address _token,
-    //     uint32 _originNetwork,
-    //     address _originTokenAddr
-    // ) external virtual {
-    //     networkID = _networkID;
-    //     vm = _vm;
-    //     realBridge = _realBridge;
-
-    //     if (_token != address(0)) {
-    //         wrappedTokenToTokenInfo[_token] = InvMockBridge.TokenInformation({
-    //             originNetwork: _originNetwork,
-    //             originTokenAddress: _originTokenAddr
-    //         });
-    //     }
-    // }
-
     /**
      * @dev Emitted when bridge assets or messages to another network
      */
@@ -147,26 +126,18 @@ contract InvMockBridge {
             require(msg.value == 0, "MSG_VALUE_NOT_ZERO");
 
             TokenInformation memory tokenInfo = wrappedTokenToTokenInfo[token];
-            // console.log("yyyyyyy fork", vm.activeFork());
-            // console.log("xxxxxxx token", token);
-            // console.log(
-            //     "xxxxxxx tokenInfo origin token addr",
-            //     tokenInfo.originTokenAddress
-            // );
-            // console.log(
-            //     "xxxxxxx tokenInfo origin network",
-            //     tokenInfo.originNetwork
-            // );
             if (tokenInfo.originTokenAddress != address(0)) {
                 // The token is a wrapped token from another network
 
                 // Burn tokens
                 if (realBridge != address(0)) {
                     address currentSender = msg.sender;
+                    // In order for this call to `burn` to work, we need the
+                    // msg.sender to be the actual L2 bridge, because it is
+                    // the only address that's able to call burn
                     // changePrank(realBridge);
                     vm.stopPrank();
                     vm.startPrank(realBridge);
-                    console.log("swapping pranks", currentSender, realBridge);
                     TokenWrapped(token).burn(msg.sender, amount);
                     // changePrank(currentSender);
                     vm.stopPrank();

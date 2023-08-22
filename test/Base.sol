@@ -359,24 +359,6 @@ contract Base is Test {
         );
     }
 
-    function _fundActorsAndBridge() internal {
-        // fund the actors in both chains
-        for (uint i = 0; i < _actors.length; i++) {
-            address actor = _actors[i];
-            vm.selectFork(_l1Fork);
-            deal(_l1Usdc, actor, _ONE_MILLION_USDC);
-
-            vm.selectFork(_l2Fork);
-            deal(_l2Wusdc, actor, _ONE_MILLION_USDC);
-        }
-
-        // fund the bridge in both chains
-        vm.selectFork(_l1Fork);
-        deal(_bridge, 1000000000 ether);
-        vm.selectFork(_l2Fork);
-        deal(_bridge, 1000000000 ether);
-    }
-
     function _toUSDC(uint256 v) internal pure returns (uint256) {
         return v * 10 ** 6;
     }

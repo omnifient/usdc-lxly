@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.17;
 
-import "lib/forge-std/src/console.sol";
 import "lib/forge-std/src/Vm.sol";
 
 import {CommonBase} from "lib/forge-std/src/Base.sol";
@@ -205,11 +204,6 @@ contract LxLyHandler is CommonBase, StdCheats, StdUtils, DSTest {
         address zkReceiver,
         uint256 amount
     ) external useActor(actorIndexSeed) {
-        console.log("---------------- deposit");
-        console.log("receiver", zkReceiver);
-        console.log("amount", amount);
-        _printBalances();
-
         // fuzz the balance of the currentActor to [0|amount|amount+1]
         fuzzActorBalance(
             fundingIndexSeed,
@@ -218,7 +212,6 @@ contract LxLyHandler is CommonBase, StdCheats, StdUtils, DSTest {
             address(_erc20L1Usdc),
             currentActor
         );
-        console.log("l1usdc balance", _getL1USDCBalance(currentActor));
 
         _state.setDepositing();
         _state.setContinueExecution(true);
@@ -268,7 +261,6 @@ contract LxLyHandler is CommonBase, StdCheats, StdUtils, DSTest {
 
         // deposit + message to mint
         _l1Escrow.bridgeToken(zkReceiver, amount, true);
-        _printBalances();
     }
 
     function withdraw(
@@ -276,13 +268,10 @@ contract LxLyHandler is CommonBase, StdCheats, StdUtils, DSTest {
         address l1Receiver,
         uint256 amount
     ) external useActor(actorIndexSeed) {
-        console.log("---------------- withdraw");
-        console.log("receiver", l1Receiver);
-        console.log("amount", amount);
-        _printBalances();
-
-        // TODO / TBD: funding with L2_USDC means that we'd need to change totalSupply
-        // and fund L1_USDC to the L1Escrow (or L2_WUSDC to NativeConverter)
+        // NOTE: we are not fuzzing the balance in the withdraw because
+        // it requires creating L2_USDC
+        // that means either changing the totalSupply without the equivalent
+        // L1_USDC/L2_WUSDC or funding those tokens to the required contracts
 
         _state.setWithdrawing();
         _state.setContinueExecution(true);
@@ -332,7 +321,6 @@ contract LxLyHandler is CommonBase, StdCheats, StdUtils, DSTest {
 
         // burn + message to withdraw
         _minterBurner.bridgeToken(l1Receiver, amount, true);
-        _printBalances();
     }
 
     function convert(
@@ -341,11 +329,6 @@ contract LxLyHandler is CommonBase, StdCheats, StdUtils, DSTest {
         address receiver,
         uint256 amount
     ) external useActor(actorIndexSeed) {
-        console.log("---------------- convert");
-        console.log("receiver", receiver);
-        console.log("amount", amount);
-        _printBalances();
-
         // fuzz the balance of the currentActor to [0|amount|amount+1]
         fuzzActorBalance(
             fundingIndexSeed,
@@ -354,7 +337,6 @@ contract LxLyHandler is CommonBase, StdCheats, StdUtils, DSTest {
             address(_erc20L2Wusdc),
             currentActor
         );
-        console.log("l2wusdc balance", _getL2WUSDCBalance(currentActor));
 
         _state.setConverting();
         _state.setContinueExecution(false);
@@ -389,12 +371,9 @@ contract LxLyHandler is CommonBase, StdCheats, StdUtils, DSTest {
 
         bytes memory emptyPermitData;
         _nativeConverter.convert(receiver, amount, emptyPermitData);
-        _printBalances();
     }
 
     function migrate(uint256 actorIndexSeed) external useActor(actorIndexSeed) {
-        console.log("---------------- migrate");
-
         _state.setMigrating();
         _state.setBalancesBefores(_getL1USDCBalance(address(_l1Escrow)), 0);
         _state.setContinueExecution(true);
@@ -402,8 +381,10 @@ contract LxLyHandler is CommonBase, StdCheats, StdUtils, DSTest {
         vm.selectFork(_l2Fork);
         uint256 amount = _getL2WUSDCBalance(address(_nativeConverter));
         _state.setAmount(amount);
-        console.log("amount", amount);
-        _printBalances();
+
+        // we must fund the bridge with L1_USDC with the same amount of L2_WUSDC we are migrating
+        // because this is our mock bridge, whereas the real bridge has L1_USDC locked in it
+        deal(address(_erc20L1Usdc), _bridge, amount);
 
         if (amount == 0) {
             _state.setContinueExecution(false);
@@ -428,7 +409,6 @@ contract LxLyHandler is CommonBase, StdCheats, StdUtils, DSTest {
 
         // message to bridge the l2_bwusdc
         _nativeConverter.migrate();
-        _printBalances();
     }
 
     // HELPERS
@@ -440,7 +420,6 @@ contract LxLyHandler is CommonBase, StdCheats, StdUtils, DSTest {
         address token,
         address actor
     ) internal {
-        console.log("in fuzz actor balance");
         FuzzyFunding ff = FuzzyFunding(bound(fundingSeed, 0, 2));
 
         // cap the max funding amount because USDC has a limit
@@ -449,13 +428,10 @@ contract LxLyHandler is CommonBase, StdCheats, StdUtils, DSTest {
 
         uint256 fundingAmount = 0;
         if (ff == FuzzyFunding.SAME_AMOUNT) {
-            console.log("same amount");
             fundingAmount = amount;
         } else if (ff == FuzzyFunding.GREATER_AMOUNT) {
-            console.log("greater amount");
             fundingAmount = amount + 1;
         } else {
-            console.log("no amount");
             assert(ff == FuzzyFunding.NO_FUND);
         }
 
@@ -488,41 +464,5 @@ contract LxLyHandler is CommonBase, StdCheats, StdUtils, DSTest {
         address addr
     ) internal useFork(_l2Fork) returns (uint256) {
         return _erc20L2Wusdc.balanceOf(addr);
-    }
-
-    function _printBalances() internal {
-        console.log("--- L1_USDC");
-        console.log("l1escrow", _getL1USDCBalance(address(_l1Escrow)));
-        console.log(
-            "zkminterburner",
-            _getL1USDCBalance(address(_minterBurner))
-        );
-        console.log(
-            "nativeconverter",
-            _getL1USDCBalance(address(_nativeConverter))
-        );
-
-        console.log("--- L2_USDC");
-        console.log("l1escrow", _getL2USDCBalance(address(_l1Escrow)));
-        console.log(
-            "zkminterburner",
-            _getL2USDCBalance(address(_minterBurner))
-        );
-        console.log(
-            "nativeconverter",
-            _getL2USDCBalance(address(_nativeConverter))
-        );
-
-        console.log("--- L2_WUSDC");
-        console.log("l1escrow", _getL2WUSDCBalance(address(_l1Escrow)));
-        console.log(
-            "zkminterburner",
-            _getL2WUSDCBalance(address(_minterBurner))
-        );
-        console.log(
-            "nativeconverter",
-            _getL2WUSDCBalance(address(_nativeConverter))
-        );
-        console.log("");
     }
 }

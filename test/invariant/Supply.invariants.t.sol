@@ -1,12 +1,15 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.17;
 
-import "lib/forge-std/src/console.sol";
 import "lib/forge-std/src/Test.sol";
 
 import {HandlerState, LxLyHandler, Operation} from "./LxLyHandler.sol";
 import {Base} from "../Base.sol";
 import "./InvMockBridge.sol";
+
+/// ATTN: the invariant test are disabled because of too many issues with forge that we could not solve
+/// the tests run successfully (without the migrate handler function) with forge 0.2.0 (dea5405 2023-08-17T00:25:19.368594453Z)
+/// but fail with the current version (forge 0.2.0 (1143e57 2023-08-24T00:20:21.116511461Z))
 
 contract Supply is Base {
     HandlerState private _state;
@@ -15,9 +18,8 @@ contract Supply is Base {
     function setUp() public override {
         // initialize base
         super.setUp();
-        super._fundActorsAndBridge();
 
-        // create and init the handler
+        // create and init the state and the handler
         _state = new HandlerState(vm, _l1Fork);
         address stateAddr = address(_state);
 
@@ -63,44 +65,24 @@ contract Supply is Base {
     }
 
     function _deployMockBridge() internal override {
-        console.log("....... deploying mock bridge");
-        // TODO: TBI
         bytes32 salt = "LXLY_BRIDGE";
 
         vm.selectFork(_l1Fork);
         InvMockBridge b1 = new InvMockBridge{salt: salt}(vm, _bridge);
         address b1Addr = address(b1);
-        // b1.initialize(_l1NetworkId, vm, address(0), address(0), 0, address(0));
-        // fund it with L1_USDC
-        deal(_l1Usdc, b1Addr, 1000000 * _ONE_MILLION_USDC);
 
         vm.selectFork(_l2Fork);
         InvMockBridge b2 = new InvMockBridge{salt: salt}(vm, _bridge);
         address b2Addr = address(b2);
-        // b2.initialize(
-        //     _l2NetworkId,
-        //     vm,
-        //     _bridge,
-        //     _l2Wusdc,
-        //     _l1NetworkId,
-        //     _l1Usdc
-        // );
-        (uint32 xx, address yy) = b2.wrappedTokenToTokenInfo(_l2Wusdc);
-        console.log("hey!", yy);
-        // fund it with L2_WUSDC
-        // deal(_l2Wusdc, b2Addr, 1000000 * _ONE_MILLION_USDC);
 
         assert(b1Addr == b2Addr);
         _bridge = b1Addr;
-
-        console.log("....... deployed mock bridge");
     }
 
-    // the test
+    // the test - disabled, see NOTE at the top of this file
 
+    /*
     function invariantGigaTest() public {
-        console.log("-------- invariantGigaTest");
-
         Operation op = _state.getCurrentOp();
         _state.setNoOp();
 
@@ -109,14 +91,12 @@ contract Supply is Base {
         else if (op == Operation.CONVERTING) _assertConvertConditionals();
         else if (op == Operation.MIGRATING) _assertMigrateConditionals();
 
-        // TODO: assertUpgradeConditionals();
-
         if (op != Operation.NOOP && _state.continueExecution()) {
-            _printBalances();
             // check main invariant
             _assertUsdcSupplyAndBalancesMatch();
         }
     }
+    */
 
     // helpers
 
@@ -133,7 +113,6 @@ contract Supply is Base {
         ) = _state.getState();
 
         if (continueExecution) {
-            console.log("... in deposit");
             // check currentActor's L1_USDC balance decreased
             vm.selectFork(_l1Fork);
             assertEq(
@@ -167,7 +146,6 @@ contract Supply is Base {
         ) = _state.getState();
 
         if (continueExecution) {
-            console.log("... in withdraw");
             // check currentActor's L2_USDC balance decreased
             vm.selectFork(_l2Fork);
             assertEq(
@@ -201,7 +179,6 @@ contract Supply is Base {
         ) = _state.getState();
 
         if (continueExecution) {
-            console.log("... in convert");
             vm.selectFork(_l2Fork);
 
             // check currentActor's L2_BWUSDC balance decreased
@@ -239,7 +216,6 @@ contract Supply is Base {
         ) = _state.getState();
 
         if (continueExecution) {
-            console.log("... in migrate");
             // check _nativeConverter L2_BWUSDC balance decreased
             vm.selectFork(_l2Fork);
             assertEq(_erc20L2Wusdc.balanceOf(address(_nativeConverter)), 0);
@@ -254,68 +230,5 @@ contract Supply is Base {
                 amount
             );
         }
-    }
-
-    // helpers 2
-
-    modifier useFork(uint256 fork) {
-        uint256 currentFork = vm.activeFork();
-        if (currentFork != fork) vm.selectFork(fork);
-        _;
-        if (currentFork != fork) vm.selectFork(currentFork);
-    }
-
-    function _getL1USDCBalance(
-        address addr
-    ) internal useFork(_l1Fork) returns (uint256) {
-        return _erc20L1Usdc.balanceOf(addr);
-    }
-
-    function _getL2USDCBalance(
-        address addr
-    ) internal useFork(_l2Fork) returns (uint256) {
-        return _erc20L2Usdc.balanceOf(addr);
-    }
-
-    function _getL2WUSDCBalance(
-        address addr
-    ) internal useFork(_l2Fork) returns (uint256) {
-        return _erc20L2Wusdc.balanceOf(addr);
-    }
-
-    function _printBalances() internal {
-        console.log("--- L1_USDC");
-        console.log("l1escrow", _getL1USDCBalance(address(_l1Escrow)));
-        console.log(
-            "zkminterburner",
-            _getL1USDCBalance(address(_minterBurner))
-        );
-        console.log(
-            "nativeconverter",
-            _getL1USDCBalance(address(_nativeConverter))
-        );
-
-        console.log("--- L2_USDC");
-        console.log("l1escrow", _getL2USDCBalance(address(_l1Escrow)));
-        console.log(
-            "zkminterburner",
-            _getL2USDCBalance(address(_minterBurner))
-        );
-        console.log(
-            "nativeconverter",
-            _getL2USDCBalance(address(_nativeConverter))
-        );
-
-        console.log("--- L2_WUSDC");
-        console.log("l1escrow", _getL2WUSDCBalance(address(_l1Escrow)));
-        console.log(
-            "zkminterburner",
-            _getL2WUSDCBalance(address(_minterBurner))
-        );
-        console.log(
-            "nativeconverter",
-            _getL2WUSDCBalance(address(_nativeConverter))
-        );
-        console.log("");
     }
 }
