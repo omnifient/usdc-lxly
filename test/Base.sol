@@ -54,7 +54,7 @@ contract Base is Test {
     address internal _alice;
     address internal _bob;
 
-    address private _deployerOwnerAdmin;
+    address internal _deployerOwnerAdmin;
     address internal _bridge;
     address internal _l1Usdc;
     address internal _l2Usdc;
