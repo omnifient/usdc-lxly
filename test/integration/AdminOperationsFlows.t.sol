@@ -2,8 +2,86 @@
 pragma solidity ^0.8.17;
 
 import {Base} from "../Base.sol";
+import "../../src/L1EscrowImpl.sol";
+import "../../src/NativeConverterImpl.sol";
+import "../../src/ZkMinterBurnerImpl.sol";
 
 contract OwnerOperationsFlows is Base {
+    event Upgraded(address indexed implementation);
+
+    /// @notice Admin can upgrade contracts to a valid address.
+
+    function testAdminCanUpgradeL1Escrow() public {
+        vm.selectFork(_l1Fork);
+        vm.startPrank(_deployerOwnerAdmin);
+
+        L1EscrowImpl newImpl = new L1EscrowImpl();
+        address newImplAddr = address(newImpl);
+
+        vm.expectEmit(address(_l1Escrow));
+        emit Upgraded(newImplAddr);
+        _l1Escrow.upgradeTo(newImplAddr);
+    }
+
+    function testAdminCanUpgradeMinterBurner() public {
+        vm.selectFork(_l2Fork);
+        vm.startPrank(_deployerOwnerAdmin);
+
+        ZkMinterBurnerImpl newImpl = new ZkMinterBurnerImpl();
+        address newImplAddr = address(newImpl);
+
+        vm.expectEmit(address(_minterBurner));
+        emit Upgraded(newImplAddr);
+        _minterBurner.upgradeTo(newImplAddr);
+    }
+
+    function testAdminCanUpgradeNativeConverter() public {
+        vm.selectFork(_l2Fork);
+        vm.startPrank(_deployerOwnerAdmin);
+
+        NativeConverterImpl newImpl = new NativeConverterImpl();
+        address newImplAddr = address(newImpl);
+
+        vm.expectEmit(address(_nativeConverter));
+        emit Upgraded(newImplAddr);
+        _nativeConverter.upgradeTo(newImplAddr);
+    }
+
+    /// @notice Non-Admin cannot upgrade contracts.
+
+    function testRevertNonAdminCannotUpgradeL1Escrow() public {
+        vm.selectFork(_l1Fork);
+        vm.startPrank(_alice);
+
+        L1EscrowImpl newImpl = new L1EscrowImpl();
+        address newImplAddr = address(newImpl);
+
+        vm.expectRevert("NOT_ADMIN");
+        _l1Escrow.upgradeTo(newImplAddr);
+    }
+
+    function testRevertNonAdminCannotUpgradeMinterBurner() public {
+        vm.selectFork(_l2Fork);
+        vm.startPrank(_alice);
+
+        ZkMinterBurnerImpl newImpl = new ZkMinterBurnerImpl();
+        address newImplAddr = address(newImpl);
+
+        vm.expectRevert("NOT_ADMIN");
+        _minterBurner.upgradeTo(newImplAddr);
+    }
+
+    function testRevertNonAdminCannotUpgradeNativeConverter() public {
+        vm.selectFork(_l2Fork);
+        vm.startPrank(_alice);
+
+        NativeConverterImpl newImpl = new NativeConverterImpl();
+        address newImplAddr = address(newImpl);
+
+        vm.expectRevert("NOT_ADMIN");
+        _nativeConverter.upgradeTo(newImplAddr);
+    }
+
     /// @notice Owner can pause and unpause contracts.
 
     function testOwnerCanPauseUnpauseL1Escrow() public {

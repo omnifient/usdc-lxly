@@ -148,7 +148,7 @@ contract ZkMinterBurnerImpl is
         _unpause();
     }
 
-    function _authorizeUpgrade(
-        address newImplementation
-    ) internal override onlyOwner {}
+    function _authorizeUpgrade(address newImplementation) internal override {
+        require(msg.sender == _getAdmin(), "NOT_ADMIN");
+    }
 }
