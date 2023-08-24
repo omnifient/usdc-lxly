@@ -51,8 +51,15 @@ contract Base is Test {
     uint32 internal _l2NetworkId;
 
     // addresses
+    address[] internal _actors;
     address internal _alice;
     address internal _bob;
+    address internal _carol;
+    address internal _dan;
+    address internal _erin;
+    address internal _frank;
+    address internal _grace;
+    address internal _henry;
 
     address private _deployerOwnerAdmin;
     address internal _bridge;
@@ -92,6 +99,12 @@ contract Base is Test {
         _deployerOwnerAdmin = vm.addr(8);
         _alice = vm.addr(1);
         _bob = vm.addr(2);
+        _carol = vm.addr(3);
+        _dan = vm.addr(4);
+        _erin = vm.addr(5);
+        _frank = vm.addr(6);
+        _grace = vm.addr(7);
+        _actors = [_alice, _bob, _carol, _dan, _erin, _frank, _grace];
 
         // deploy and initialize contracts
         _deployMockBridge();
@@ -344,6 +357,24 @@ contract Base is Test {
             abi.encode(receiver, amount), // metadata
             uint32(MockBridge(_bridge).depositCount())
         );
+    }
+
+    function _fundActorsAndBridge() internal {
+        // fund the actors in both chains
+        for (uint i = 0; i < _actors.length; i++) {
+            address actor = _actors[i];
+            vm.selectFork(_l1Fork);
+            deal(_l1Usdc, actor, _ONE_MILLION_USDC);
+
+            vm.selectFork(_l2Fork);
+            deal(_l2Wusdc, actor, _ONE_MILLION_USDC);
+        }
+
+        // fund the bridge in both chains
+        vm.selectFork(_l1Fork);
+        deal(_bridge, 1000000000 ether);
+        vm.selectFork(_l2Fork);
+        deal(_bridge, 1000000000 ether);
     }
 
     function _toUSDC(uint256 v) internal pure returns (uint256) {
