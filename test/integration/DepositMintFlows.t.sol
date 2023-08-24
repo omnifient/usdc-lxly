@@ -1,25 +1,9 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.17;
 
-import {Base} from "../Base.sol";
+import {Base, Events} from "../Base.sol";
 
 contract DepositMintFlows is Base {
-    function _emitDepositBridgeEvent(
-        address receiver,
-        uint256 amount
-    ) internal {
-        emit BridgeEvent(
-            1, // _LEAF_TYPE_MESSAGE
-            _l1NetworkId, // Deposit always come from L1
-            address(_l1Escrow), // from
-            _l2NetworkId, // Deposit always targets L2
-            address(_minterBurner), // destinationAddress
-            0, // msg.value
-            abi.encode(receiver, amount), // metadata
-            uint32(86512) // ATTN: deposit count in mainnet block 17785773
-        );
-    }
-
     /// @notice Alice deposits 1000 L1_USDC to L1Escrow using approve(), and MinterBurner mints back 1000 L2_USDC
     function testDepositToL1EscrowMintsInL2() public {
         vm.selectFork(_l1Fork);
@@ -36,7 +20,7 @@ contract DepositMintFlows is Base {
 
         // check that our deposit event is emitted
         vm.expectEmit(address(_l1Escrow));
-        emit Deposit(_alice, _alice, amount);
+        emit Events.Deposit(_alice, _alice, amount);
 
         // deposit to L1Escrow
         _l1Escrow.bridgeToken(_alice, amount, true);
@@ -77,7 +61,7 @@ contract DepositMintFlows is Base {
 
         // check that our deposit event is emitted
         vm.expectEmit(address(_l1Escrow));
-        emit Deposit(_alice, _alice, amount);
+        emit Events.Deposit(_alice, _alice, amount);
 
         // deposit to L1Escrow
         _l1Escrow.bridgeToken(_alice, amount, true, permitData);
@@ -141,7 +125,7 @@ contract DepositMintFlows is Base {
 
         // check that our deposit event is emitted
         vm.expectEmit(address(_l1Escrow));
-        emit Deposit(_alice, _bob, amount);
+        emit Events.Deposit(_alice, _bob, amount);
 
         // deposit to L1Escrow for bob
         _l1Escrow.bridgeToken(_bob, amount, true);
