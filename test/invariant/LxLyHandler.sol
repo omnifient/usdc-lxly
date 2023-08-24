@@ -28,7 +28,7 @@ contract HandlerState {
     uint256 private _stateFork;
 
     Operation internal _currentOp;
-    bool internal _continueExecution;
+    bool public continueExecution;
     address internal _fuzzedReceiver;
     uint256 internal _fuzzedAmount;
     uint256 internal _l1BalanceBefore;
@@ -74,7 +74,7 @@ contract HandlerState {
     // getters & setters for state
 
     function setContinueExecution(bool exec) external useStateFork {
-        _continueExecution = exec;
+        continueExecution = exec;
     }
 
     function setReceiver(address receiver) external useStateFork {
@@ -119,7 +119,7 @@ contract HandlerState {
         )
     {
         return (
-            _continueExecution,
+            continueExecution,
             _fuzzedReceiver,
             _fuzzedAmount,
             _l1BalanceBefore,
@@ -154,13 +154,6 @@ contract LxLyHandler is CommonBase, StdCheats, StdUtils, DSTest {
         vm.startPrank(currentActor);
         _;
         vm.stopPrank();
-    }
-
-    modifier useFork(uint256 fork) {
-        uint256 currentFork = vm.activeFork();
-        if (currentFork != fork) vm.selectFork(fork);
-        _;
-        if (currentFork != fork) vm.selectFork(currentFork);
     }
 
     constructor(
@@ -204,7 +197,10 @@ contract LxLyHandler is CommonBase, StdCheats, StdUtils, DSTest {
         address zkReceiver,
         uint256 amount
     ) external useActor(actorIndexSeed) {
-        console.log("-------- deposit");
+        console.log("---------------- deposit");
+        console.log("receiver", zkReceiver);
+        console.log("amount", amount);
+        _printBalances();
 
         _state.setDepositing();
         _state.setContinueExecution(true);
@@ -254,6 +250,7 @@ contract LxLyHandler is CommonBase, StdCheats, StdUtils, DSTest {
 
         // deposit + message to mint
         _l1Escrow.bridgeToken(zkReceiver, amount, true);
+        _printBalances();
     }
 
     function withdraw(
@@ -261,7 +258,10 @@ contract LxLyHandler is CommonBase, StdCheats, StdUtils, DSTest {
         address l1Receiver,
         uint256 amount
     ) external useActor(actorIndexSeed) {
-        console.log("-------- withdraw");
+        console.log("---------------- withdraw");
+        console.log("receiver", l1Receiver);
+        console.log("amount", amount);
+        _printBalances();
 
         _state.setWithdrawing();
         _state.setContinueExecution(true);
@@ -311,6 +311,7 @@ contract LxLyHandler is CommonBase, StdCheats, StdUtils, DSTest {
 
         // burn + message to withdraw
         _minterBurner.bridgeToken(l1Receiver, amount, true);
+        _printBalances();
     }
 
     function convert(
@@ -318,7 +319,10 @@ contract LxLyHandler is CommonBase, StdCheats, StdUtils, DSTest {
         address receiver,
         uint256 amount
     ) external useActor(actorIndexSeed) {
-        console.log("-------- convert");
+        console.log("---------------- convert");
+        console.log("receiver", receiver);
+        console.log("amount", amount);
+        _printBalances();
 
         _state.setConverting();
         _state.setContinueExecution(false);
@@ -353,10 +357,11 @@ contract LxLyHandler is CommonBase, StdCheats, StdUtils, DSTest {
 
         bytes memory emptyPermitData;
         _nativeConverter.convert(receiver, amount, emptyPermitData);
+        _printBalances();
     }
 
     function migrate(uint256 actorIndexSeed) external useActor(actorIndexSeed) {
-        console.log("-------- migrate");
+        console.log("---------------- migrate");
 
         _state.setMigrating();
         _state.setBalancesBefores(_getL1USDCBalance(address(_l1Escrow)), 0);
@@ -364,6 +369,9 @@ contract LxLyHandler is CommonBase, StdCheats, StdUtils, DSTest {
 
         vm.selectFork(_l2Fork);
         uint256 amount = _getL2WUSDCBalance(address(_nativeConverter));
+        _state.setAmount(amount);
+        console.log("amount", amount);
+        _printBalances();
 
         if (amount == 0) {
             _state.setContinueExecution(false);
@@ -388,9 +396,17 @@ contract LxLyHandler is CommonBase, StdCheats, StdUtils, DSTest {
 
         // message to bridge the l2_bwusdc
         _nativeConverter.migrate();
+        _printBalances();
     }
 
     // HELPERS
+
+    modifier useFork(uint256 fork) {
+        uint256 currentFork = vm.activeFork();
+        if (currentFork != fork) vm.selectFork(fork);
+        _;
+        if (currentFork != fork) vm.selectFork(currentFork);
+    }
 
     function _getL1USDCBalance(
         address addr
@@ -408,5 +424,41 @@ contract LxLyHandler is CommonBase, StdCheats, StdUtils, DSTest {
         address addr
     ) internal useFork(_l2Fork) returns (uint256) {
         return _erc20L2Wusdc.balanceOf(addr);
+    }
+
+    function _printBalances() internal {
+        console.log("--- L1_USDC");
+        console.log("l1escrow", _getL1USDCBalance(address(_l1Escrow)));
+        console.log(
+            "zkminterburner",
+            _getL1USDCBalance(address(_minterBurner))
+        );
+        console.log(
+            "nativeconverter",
+            _getL1USDCBalance(address(_nativeConverter))
+        );
+
+        console.log("--- L2_USDC");
+        console.log("l1escrow", _getL2USDCBalance(address(_l1Escrow)));
+        console.log(
+            "zkminterburner",
+            _getL2USDCBalance(address(_minterBurner))
+        );
+        console.log(
+            "nativeconverter",
+            _getL2USDCBalance(address(_nativeConverter))
+        );
+
+        console.log("--- L2_WUSDC");
+        console.log("l1escrow", _getL2WUSDCBalance(address(_l1Escrow)));
+        console.log(
+            "zkminterburner",
+            _getL2WUSDCBalance(address(_minterBurner))
+        );
+        console.log(
+            "nativeconverter",
+            _getL2WUSDCBalance(address(_nativeConverter))
+        );
+        console.log("");
     }
 }
