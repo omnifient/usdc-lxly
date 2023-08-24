@@ -6,7 +6,7 @@ import "../../src/L1EscrowImpl.sol";
 import "../../src/NativeConverterImpl.sol";
 import "../../src/ZkMinterBurnerImpl.sol";
 
-contract OwnerOperationsFlows is Base {
+contract AdminAndOwnerOperationsFlows is Base {
     event Upgraded(address indexed implementation);
 
     /// @notice Admin can upgrade contracts to a valid address.
