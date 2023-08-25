@@ -19,8 +19,8 @@ contract L1EscrowImpl is IBridgeMessageReceiver, CommonAdminOwner {
 
     IPolygonZkEVMBridge public bridge;
     uint32 public zkNetworkId;
-    address public zkContract;
-    IUSDC public l1Usdc;
+    address public zkMinterBurner;
+    IUSDC public l1USDC;
 
     constructor() {
         // override default OZ behaviour that sets msg.sender as the owner
@@ -32,11 +32,11 @@ contract L1EscrowImpl is IBridgeMessageReceiver, CommonAdminOwner {
         address owner_,
         address bridge_,
         uint32 zkNetworkId_,
-        address zkContract_,
+        address zkMinterBurnerProxy_,
         address l1Usdc_
     ) external onlyProxy onlyAdmin initializer {
         require(bridge_ != address(0), "INVALID_ADDRESS");
-        require(zkContract_ != address(0), "INVALID_ADDRESS");
+        require(zkMinterBurnerProxy_ != address(0), "INVALID_ADDRESS");
         require(l1Usdc_ != address(0), "INVALID_ADDRESS");
         require(owner_ != address(0), "INVALID_ADDRESS");
 
@@ -46,8 +46,8 @@ contract L1EscrowImpl is IBridgeMessageReceiver, CommonAdminOwner {
 
         bridge = IPolygonZkEVMBridge(bridge_);
         zkNetworkId = zkNetworkId_;
-        zkContract = zkContract_;
-        l1Usdc = IUSDC(l1Usdc_);
+        zkMinterBurner = zkMinterBurnerProxy_;
+        l1USDC = IUSDC(l1Usdc_);
     }
 
     function bridgeToken(
@@ -56,18 +56,18 @@ contract L1EscrowImpl is IBridgeMessageReceiver, CommonAdminOwner {
         bool forceUpdateGlobalExitRoot
     ) public whenNotPaused {
         // User calls deposit() on L1Escrow, L1_USDC transferred to L1Escrow
-        // message sent to zkEVMBridge targeted to zkEVM’s BridgeMinter.
+        // message sent to PolygonZkEvmBridge targeted to L2's zkMinterBurner.
 
         require(destinationAddress != address(0), "INVALID_RECEIVER");
         require(amount > 0, "INVALID_AMOUNT");
 
-        // move usdc from the user to the escrow
-        l1Usdc.safeTransferFrom(msg.sender, address(this), amount);
-        // tell our zk minter to mint usdc to the receiver
+        // move L1-USDC from the user to the escrow
+        l1USDC.safeTransferFrom(msg.sender, address(this), amount);
+        // tell our zkMinterBurner to mint zkUSDCe to the receiver
         bytes memory data = abi.encode(destinationAddress, amount);
         bridge.bridgeMessage(
             zkNetworkId,
-            zkContract,
+            zkMinterBurner,
             forceUpdateGlobalExitRoot,
             data
         );
@@ -82,7 +82,7 @@ contract L1EscrowImpl is IBridgeMessageReceiver, CommonAdminOwner {
         bytes calldata permitData
     ) external whenNotPaused {
         if (permitData.length > 0)
-            LibPermit.permit(address(l1Usdc), amount, permitData);
+            LibPermit.permit(address(l1USDC), amount, permitData);
 
         bridgeToken(destinationAddress, amount, forceUpdateGlobalExitRoot);
     }
@@ -95,20 +95,23 @@ contract L1EscrowImpl is IBridgeMessageReceiver, CommonAdminOwner {
         // Function triggered by the bridge once a message is received by the other network
 
         require(msg.sender == address(bridge), "NOT_BRIDGE");
-        require(zkContract == originAddress, "NOT_ZK_CONTRACT");
+        require(zkMinterBurner == originAddress, "NOT_MINTER_BURNER");
         require(zkNetworkId == originNetwork, "NOT_ZK_CHAIN");
 
         // decode message data and call withdraw
-        (address l1Addr, uint256 amount) = abi.decode(data, (address, uint256));
+        (address l1Receiver, uint256 amount) = abi.decode(
+            data,
+            (address, uint256)
+        );
 
         // Message claimed and sent to L1Escrow,
         // which transfers L1_USDC to the correct address.
 
         // kinda redundant - these checks are being done by the caller
-        require(l1Addr != address(0), "INVALID_RECEIVER");
+        require(l1Receiver != address(0), "INVALID_RECEIVER");
         require(amount > 0, "INVALID_AMOUNT");
 
         // send the locked L1_USDC to the receiver
-        l1Usdc.safeTransfer(l1Addr, amount);
+        l1USDC.safeTransfer(l1Receiver, amount);
     }
 }

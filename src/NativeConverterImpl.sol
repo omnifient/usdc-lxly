@@ -20,10 +20,13 @@ contract NativeConverterImpl is CommonAdminOwner {
     event Convert(address indexed from, address indexed to, uint256 amount);
     event Migrate(uint256 amount);
 
+    /// @notice the PolygonZkEVMBridge deployed on the zkEVM
     IPolygonZkEVMBridge public bridge;
     uint32 public l1NetworkId;
     address public l1Escrow;
+    /// @notice The L2 USDC-e deployed on the zkEVM
     IUSDC public zkUSDCe;
+    /// @notice The default L2 USDC TokenWrapped token deployed on the zkEVM
     IUSDC public zkBWUSDC;
 
     constructor() {
@@ -82,8 +85,8 @@ contract NativeConverterImpl is CommonAdminOwner {
 
     function migrate() external whenNotPaused {
         // Anyone can call migrate() on NativeConverter to
-        // have all BridgeWrappedUSDC withdrawn via the zkEVMBridge
-        // moving the L1_USDC held in the zkEVMBridge to L1Escrow
+        // have all zkBridgeWrappedUSDC withdrawn via the PolygonZkEVMBridge
+        // moving the L1_USDC held in the PolygonZkEVMBridge to L1Escrow
 
         uint256 amount = zkBWUSDC.balanceOf(address(this));
 

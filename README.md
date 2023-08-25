@@ -2,7 +2,7 @@
 
 ## Description
 
-[USDC LxLy](https://docs.google.com/document/d/1heUd3Cbux-ngnCJITbKJ9pdsz26BmNz1hfOn9NTuDH8/edit?pli=1)
+[USDC.E LxLy](https://docs.google.com/document/d/1heUd3Cbux-ngnCJITbKJ9pdsz26BmNz1hfOn9NTuDH8/edit?pli=1)
 
 ## Contracts
 
@@ -19,14 +19,14 @@
 ## Flows
 
 - User Bridges from L1 to zkEVM (post upgrade to USDC.e)
-  - User calls deposit() on L1Escrow, L1_USDC transferred to L1Escrow, message sent to zkEVMBridge targeted to zkEVM’s BridgeMinter.
+  - User calls deposit() on L1Escrow, L1_USDC transferred to L1Escrow, message sent to PolygonZkEVMBridge targeted to zkEVM’s BridgeMinter.
   - Message claimed and sent to BridgeMinter, which calls mint() on NativeUSDC which mints new supply to the correct address.
 - User Bridges from zkEVM to L1 (post upgrade to USDC.e)
-  - User calls withdraw() on BridgeBurner which calls burn() on NativeUSDC burning the supply. Message is sent to zkEVMBridge targeted to L1Escrow.
+  - User calls withdraw() on BridgeBurner which calls burn() on NativeUSDC burning the supply. Message is sent to PolygonZkEVMBridge targeted to L1Escrow.
   - Message claimed and sent to L1Escrow, which transfers L1_USDC to the correct address.
 - User converts BridgeWrappedUSDC to USDC.e
   - User calls convert() on NativeConverter, BridgeWrappedUSDC is transferred to NativeConverter. NativeConverter calls mint() on NativeUSDC which mints new supply to the correct address.
-  - Anyone can call migrate() on NativeConverter to have all BridgeWrappedUSDC withdrawn via the zkEVMBridge moving the L1_USDC held in the zkEVMBridge to L1Escrow.
+  - Anyone can call migrate() on NativeConverter to have all BridgeWrappedUSDC withdrawn via the PolygonZkEVMBridge moving the L1_USDC held in the PolygonZkEVMBridge to L1Escrow.
 
 ## Testing
 

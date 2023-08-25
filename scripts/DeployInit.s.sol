@@ -22,10 +22,12 @@ contract DeployInit is Script {
     uint32 l2NetworkId = uint32(vm.envUint("L2_NETWORK_ID"));
 
     address l1Usdc = vm.envAddress("ADDRESS_L1_USDC");
-    address l2Usdc = vm.envAddress("ADDRESS_L2_USDC"); // ATTN: needs to be deployed beforehand zkUsdc
-    address l2WrappedUsdc = vm.envAddress("ADDRESS_L2_WUSDC");
+    address zkUSDCe = vm.envAddress("ADDRESS_L2_USDC"); // ATTN: needs to be deployed beforehand zkUsdc
+    address zkBWUSDC = vm.envAddress("ADDRESS_L2_WUSDC");
 
+    /// @notice the address that is able to upgrade the proxy contract's implementation contract
     address admin = vm.envAddress("ADDRESS_PROXY_ADMIN");
+    /// @notice the address that is able to pause and unpause the l1Escrow, zkMinterBurner, and nativeConverter contracts
     address owner = vm.envAddress("ADDRESS_OWNER");
 
     function run() external {
@@ -70,8 +72,8 @@ contract DeployInit is Script {
                 l1EscrowProxy,
                 minterBurnerProxy,
                 nativeConverterProxy,
-                l2Usdc,
-                l2WrappedUsdc
+                zkUSDCe,
+                zkBWUSDC
             );
         vm.stopBroadcast();
 

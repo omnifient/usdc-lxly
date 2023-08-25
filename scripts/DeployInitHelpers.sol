@@ -79,8 +79,8 @@ library LibDeployInit {
         address l1EscrowProxy,
         address minterBurnerProxy,
         address nativeConverterProxy,
-        address l2Usdc,
-        address l2Wusdc
+        address zkUSDCe,
+        address zkBWUSDC
     )
         internal
         returns (
@@ -95,7 +95,7 @@ library LibDeployInit {
             bridge,
             l1NetworkId,
             l1EscrowProxy,
-            l2Usdc
+            zkUSDCe
         );
 
         // get a reference to the proxy, with the impl's abi, and then call initialize
@@ -105,8 +105,8 @@ library LibDeployInit {
             bridge,
             l1NetworkId,
             l1EscrowProxy,
-            l2Usdc,
-            l2Wusdc
+            zkUSDCe,
+            zkBWUSDC
         );
     }
 }
