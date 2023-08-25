@@ -1,26 +1,18 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.17;
 
-import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
-import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol";
 import "@zkevm/interfaces/IBridgeMessageReceiver.sol";
 import "@zkevm/interfaces/IPolygonZkEVMBridge.sol";
+
+import {CommonAdminOwner} from "./CommonAdminOwner.sol";
 
 import {IUSDC} from "./interfaces/IUSDC.sol";
 import {LibPermit} from "./helpers/LibPermit.sol";
 
 // This contract will receive USDC from users on L1 and trigger BridgeMinter on the zkEVM via LxLy.
 // This contract will hold all of the backing for USDC on zkEVM.
-contract L1EscrowImpl is
-    IBridgeMessageReceiver,
-    Initializable,
-    OwnableUpgradeable,
-    PausableUpgradeable,
-    UUPSUpgradeable
-{
+contract L1EscrowImpl is IBridgeMessageReceiver, CommonAdminOwner {
     using SafeERC20Upgradeable for IUSDC;
 
     event Deposit(address indexed from, address indexed to, uint256 amount);
@@ -42,16 +34,13 @@ contract L1EscrowImpl is
         uint32 zkNetworkId_,
         address zkContract_,
         address l1Usdc_
-    ) external onlyProxy initializer {
-        require(msg.sender == _getAdmin(), "NOT_ADMIN");
+    ) external onlyProxy onlyAdmin initializer {
         require(bridge_ != address(0), "INVALID_ADDRESS");
         require(zkContract_ != address(0), "INVALID_ADDRESS");
         require(l1Usdc_ != address(0), "INVALID_ADDRESS");
         require(owner_ != address(0), "INVALID_ADDRESS");
 
-        __Ownable_init(); // ATTN: we override this later
-        __Pausable_init(); // NOOP
-        __UUPSUpgradeable_init(); // NOOP
+        __CommonAdminOwner_init();
 
         _transferOwnership(owner_);
 
@@ -121,23 +110,5 @@ contract L1EscrowImpl is
 
         // send the locked L1_USDC to the receiver
         l1Usdc.safeTransfer(l1Addr, amount);
-    }
-
-    /**
-     * @dev called by the owner to pause, triggers stopped state
-     */
-    function pause() external onlyOwner {
-        _pause();
-    }
-
-    /**
-     * @dev called by the owner to unpause, returns to normal state
-     */
-    function unpause() external onlyOwner {
-        _unpause();
-    }
-
-    function _authorizeUpgrade(address newImplementation) internal override {
-        require(msg.sender == _getAdmin(), "NOT_ADMIN");
     }
 }

@@ -1,13 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.17;
 
-import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
-import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol";
 import "@zkevm/interfaces/IBridgeMessageReceiver.sol";
 import "@zkevm/interfaces/IPolygonZkEVMBridge.sol";
+
+import {CommonAdminOwner} from "./CommonAdminOwner.sol";
 
 import {IUSDC} from "./interfaces/IUSDC.sol";
 import {LibPermit} from "./helpers/LibPermit.sol";
@@ -20,13 +18,7 @@ import {LibPermit} from "./helpers/LibPermit.sol";
 // This contract will send messages to LXLY bridge on zkEVM,
 // it will hold the burner role giving it the ability to burn USDC.e based on instructions from LXLY,
 // triggering a release of assets on L1Escrow.
-contract ZkMinterBurnerImpl is
-    IBridgeMessageReceiver,
-    Initializable,
-    OwnableUpgradeable,
-    PausableUpgradeable,
-    UUPSUpgradeable
-{
+contract ZkMinterBurnerImpl is IBridgeMessageReceiver, CommonAdminOwner {
     using SafeERC20Upgradeable for IUSDC;
 
     event Withdraw(address indexed from, address indexed to, uint256 amount);
@@ -48,16 +40,13 @@ contract ZkMinterBurnerImpl is
         uint32 l1NetworkId_,
         address l1Contract_,
         address zkUsdc_
-    ) external onlyProxy initializer {
-        require(msg.sender == _getAdmin(), "NOT_ADMIN");
+    ) external onlyProxy onlyAdmin initializer {
         require(bridge_ != address(0), "INVALID_ADDRESS");
         require(l1Contract_ != address(0), "INVALID_ADDRESS");
         require(zkUsdc_ != address(0), "INVALID_ADDRESS");
         require(owner_ != address(0), "INVALID_ADDRESS");
 
-        __Ownable_init(); // ATTN: we override this later
-        __Pausable_init(); // NOOP
-        __UUPSUpgradeable_init(); // NOOP
+        __CommonAdminOwner_init();
 
         _transferOwnership(owner_);
 
@@ -132,23 +121,5 @@ contract ZkMinterBurnerImpl is
 
         // mint USDC.E to target address
         zkUsdc.mint(zkAddr, amount);
-    }
-
-    /**
-     * @dev called by the owner to pause, triggers stopped state
-     */
-    function pause() external onlyOwner {
-        _pause();
-    }
-
-    /**
-     * @dev called by the owner to unpause, returns to normal state
-     */
-    function unpause() external onlyOwner {
-        _unpause();
-    }
-
-    function _authorizeUpgrade(address newImplementation) internal override {
-        require(msg.sender == _getAdmin(), "NOT_ADMIN");
     }
 }

@@ -7,6 +7,7 @@ import "../../src/NativeConverterImpl.sol";
 import "../../src/ZkMinterBurnerImpl.sol";
 
 contract AdminAndOwnerOperationsFlows is Base {
+    event AdminChanged(address previousAdmin, address newAdmin);
     event Upgraded(address indexed implementation);
 
     /// @notice Admin can upgrade contracts to a valid address.
@@ -185,5 +186,67 @@ contract AdminAndOwnerOperationsFlows is Base {
         vm.expectRevert("Ownable: caller is not the owner");
         _nativeConverter.unpause();
         assertEq(_nativeConverter.paused(), true);
+    }
+
+    /// @notice Admin can change admin.
+
+    function testAdminCanChangeAdminL1Escrow() public {
+        vm.selectFork(_l1Fork);
+        vm.startPrank(_deployerOwnerAdmin);
+
+        // set alice as admin
+        vm.expectEmit(address(_l1Escrow));
+        emit AdminChanged(_deployerOwnerAdmin, _alice);
+        _l1Escrow.changeAdmin(_alice);
+
+        // check that deployer is no longer admin
+        vm.expectRevert("NOT_ADMIN");
+        _l1Escrow.changeAdmin(_alice);
+
+        // check that alice is admin by transferring back admin to deployer
+        vm.startPrank(_alice);
+        vm.expectEmit(address(_l1Escrow));
+        emit AdminChanged(_alice, _deployerOwnerAdmin);
+        _l1Escrow.changeAdmin(_deployerOwnerAdmin);
+    }
+
+    function testAdminCanChangeAdminMinterBurner() public {
+        vm.selectFork(_l2Fork);
+        vm.startPrank(_deployerOwnerAdmin);
+
+        // set alice as admin
+        vm.expectEmit(address(_minterBurner));
+        emit AdminChanged(_deployerOwnerAdmin, _alice);
+        _minterBurner.changeAdmin(_alice);
+
+        // check that deployer is no longer admin
+        vm.expectRevert("NOT_ADMIN");
+        _minterBurner.changeAdmin(_alice);
+
+        // check that alice is admin by transferring back admin to deployer
+        vm.startPrank(_alice);
+        vm.expectEmit(address(_minterBurner));
+        emit AdminChanged(_alice, _deployerOwnerAdmin);
+        _minterBurner.changeAdmin(_deployerOwnerAdmin);
+    }
+
+    function testAdminCanChangeAdminNativeConverter() public {
+        vm.selectFork(_l2Fork);
+        vm.startPrank(_deployerOwnerAdmin);
+
+        // set alice as admin
+        vm.expectEmit(address(_nativeConverter));
+        emit AdminChanged(_deployerOwnerAdmin, _alice);
+        _nativeConverter.changeAdmin(_alice);
+
+        // check that deployer is no longer admin
+        vm.expectRevert("NOT_ADMIN");
+        _nativeConverter.changeAdmin(_alice);
+
+        // check that alice is admin by transferring back admin to deployer
+        vm.startPrank(_alice);
+        vm.expectEmit(address(_nativeConverter));
+        emit AdminChanged(_alice, _deployerOwnerAdmin);
+        _nativeConverter.changeAdmin(_deployerOwnerAdmin);
     }
 }
