@@ -51,8 +51,15 @@ contract Base is Test {
     uint32 internal _l2NetworkId;
 
     // addresses
+    address[] internal _actors;
     address internal _alice;
     address internal _bob;
+    address internal _carol;
+    address internal _dan;
+    address internal _erin;
+    address internal _frank;
+    address internal _grace;
+    address internal _henry;
 
     address internal _deployerOwnerAdmin;
     address internal _bridge;
@@ -92,6 +99,12 @@ contract Base is Test {
         _deployerOwnerAdmin = vm.addr(8);
         _alice = vm.addr(1);
         _bob = vm.addr(2);
+        _carol = vm.addr(3);
+        _dan = vm.addr(4);
+        _erin = vm.addr(5);
+        _frank = vm.addr(6);
+        _grace = vm.addr(7);
+        _actors = [_alice, _bob, _carol, _dan, _erin, _frank, _grace];
 
         // deploy and initialize contracts
         _deployMockBridge();
@@ -286,7 +299,7 @@ contract Base is Test {
         vm.stopPrank();
     }
 
-    function _deployMockBridge() internal {
+    function _deployMockBridge() internal virtual {
         vm.selectFork(_l1Fork);
         MockBridge mb1 = new MockBridge();
         bytes memory mb1Code = address(mb1).code;
