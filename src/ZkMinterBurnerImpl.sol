@@ -25,8 +25,8 @@ contract ZkMinterBurnerImpl is IBridgeMessageReceiver, CommonAdminOwner {
 
     IPolygonZkEVMBridge public bridge;
     uint32 public l1NetworkId;
-    address public l1Contract;
-    IUSDC public zkUsdc;
+    address public l1Escrow;
+    IUSDC public zkUSDCe;
 
     constructor() {
         // override default OZ behaviour that sets msg.sender as the owner
@@ -38,12 +38,12 @@ contract ZkMinterBurnerImpl is IBridgeMessageReceiver, CommonAdminOwner {
         address owner_,
         address bridge_,
         uint32 l1NetworkId_,
-        address l1Contract_,
-        address zkUsdc_
+        address l1EscrowProxy_,
+        address zkUSDCe_
     ) external onlyProxy onlyAdmin initializer {
         require(bridge_ != address(0), "INVALID_ADDRESS");
-        require(l1Contract_ != address(0), "INVALID_ADDRESS");
-        require(zkUsdc_ != address(0), "INVALID_ADDRESS");
+        require(l1EscrowProxy_ != address(0), "INVALID_ADDRESS");
+        require(zkUSDCe_ != address(0), "INVALID_ADDRESS");
         require(owner_ != address(0), "INVALID_ADDRESS");
 
         __CommonAdminOwner_init();
@@ -52,8 +52,8 @@ contract ZkMinterBurnerImpl is IBridgeMessageReceiver, CommonAdminOwner {
 
         bridge = IPolygonZkEVMBridge(bridge_);
         l1NetworkId = l1NetworkId_;
-        l1Contract = l1Contract_;
-        zkUsdc = IUSDC(zkUsdc_);
+        l1Escrow = l1EscrowProxy_;
+        zkUSDCe = IUSDC(zkUSDCe_);
     }
 
     function bridgeToken(
@@ -63,21 +63,21 @@ contract ZkMinterBurnerImpl is IBridgeMessageReceiver, CommonAdminOwner {
     ) public whenNotPaused {
         // User calls withdraw() on BridgeBurner
         // which calls burn() on NativeUSDC burning the supply.
-        // Message is sent to zkEVMBridge targeted to L1Escrow.
+        // Message is sent to PolygonZkEVMBridge targeted to L1Escrow.
 
         require(destinationAddress != address(0), "INVALID_RECEIVER");
         // this is redundant - the usdc contract does the same validation
         // require(amount > 0, "INVALID_AMOUNT");
 
         // transfer the USDC.E from the user, and then burn it
-        zkUsdc.safeTransferFrom(msg.sender, address(this), amount);
-        zkUsdc.burn(amount);
+        zkUSDCe.safeTransferFrom(msg.sender, address(this), amount);
+        zkUSDCe.burn(amount);
 
         // message L1Escrow to unlock the L1_USDC and transfer it to destinationAddress
         bytes memory data = abi.encode(destinationAddress, amount);
         bridge.bridgeMessage(
             l1NetworkId,
-            l1Contract,
+            l1Escrow,
             forceUpdateGlobalExitRoot,
             data
         );
@@ -92,7 +92,7 @@ contract ZkMinterBurnerImpl is IBridgeMessageReceiver, CommonAdminOwner {
         bytes calldata permitData
     ) external whenNotPaused {
         if (permitData.length > 0)
-            LibPermit.permit(address(zkUsdc), amount, permitData);
+            LibPermit.permit(address(zkUSDCe), amount, permitData);
 
         bridgeToken(destinationAddress, amount, forceUpdateGlobalExitRoot);
     }
@@ -102,24 +102,27 @@ contract ZkMinterBurnerImpl is IBridgeMessageReceiver, CommonAdminOwner {
         uint32 originNetwork,
         bytes memory data
     ) external payable whenNotPaused {
-        // Function triggered by the bridge once a message is received by the other network
+        // Function triggered by the bridge once a message is received from the L1Escrow
 
         require(msg.sender == address(bridge), "NOT_BRIDGE");
-        require(l1Contract == originAddress, "NOT_L1_CONTRACT");
+        require(l1Escrow == originAddress, "NOT_L1_ESCROW_CONTRACT");
         require(l1NetworkId == originNetwork, "NOT_L1_CHAIN");
 
         // decode message data and call mint
-        (address zkAddr, uint256 amount) = abi.decode(data, (address, uint256));
+        (address zkReceiver, uint256 amount) = abi.decode(
+            data,
+            (address, uint256)
+        );
 
-        // Message claimed and sent to BridgeMinter,
-        // which calls mint() on NativeUSDC
+        // Message claimed and sent to ZkMinterBurner,
+        // which calls mint() on zkUSDCe
         // which mints new supply to the correct address.
 
-        // this is redundant - the usdc contract does the same validations
+        // this is redundant - the zkUSDCe contract does the same validations
         // require(zkReceiver != address(0), "INVALID_RECEIVER");
         // require(amount > 0, "INVALID_AMOUNT");
 
-        // mint USDC.E to target address
-        zkUsdc.mint(zkAddr, amount);
+        // mint zkUSDCe to the receiver address
+        zkUSDCe.mint(zkReceiver, amount);
     }
 }
