@@ -14,37 +14,7 @@ import "../src/NativeConverterImpl.sol";
 import "../src/ZkMinterBurnerProxy.sol";
 import "../src/ZkMinterBurnerImpl.sol";
 
-contract Base is Test {
-    uint256 internal constant _ONE_MILLION_USDC = 10 ** 6 * 10 ** 6;
-
-    /* ================= FIELDS ================= */
-    uint256 internal _l1Fork;
-    uint256 internal _l2Fork;
-    uint32 internal _l1NetworkId;
-    uint32 internal _l2NetworkId;
-
-    // addresses
-    address internal _alice;
-    address internal _bob;
-
-    address private _deployerOwnerAdmin;
-    address internal _bridge;
-    address internal _l1Usdc;
-    address internal _l2Usdc;
-    address internal _l2Wusdc;
-
-    // helper variables
-    IERC20 internal _erc20L1Usdc;
-    IERC20 internal _erc20L2Usdc;
-    IERC20 internal _erc20L2Wusdc;
-
-    // L1 contracts
-    L1EscrowImpl internal _l1Escrow;
-
-    // L2 contracts
-    ZkMinterBurnerImpl internal _minterBurner;
-    NativeConverterImpl internal _nativeConverter;
-
+library Events {
     /* ================= EVENTS ================= */
     // copy of PolygonZKEVMBridge.BridgeEvent
     event BridgeEvent(
@@ -69,6 +39,38 @@ contract Base is Test {
 
     // copy of ZkMinterBurner.Withdraw
     event Withdraw(address indexed from, address indexed to, uint256 amount);
+}
+
+contract Base is Test {
+    uint256 internal constant _ONE_MILLION_USDC = 10 ** 6 * 10 ** 6;
+
+    /* ================= FIELDS ================= */
+    uint256 internal _l1Fork;
+    uint256 internal _l2Fork;
+    uint32 internal _l1NetworkId;
+    uint32 internal _l2NetworkId;
+
+    // addresses
+    address internal _alice;
+    address internal _bob;
+
+    address internal _deployerOwnerAdmin;
+    address internal _bridge;
+    address internal _l1Usdc;
+    address internal _l2Usdc;
+    address internal _l2Wusdc;
+
+    // helper variables
+    IERC20 internal _erc20L1Usdc;
+    IERC20 internal _erc20L2Usdc;
+    IERC20 internal _erc20L2Wusdc;
+
+    // L1 contracts
+    L1EscrowImpl internal _l1Escrow;
+
+    // L2 contracts
+    ZkMinterBurnerImpl internal _minterBurner;
+    NativeConverterImpl internal _nativeConverter;
 
     /* ================= SETUP ================= */
     function setUp() public virtual {
@@ -105,10 +107,10 @@ contract Base is Test {
 
     /* ================= HELPERS ================= */
     function _assertUsdcSupplyAndBalancesMatch() internal {
-        vm.selectFork(_l1NetworkId);
+        vm.selectFork(_l1Fork);
         uint256 l1EscrowBalance = _erc20L1Usdc.balanceOf(address(_l1Escrow));
 
-        vm.selectFork(_l2NetworkId);
+        vm.selectFork(_l2Fork);
         uint256 l2TotalSupply = _erc20L2Usdc.totalSupply();
         uint256 wUsdcConverterBalance = _erc20L2Wusdc.balanceOf(
             address(_nativeConverter)
@@ -294,6 +296,54 @@ contract Base is Test {
         MockBridge mb2 = new MockBridge();
         bytes memory mb2Code = address(mb2).code;
         vm.etch(_bridge, mb2Code);
+    }
+
+    function _emitDepositBridgeEvent(
+        address receiver,
+        uint256 amount
+    ) internal {
+        emit Events.BridgeEvent(
+            1, // _LEAF_TYPE_MESSAGE
+            _l1NetworkId, // Deposit always come from L1
+            address(_l1Escrow), // from
+            _l2NetworkId, // Deposit always targets L2
+            address(_minterBurner), // destinationAddress
+            0, // msg.value
+            abi.encode(receiver, amount), // metadata
+            uint32(MockBridge(_bridge).depositCount())
+        );
+    }
+
+    function _emitMigrateBridgeEvent() internal {
+        uint256 amount = _erc20L2Wusdc.balanceOf(address(_nativeConverter));
+        address receiver = address(_l1Escrow);
+
+        emit Events.BridgeEvent(
+            0, // _LEAF_TYPE_ASSET
+            _l1NetworkId, // originNetwork is the origin network of the underlying asset (in this case, L1)
+            _l1Usdc, // originTokenAddress
+            _l1NetworkId, // destinationNetwork is the target network (L1)
+            receiver, // destinationAddress
+            amount, // amount
+            "", // metadata is empty when bridging wrapped assets
+            uint32(MockBridge(_bridge).depositCount())
+        );
+    }
+
+    function _emitWithdrawBridgeEvent(
+        address receiver,
+        uint256 amount
+    ) internal {
+        emit Events.BridgeEvent(
+            1, // _LEAF_TYPE_MESSAGE
+            _l2NetworkId, // Withdraw always come from L2
+            address(_minterBurner), // from
+            _l1NetworkId, // Withdraw always targets L1
+            address(_l1Escrow), // destinationAddress
+            0, // msg.value
+            abi.encode(receiver, amount), // metadata
+            uint32(MockBridge(_bridge).depositCount())
+        );
     }
 
     function _toUSDC(uint256 v) internal pure returns (uint256) {

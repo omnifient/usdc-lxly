@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.17;
 
-import {Base} from "../Base.sol";
+import {Base, Events} from "../Base.sol";
 
 contract ConvertFlows is Base {
     bytes private _emptyBytes;
@@ -19,7 +19,7 @@ contract ConvertFlows is Base {
 
         // check that our convert event is emitted
         vm.expectEmit(address(_nativeConverter));
-        emit Convert(_alice, _alice, amount);
+        emit Events.Convert(_alice, _alice, amount);
 
         // call convert
         _nativeConverter.convert(_alice, amount, _emptyBytes);
@@ -55,7 +55,7 @@ contract ConvertFlows is Base {
 
         // check that our convert event is emitted
         vm.expectEmit(address(_nativeConverter));
-        emit Convert(_alice, _alice, amount);
+        emit Events.Convert(_alice, _alice, amount);
 
         // call convert
         _nativeConverter.convert(_alice, amount, permitData);
@@ -117,7 +117,7 @@ contract ConvertFlows is Base {
 
         // check that our convert event is emitted
         vm.expectEmit(address(_nativeConverter));
-        emit Convert(_alice, _bob, amount);
+        emit Events.Convert(_alice, _bob, amount);
 
         // call convert
         _nativeConverter.convert(_bob, amount, _emptyBytes);
