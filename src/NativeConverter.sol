@@ -9,11 +9,14 @@ import {CommonAdminOwner} from "./CommonAdminOwner.sol";
 import {IUSDC} from "./interfaces/IUSDC.sol";
 import {LibPermit} from "./helpers/LibPermit.sol";
 
-// This contract will receive BridgeWrappedUSDC on zkEVM and issue USDC.e on zkEVM.
-// This contract will hold the minter role giving it the ability to mint USDC.e based on inflows of BridgeWrappedUSDC.
-// This contract will also have a permissionless publicly callable function called “migrate” which when called will
-// withdraw all BridgedWrappedUSDC to L1 via the LXLY bridge. The beneficiary address will be the L1Escrow,
-// thus migrating the supply and settling the balance.
+/// @title NativeConverter
+/// @notice This contract will receive BridgeWrappedUSDC on zkEVM and issue USDC.e on the zkEVM.
+/// @notice This contract will hold the minter role giving it the ability to mint USDC.e based on
+/// inflows of BridgeWrappedUSDC. This contract will also have a permissionless publicly
+/// callable function called “migrate” which when called will burn all BridgedWrappedUSDC
+/// on the L2, and send a message to the bridge that causes all of the corresponding
+/// backing L1 USD to be sent to the L1Escrow. This aligns the balance of the L1Escrow
+/// contract with the total supply of USDC-e on the zkEVM.
 contract NativeConverter is CommonAdminOwner {
     using SafeERC20Upgradeable for IUSDC;
 
@@ -22,10 +25,17 @@ contract NativeConverter is CommonAdminOwner {
 
     /// @notice the PolygonZkEVMBridge deployed on the zkEVM
     IPolygonZkEVMBridge public bridge;
+
+    /// @notice The ID used internally by the bridge to identify L1 messages. Initially
+    /// @notice set to be `0`
     uint32 public l1NetworkId;
+
+    /// @notice The address of the L1Escrow
     address public l1Escrow;
+
     /// @notice The L2 USDC-e deployed on the zkEVM
     IUSDC public zkUSDCe;
+
     /// @notice The default L2 USDC TokenWrapped token deployed on the zkEVM
     IUSDC public zkBWUSDC;
 
@@ -35,6 +45,8 @@ contract NativeConverter is CommonAdminOwner {
         _transferOwnership(address(1));
     }
 
+    /// @notice Setup the state variables of the upgradeable NativeConverter contract
+    /// @notice The owner is the contract that is able to pause and unpause function calls
     function initialize(
         address owner_,
         address admin_,
@@ -63,16 +75,17 @@ contract NativeConverter is CommonAdminOwner {
         zkBWUSDC = IUSDC(zkBWUSDC_);
     }
 
+    /// @notice Converts L2 BridgeWrappedUSDC to L2 USDC-e
+    /// @dev The NativeConverter transfers L2 BridgeWrappedUSDC from the caller to itself and
+    /// @dev mints L2 USDC-e to the caller
+    /// @param receiver address that will receive L2 USDC-e on the L2
+    /// @param amount amount of L2 BridgeWrappedUSDC to convert
+    /// @param permitData data for the permit call on the L2 BridgeWrappedUSDC
     function convert(
         address receiver,
         uint256 amount,
         bytes calldata permitData
     ) external whenNotPaused {
-        // User calls convert() on NativeConverter,
-        // BridgeWrappedUSDC is transferred to NativeConverter
-        // NativeConverter calls mint() on NativeUSDC which mints
-        // new supply to the correct address.
-
         require(receiver != address(0), "INVALID_RECEIVER");
         require(amount > 0, "INVALID_AMOUNT");
 
@@ -86,6 +99,10 @@ contract NativeConverter is CommonAdminOwner {
         emit Convert(msg.sender, receiver, amount);
     }
 
+    /// @notice Migrates L2 BridgeWrappedUSDC USDC to L1 USDC
+    /// @dev Any BridgeWrappedUSDC transfered in by previous calls to
+    /// @dev {NativeConverter-convert} will be burned and the corresponding
+    /// @dev L1 USDC will be sent to the L1Escrow via a message to the bridge
     function migrate() external whenNotPaused {
         // Anyone can call migrate() on NativeConverter to
         // have all zkBridgeWrappedUSDC withdrawn via the PolygonZkEVMBridge

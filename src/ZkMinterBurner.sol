@@ -10,22 +10,29 @@ import {CommonAdminOwner} from "./CommonAdminOwner.sol";
 import {IUSDC} from "./interfaces/IUSDC.sol";
 import {LibPermit} from "./helpers/LibPermit.sol";
 
-// - Minter
-// This contract will receive messages from the LXLY bridge on zkEVM,
-// it will hold the minter role giving it the ability to mint USDC.e
-// based on instructions from LXLY from Ethereum only.
-// - Burner
-// This contract will send messages to LXLY bridge on zkEVM,
-// it will hold the burner role giving it the ability to burn USDC.e based on instructions from LXLY,
-// triggering a release of assets on L1Escrow.
+/// @title ZkMinterBurner
+/// @notice This upgradeable L2 contract facilitates 2 actions:
+/// 1. Minting USDC-E on the zkEVM backed by L1 USDC held in the L1Escrow
+/// 2. Burning USDC-E on the zkEVM and sending a bridge message to unlock the
+/// corresponding funds held in the L1Escrow (the reverse of (1) above).
 contract ZkMinterBurner is IBridgeMessageReceiver, CommonAdminOwner {
     using SafeERC20Upgradeable for IUSDC;
 
     event Withdraw(address indexed from, address indexed to, uint256 amount);
 
+    /// @notice The singleton bridge contract on both L1 and L2 (zkEVM) that faciliates
+    /// @notice bridging messages between L1 and L2. It also stores all of the L1 USDC
+    /// @notice backing the L2 BridgeWrappedUSDC
     IPolygonZkEVMBridge public bridge;
+
+    /// @notice The ID used internally by the bridge to identify L1 messages. Initially
+    /// @notice set to be `0`
     uint32 public l1NetworkId;
+
+    /// @notice The address of the L1Escrow
     address public l1Escrow;
+
+    /// @notice The address of the L2 USDC-e ERC20 token
     IUSDC public zkUSDCe;
 
     constructor() {
@@ -34,6 +41,8 @@ contract ZkMinterBurner is IBridgeMessageReceiver, CommonAdminOwner {
         _transferOwnership(address(1));
     }
 
+    /// @notice Setup the state variables of the upgradeable ZkMinterBurner contract
+    /// @notice the owner is the contract that is able to pause and unpause function calls
     function initialize(
         address owner_,
         address admin_,
@@ -59,20 +68,25 @@ contract ZkMinterBurner is IBridgeMessageReceiver, CommonAdminOwner {
         zkUSDCe = IUSDC(zkUSDCe_);
     }
 
+    /// @notice Bridges L2 USDC-e to L1 USDC
+    /// @dev The ZkMinterBurner transfers L2 USDC-e from the caller to itself and
+    /// @dev burns it, thencalls `bridge.bridgeMessage, which ultimately results in a message
+    /// @dev received on the L1Escrow which unlocks the corresponding L1 USDC to the
+    /// @dev destination address
+    /// @dev Can be paused
+    /// @param destinationAddress address that will receive L1 USDC on the L1
+    /// @param amount amount of L2 USDC-e to bridge
+    /// @param forceUpdateGlobalExitRoot whether or not to force the bridge to update
     function bridgeToken(
         address destinationAddress,
         uint256 amount,
         bool forceUpdateGlobalExitRoot
     ) public whenNotPaused {
-        // User calls withdraw() on BridgeBurner
-        // which calls burn() on NativeUSDC burning the supply.
-        // Message is sent to PolygonZkEVMBridge targeted to L1Escrow.
-
         require(destinationAddress != address(0), "INVALID_RECEIVER");
         // this is redundant - the usdc contract does the same validation
         // require(amount > 0, "INVALID_AMOUNT");
 
-        // transfer the USDC.E from the user, and then burn it
+        // transfer the USDC-E from the user, and then burn it
         zkUSDCe.safeTransferFrom(msg.sender, address(this), amount);
         zkUSDCe.burn(amount);
 
@@ -88,6 +102,8 @@ contract ZkMinterBurner is IBridgeMessageReceiver, CommonAdminOwner {
         emit Withdraw(msg.sender, destinationAddress, amount);
     }
 
+    /// @notice Similar to {ZkMinterBurnerImpl-bridgeToken}, but saves an ERC20.approve call
+    /// @notice by using the EIP-2612 permit function
     function bridgeToken(
         address destinationAddress,
         uint256 amount,
@@ -100,6 +116,12 @@ contract ZkMinterBurner is IBridgeMessageReceiver, CommonAdminOwner {
         bridgeToken(destinationAddress, amount, forceUpdateGlobalExitRoot);
     }
 
+    /// @dev This function is triggered by the bridge to faciliate the USDC-e minting process.
+    /// @dev This function is called by the bridge when a message is sent by the L1Escrow
+    /// @dev communicating that it has received L1 USDC and wants the ZkMinterBurner to
+    /// @dev mint USDC-e.
+    /// @dev This function can only be called by the bridge contract
+    /// @dev Can be paused
     function onMessageReceived(
         address originAddress,
         uint32 originNetwork,
@@ -116,10 +138,6 @@ contract ZkMinterBurner is IBridgeMessageReceiver, CommonAdminOwner {
             data,
             (address, uint256)
         );
-
-        // Message claimed and sent to ZkMinterBurner,
-        // which calls mint() on zkUSDCe
-        // which mints new supply to the correct address.
 
         // this is redundant - the zkUSDCe contract does the same validations
         // require(zkReceiver != address(0), "INVALID_RECEIVER");
