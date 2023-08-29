@@ -58,10 +58,10 @@ contract Base is Test {
     address internal _dan;
     address internal _erin;
     address internal _frank;
-    address internal _grace;
-    address internal _henry;
 
-    address internal _deployerOwnerAdmin;
+    address internal _deployer;
+    address internal _owner;
+    address internal _admin;
     address internal _bridge;
     address internal _l1Usdc;
     address internal _l2Usdc;
@@ -96,15 +96,16 @@ contract Base is Test {
         _erc20L2Usdc = IERC20(_l2Usdc);
         _erc20L2Wusdc = IERC20(_l2Wusdc);
 
-        _deployerOwnerAdmin = vm.addr(8);
+        _deployer = vm.addr(9);
+        _owner = vm.addr(8);
+        _admin = vm.addr(7);
         _alice = vm.addr(1);
         _bob = vm.addr(2);
         _carol = vm.addr(3);
         _dan = vm.addr(4);
         _erin = vm.addr(5);
         _frank = vm.addr(6);
-        _grace = vm.addr(7);
-        _actors = [_alice, _bob, _carol, _dan, _erin, _frank, _grace];
+        _actors = [_alice, _bob, _carol, _dan, _erin, _frank];
 
         // deploy and initialize contracts
         _deployMockBridge();
@@ -255,27 +256,24 @@ contract Base is Test {
     }
 
     function _deployInitContracts() internal {
-        vm.startPrank(_deployerOwnerAdmin);
+        vm.startPrank(_deployer);
 
         // deploy L1 contract
         vm.selectFork(_l1Fork);
-        address l1EscrowProxy = LibDeployInit.deployL1Contracts(
-            _deployerOwnerAdmin // admin
-        );
+        address l1EscrowProxy = LibDeployInit.deployL1Contracts();
 
         // deploy L2 contracts
         vm.selectFork(_l2Fork);
         (
             address minterBurnerProxy,
             address nativeConverterProxy
-        ) = LibDeployInit.deployL2Contracts(
-                _deployerOwnerAdmin // admin
-            );
+        ) = LibDeployInit.deployL2Contracts();
 
         // init L1 contract
         vm.selectFork(_l1Fork);
         _l1Escrow = LibDeployInit.initL1Contracts(
-            _deployerOwnerAdmin,
+            _owner,
+            _admin,
             _l2NetworkId,
             _bridge,
             l1EscrowProxy,
@@ -286,7 +284,8 @@ contract Base is Test {
         // init L2 contracts
         vm.selectFork(_l2Fork);
         (_minterBurner, _nativeConverter) = LibDeployInit.initL2Contracts(
-            _deployerOwnerAdmin,
+            _owner,
+            _admin,
             _l1NetworkId,
             _bridge,
             l1EscrowProxy,

@@ -14,7 +14,7 @@ contract AdminAndOwnerOperationsFlows is Base {
 
     function testAdminCanUpgradeL1Escrow() public {
         vm.selectFork(_l1Fork);
-        vm.startPrank(_deployerOwnerAdmin);
+        vm.startPrank(_admin);
 
         L1EscrowImpl newImpl = new L1EscrowImpl();
         address newImplAddr = address(newImpl);
@@ -26,7 +26,7 @@ contract AdminAndOwnerOperationsFlows is Base {
 
     function testAdminCanUpgradeMinterBurner() public {
         vm.selectFork(_l2Fork);
-        vm.startPrank(_deployerOwnerAdmin);
+        vm.startPrank(_admin);
 
         ZkMinterBurnerImpl newImpl = new ZkMinterBurnerImpl();
         address newImplAddr = address(newImpl);
@@ -38,7 +38,7 @@ contract AdminAndOwnerOperationsFlows is Base {
 
     function testAdminCanUpgradeNativeConverter() public {
         vm.selectFork(_l2Fork);
-        vm.startPrank(_deployerOwnerAdmin);
+        vm.startPrank(_admin);
 
         NativeConverterImpl newImpl = new NativeConverterImpl();
         address newImplAddr = address(newImpl);
@@ -87,7 +87,7 @@ contract AdminAndOwnerOperationsFlows is Base {
 
     function testOwnerCanPauseUnpauseL1Escrow() public {
         vm.selectFork(_l1Fork);
-        vm.startPrank(_deployerOwnerAdmin);
+        vm.startPrank(_owner);
 
         assertEq(_l1Escrow.paused(), false);
         _l1Escrow.pause();
@@ -98,7 +98,7 @@ contract AdminAndOwnerOperationsFlows is Base {
 
     function testOwnerCanPauseUnpauseMinterBurner() public {
         vm.selectFork(_l2Fork);
-        vm.startPrank(_deployerOwnerAdmin);
+        vm.startPrank(_owner);
 
         assertEq(_minterBurner.paused(), false);
         _minterBurner.pause();
@@ -109,7 +109,7 @@ contract AdminAndOwnerOperationsFlows is Base {
 
     function testOwnerCanPauseUnpauseNativeConverter() public {
         vm.selectFork(_l2Fork);
-        vm.startPrank(_deployerOwnerAdmin);
+        vm.startPrank(_owner);
 
         assertEq(_nativeConverter.paused(), false);
         _nativeConverter.pause();
@@ -154,7 +154,7 @@ contract AdminAndOwnerOperationsFlows is Base {
 
     function testRevertNonOwnerCannotPauseUnpauseL1Escrow() public {
         vm.selectFork(_l1Fork);
-        vm.startPrank(_deployerOwnerAdmin);
+        vm.startPrank(_owner);
         _l1Escrow.pause();
         assertEq(_l1Escrow.paused(), true);
 
@@ -166,7 +166,7 @@ contract AdminAndOwnerOperationsFlows is Base {
 
     function testRevertNonOwnerCannotPauseUnpauseMinterBurner() public {
         vm.selectFork(_l2Fork);
-        vm.startPrank(_deployerOwnerAdmin);
+        vm.startPrank(_owner);
         _minterBurner.pause();
         assertEq(_minterBurner.paused(), true);
 
@@ -178,7 +178,7 @@ contract AdminAndOwnerOperationsFlows is Base {
 
     function testRevertNonOwnerCannotPauseUnpauseNativeConverter() public {
         vm.selectFork(_l2Fork);
-        vm.startPrank(_deployerOwnerAdmin);
+        vm.startPrank(_owner);
         _nativeConverter.pause();
         assertEq(_nativeConverter.paused(), true);
 
@@ -192,11 +192,11 @@ contract AdminAndOwnerOperationsFlows is Base {
 
     function testAdminCanChangeAdminL1Escrow() public {
         vm.selectFork(_l1Fork);
-        vm.startPrank(_deployerOwnerAdmin);
+        vm.startPrank(_admin);
 
         // set alice as admin
         vm.expectEmit(address(_l1Escrow));
-        emit AdminChanged(_deployerOwnerAdmin, _alice);
+        emit AdminChanged(_admin, _alice);
         _l1Escrow.changeAdmin(_alice);
 
         // check that deployer is no longer admin
@@ -206,17 +206,17 @@ contract AdminAndOwnerOperationsFlows is Base {
         // check that alice is admin by transferring back admin to deployer
         vm.startPrank(_alice);
         vm.expectEmit(address(_l1Escrow));
-        emit AdminChanged(_alice, _deployerOwnerAdmin);
-        _l1Escrow.changeAdmin(_deployerOwnerAdmin);
+        emit AdminChanged(_alice, _admin);
+        _l1Escrow.changeAdmin(_admin);
     }
 
     function testAdminCanChangeAdminMinterBurner() public {
         vm.selectFork(_l2Fork);
-        vm.startPrank(_deployerOwnerAdmin);
+        vm.startPrank(_admin);
 
         // set alice as admin
         vm.expectEmit(address(_minterBurner));
-        emit AdminChanged(_deployerOwnerAdmin, _alice);
+        emit AdminChanged(_admin, _alice);
         _minterBurner.changeAdmin(_alice);
 
         // check that deployer is no longer admin
@@ -226,17 +226,17 @@ contract AdminAndOwnerOperationsFlows is Base {
         // check that alice is admin by transferring back admin to deployer
         vm.startPrank(_alice);
         vm.expectEmit(address(_minterBurner));
-        emit AdminChanged(_alice, _deployerOwnerAdmin);
-        _minterBurner.changeAdmin(_deployerOwnerAdmin);
+        emit AdminChanged(_alice, _admin);
+        _minterBurner.changeAdmin(_admin);
     }
 
     function testAdminCanChangeAdminNativeConverter() public {
         vm.selectFork(_l2Fork);
-        vm.startPrank(_deployerOwnerAdmin);
+        vm.startPrank(_admin);
 
         // set alice as admin
         vm.expectEmit(address(_nativeConverter));
-        emit AdminChanged(_deployerOwnerAdmin, _alice);
+        emit AdminChanged(_admin, _alice);
         _nativeConverter.changeAdmin(_alice);
 
         // check that deployer is no longer admin
@@ -246,7 +246,7 @@ contract AdminAndOwnerOperationsFlows is Base {
         // check that alice is admin by transferring back admin to deployer
         vm.startPrank(_alice);
         vm.expectEmit(address(_nativeConverter));
-        emit AdminChanged(_alice, _deployerOwnerAdmin);
-        _nativeConverter.changeAdmin(_deployerOwnerAdmin);
+        emit AdminChanged(_alice, _admin);
+        _nativeConverter.changeAdmin(_admin);
     }
 }

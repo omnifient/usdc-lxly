@@ -1,14 +1,14 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.17;
 
-import "@oz/proxy/ERC1967/ERC1967Proxy.sol";
+import "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 
 contract NativeConverterProxy is ERC1967Proxy {
     constructor(
-        address admin_,
         address impl,
         bytes memory data
     ) payable ERC1967Proxy(impl, data) {
-        _changeAdmin(admin_);
+        // set admin=deployer, this is changed on the subsequent call to init
+        _changeAdmin(msg.sender);
     }
 }

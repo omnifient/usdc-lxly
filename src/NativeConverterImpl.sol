@@ -37,25 +37,28 @@ contract NativeConverterImpl is CommonAdminOwner {
 
     function initialize(
         address owner_,
+        address admin_,
         address bridge_,
         uint32 l1NetworkId_,
-        address l1Escrow_,
+        address l1EscrowProxy_,
         address zkUSDCe_,
         address zkBWUSDC_
     ) external onlyProxy onlyAdmin initializer {
-        require(bridge_ != address(0), "INVALID_ADDRESS");
-        require(l1Escrow_ != address(0), "INVALID_ADDRESS");
-        require(zkUSDCe_ != address(0), "INVALID_ADDRESS");
-        require(zkBWUSDC_ != address(0), "INVALID_ADDRESS");
-        require(owner_ != address(0), "INVALID_ADDRESS");
+        require(bridge_ != address(0), "INVALID_BRIDGE");
+        require(l1EscrowProxy_ != address(0), "INVALID_L1ESCROW");
+        require(zkUSDCe_ != address(0), "INVALID_USDC_E");
+        require(zkBWUSDC_ != address(0), "INVALID_BW_UDSC");
+        require(owner_ != address(0), "INVALID_OWNER");
+        require(admin_ != address(0), "INVALID_ADMIN");
 
         __CommonAdminOwner_init();
 
         _transferOwnership(owner_);
+        _changeAdmin(admin_);
 
         bridge = IPolygonZkEVMBridge(bridge_);
         l1NetworkId = l1NetworkId_;
-        l1Escrow = l1Escrow_;
+        l1Escrow = l1EscrowProxy_;
         zkUSDCe = IUSDC(zkUSDCe_);
         zkBWUSDC = IUSDC(zkBWUSDC_);
     }
