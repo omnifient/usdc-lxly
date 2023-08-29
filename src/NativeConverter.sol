@@ -51,7 +51,7 @@ contract NativeConverter is CommonAdminOwner {
     /// as well as transfer the ownership of the contract
     /// @param bridge_ the address of the PolygonZkEVMBridge deployed on the zkEVM
     /// @param l1NetworkId_ the ID used internally by the bridge to identify L1 messages
-    /// @param l1Escrow_ the address of the L1Escrow deployed on the L1
+    /// @param l1EscrowProxy_ the address of the L1Escrow deployed on the L1
     /// @param zkUSDCe_ the address of the L2 USDC-e deployed on the zkEVM
     /// @param zkBWUSDC_ the address of the default L2 USDC TokenWrapped token deployed on the zkEVM
     function initialize(
