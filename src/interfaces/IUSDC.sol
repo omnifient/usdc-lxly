@@ -7,4 +7,6 @@ interface IUSDC is IERC20Upgradeable {
     function burn(uint256 _amount) external;
 
     function mint(address _to, uint256 _amount) external returns (bool);
+
+    function DOMAIN_SEPARATOR() external view returns (bytes32);
 }

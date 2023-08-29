@@ -6,6 +6,7 @@ import "lib/forge-std/src/Test.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 
 import {LibDeployInit} from "../scripts/DeployInitHelpers.sol";
+import "../src/interfaces/IUSDC.sol";
 import "../src/mocks/MockBridge.sol";
 import "../src/L1EscrowProxy.sol";
 import "../src/L1Escrow.sol";
@@ -218,13 +219,7 @@ contract Base is Test {
         // );
 
         // using hardcoded hashes for the tests because of the different behaviour between the tokens
-        bytes32 domainSeparator;
-        if (token == _l1Usdc)
-            domainSeparator = 0x06c37168a7db5138defc7866392bb87a741f9b3d104deb5094588ce041cae335;
-        else if (token == _l2Usdc)
-            domainSeparator = 0x32cb9f7a37b849025be12e9700a52a2ee65ac0486dc394e301d499c167295793;
-        else if (token == _l2Wusdc)
-            domainSeparator = 0xb8635a253867c90fc062ea6e136320a069a19b956695db78f8be4224e1d7c462;
+        bytes32 domainSeparator = IUSDC(token).DOMAIN_SEPARATOR();
 
         bytes32 structHash = keccak256(
             abi.encode(
