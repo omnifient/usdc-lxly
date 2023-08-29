@@ -2,9 +2,9 @@
 pragma solidity ^0.8.17;
 
 import {Base} from "../Base.sol";
-import "../../src/L1EscrowImpl.sol";
-import "../../src/NativeConverterImpl.sol";
-import "../../src/ZkMinterBurnerImpl.sol";
+import "../../src/L1Escrow.sol";
+import "../../src/NativeConverter.sol";
+import "../../src/ZkMinterBurner.sol";
 
 contract AdminAndOwnerOperationsFlows is Base {
     event AdminChanged(address previousAdmin, address newAdmin);
@@ -16,7 +16,7 @@ contract AdminAndOwnerOperationsFlows is Base {
         vm.selectFork(_l1Fork);
         vm.startPrank(_admin);
 
-        L1EscrowImpl newImpl = new L1EscrowImpl();
+        L1Escrow newImpl = new L1Escrow();
         address newImplAddr = address(newImpl);
 
         vm.expectEmit(address(_l1Escrow));
@@ -28,7 +28,7 @@ contract AdminAndOwnerOperationsFlows is Base {
         vm.selectFork(_l2Fork);
         vm.startPrank(_admin);
 
-        ZkMinterBurnerImpl newImpl = new ZkMinterBurnerImpl();
+        ZkMinterBurner newImpl = new ZkMinterBurner();
         address newImplAddr = address(newImpl);
 
         vm.expectEmit(address(_minterBurner));
@@ -40,7 +40,7 @@ contract AdminAndOwnerOperationsFlows is Base {
         vm.selectFork(_l2Fork);
         vm.startPrank(_admin);
 
-        NativeConverterImpl newImpl = new NativeConverterImpl();
+        NativeConverter newImpl = new NativeConverter();
         address newImplAddr = address(newImpl);
 
         vm.expectEmit(address(_nativeConverter));
@@ -54,7 +54,7 @@ contract AdminAndOwnerOperationsFlows is Base {
         vm.selectFork(_l1Fork);
         vm.startPrank(_alice);
 
-        L1EscrowImpl newImpl = new L1EscrowImpl();
+        L1Escrow newImpl = new L1Escrow();
         address newImplAddr = address(newImpl);
 
         vm.expectRevert("NOT_ADMIN");
@@ -65,7 +65,7 @@ contract AdminAndOwnerOperationsFlows is Base {
         vm.selectFork(_l2Fork);
         vm.startPrank(_alice);
 
-        ZkMinterBurnerImpl newImpl = new ZkMinterBurnerImpl();
+        ZkMinterBurner newImpl = new ZkMinterBurner();
         address newImplAddr = address(newImpl);
 
         vm.expectRevert("NOT_ADMIN");
@@ -76,7 +76,7 @@ contract AdminAndOwnerOperationsFlows is Base {
         vm.selectFork(_l2Fork);
         vm.startPrank(_alice);
 
-        NativeConverterImpl newImpl = new NativeConverterImpl();
+        NativeConverter newImpl = new NativeConverter();
         address newImplAddr = address(newImpl);
 
         vm.expectRevert("NOT_ADMIN");

@@ -12,7 +12,7 @@ import {LibPermit} from "./helpers/LibPermit.sol";
 
 // This contract will receive USDC from users on L1 and trigger BridgeMinter on the zkEVM via LxLy.
 // This contract will hold all of the backing for USDC on zkEVM.
-contract L1EscrowImpl is IBridgeMessageReceiver, CommonAdminOwner {
+contract L1Escrow is IBridgeMessageReceiver, CommonAdminOwner {
     using SafeERC20Upgradeable for IUSDC;
 
     event Deposit(address indexed from, address indexed to, uint256 amount);

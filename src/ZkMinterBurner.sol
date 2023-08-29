@@ -18,7 +18,7 @@ import {LibPermit} from "./helpers/LibPermit.sol";
 // This contract will send messages to LXLY bridge on zkEVM,
 // it will hold the burner role giving it the ability to burn USDC.e based on instructions from LXLY,
 // triggering a release of assets on L1Escrow.
-contract ZkMinterBurnerImpl is IBridgeMessageReceiver, CommonAdminOwner {
+contract ZkMinterBurner is IBridgeMessageReceiver, CommonAdminOwner {
     using SafeERC20Upgradeable for IUSDC;
 
     event Withdraw(address indexed from, address indexed to, uint256 amount);

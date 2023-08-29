@@ -4,21 +4,18 @@ pragma solidity ^0.8.17;
 import {CommonBase} from "lib/forge-std/src/Base.sol";
 
 import "../src/L1EscrowProxy.sol";
-import "../src/L1EscrowImpl.sol";
+import "../src/L1Escrow.sol";
 import "../src/NativeConverterProxy.sol";
-import "../src/NativeConverterImpl.sol";
+import "../src/NativeConverter.sol";
 import "../src/ZkMinterBurnerProxy.sol";
-import "../src/ZkMinterBurnerImpl.sol";
+import "../src/ZkMinterBurner.sol";
 
 library LibDeployInit {
     function deployL1Contracts() internal returns (address l1eProxy) {
         // deploy implementation
-        L1EscrowImpl l1EscrowImpl = new L1EscrowImpl();
+        L1Escrow l1Escrow = new L1Escrow();
         // deploy proxy
-        L1EscrowProxy l1EscrowProxy = new L1EscrowProxy(
-            address(l1EscrowImpl),
-            ""
-        );
+        L1EscrowProxy l1EscrowProxy = new L1EscrowProxy(address(l1Escrow), "");
 
         // return address of the proxy
         l1eProxy = address(l1EscrowProxy);
@@ -29,7 +26,7 @@ library LibDeployInit {
         returns (address mbProxy, address ncProxy)
     {
         // deploy implementation
-        ZkMinterBurnerImpl minterBurnerImpl = new ZkMinterBurnerImpl();
+        ZkMinterBurner minterBurnerImpl = new ZkMinterBurner();
         // deploy proxy
         ZkMinterBurnerProxy minterBurnerProxy = new ZkMinterBurnerProxy(
             address(minterBurnerImpl),
@@ -37,10 +34,10 @@ library LibDeployInit {
         );
 
         // deploy implementation
-        NativeConverterImpl nativeConverterImpl = new NativeConverterImpl();
+        NativeConverter nativeConverter = new NativeConverter();
         // deploy proxy
         NativeConverterProxy nativeConverterProxy = new NativeConverterProxy(
-            address(nativeConverterImpl),
+            address(nativeConverter),
             ""
         );
 
@@ -57,9 +54,9 @@ library LibDeployInit {
         address l1EscrowProxy,
         address minterBurnerProxy,
         address l1Usdc
-    ) internal returns (L1EscrowImpl l1Escrow) {
+    ) internal returns (L1Escrow l1Escrow) {
         // get a reference to the proxy, with the impl's abi, and then call initialize
-        l1Escrow = L1EscrowImpl(l1EscrowProxy);
+        l1Escrow = L1Escrow(l1EscrowProxy);
         l1Escrow.initialize(
             owner,
             admin,
@@ -82,13 +79,10 @@ library LibDeployInit {
         address zkBWUSDC
     )
         internal
-        returns (
-            ZkMinterBurnerImpl minterBurner,
-            NativeConverterImpl nativeConverter
-        )
+        returns (ZkMinterBurner minterBurner, NativeConverter nativeConverter)
     {
         // get a reference to the proxy, with the impl's abi, and then call initialize
-        minterBurner = ZkMinterBurnerImpl(minterBurnerProxy);
+        minterBurner = ZkMinterBurner(minterBurnerProxy);
         minterBurner.initialize(
             owner,
             admin,
@@ -99,7 +93,7 @@ library LibDeployInit {
         );
 
         // get a reference to the proxy, with the impl's abi, and then call initialize
-        nativeConverter = NativeConverterImpl(nativeConverterProxy);
+        nativeConverter = NativeConverter(nativeConverterProxy);
         nativeConverter.initialize(
             owner,
             admin,
