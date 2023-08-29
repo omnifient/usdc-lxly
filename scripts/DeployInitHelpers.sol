@@ -11,14 +11,11 @@ import "../src/ZkMinterBurnerProxy.sol";
 import "../src/ZkMinterBurnerImpl.sol";
 
 library LibDeployInit {
-    function deployL1Contracts(
-        address admin
-    ) internal returns (address l1eProxy) {
+    function deployL1Contracts() internal returns (address l1eProxy) {
         // deploy implementation
         L1EscrowImpl l1EscrowImpl = new L1EscrowImpl();
         // deploy proxy
         L1EscrowProxy l1EscrowProxy = new L1EscrowProxy(
-            admin,
             address(l1EscrowImpl),
             ""
         );
@@ -27,14 +24,14 @@ library LibDeployInit {
         l1eProxy = address(l1EscrowProxy);
     }
 
-    function deployL2Contracts(
-        address admin
-    ) internal returns (address mbProxy, address ncProxy) {
+    function deployL2Contracts()
+        internal
+        returns (address mbProxy, address ncProxy)
+    {
         // deploy implementation
         ZkMinterBurnerImpl minterBurnerImpl = new ZkMinterBurnerImpl();
         // deploy proxy
         ZkMinterBurnerProxy minterBurnerProxy = new ZkMinterBurnerProxy(
-            admin,
             address(minterBurnerImpl),
             ""
         );
@@ -43,7 +40,6 @@ library LibDeployInit {
         NativeConverterImpl nativeConverterImpl = new NativeConverterImpl();
         // deploy proxy
         NativeConverterProxy nativeConverterProxy = new NativeConverterProxy(
-            admin,
             address(nativeConverterImpl),
             ""
         );
@@ -55,6 +51,7 @@ library LibDeployInit {
 
     function initL1Contracts(
         address owner,
+        address admin,
         uint32 l2NetworkId,
         address bridge,
         address l1EscrowProxy,
@@ -65,6 +62,7 @@ library LibDeployInit {
         l1Escrow = L1EscrowImpl(l1EscrowProxy);
         l1Escrow.initialize(
             owner,
+            admin,
             bridge,
             l2NetworkId,
             minterBurnerProxy,
@@ -74,6 +72,7 @@ library LibDeployInit {
 
     function initL2Contracts(
         address owner,
+        address admin,
         uint32 l1NetworkId,
         address bridge,
         address l1EscrowProxy,
@@ -92,6 +91,7 @@ library LibDeployInit {
         minterBurner = ZkMinterBurnerImpl(minterBurnerProxy);
         minterBurner.initialize(
             owner,
+            admin,
             bridge,
             l1NetworkId,
             l1EscrowProxy,
@@ -102,6 +102,7 @@ library LibDeployInit {
         nativeConverter = NativeConverterImpl(nativeConverterProxy);
         nativeConverter.initialize(
             owner,
+            admin,
             bridge,
             l1NetworkId,
             l1EscrowProxy,

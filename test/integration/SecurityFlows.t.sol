@@ -30,7 +30,7 @@ contract SecurityFlows is Base {
 
     function testRevertAlreadyInitializedL1Escrow() public {
         vm.selectFork(_l1Fork);
-        vm.startPrank(_deployerOwnerAdmin);
+        vm.startPrank(_admin);
 
         // it's initialized
         assertNotEq(address(_l1Escrow.bridge()), address(0));
@@ -38,6 +38,7 @@ contract SecurityFlows is Base {
         // can't initialize because already initialized
         vm.expectRevert("Initializable: contract is already initialized");
         _l1Escrow.initialize(
+            address(0),
             address(0),
             address(0),
             _l2NetworkId,
@@ -48,7 +49,7 @@ contract SecurityFlows is Base {
 
     function testRevertAlreadyInitializedMinterBurner() public {
         vm.selectFork(_l2Fork);
-        vm.startPrank(_deployerOwnerAdmin);
+        vm.startPrank(_admin);
 
         // it's initialized
         assertNotEq(address(_minterBurner.bridge()), address(0));
@@ -56,6 +57,7 @@ contract SecurityFlows is Base {
         // can't initialize because already initialized
         vm.expectRevert("Initializable: contract is already initialized");
         _minterBurner.initialize(
+            address(0),
             address(0),
             address(0),
             _l1NetworkId,
@@ -66,7 +68,7 @@ contract SecurityFlows is Base {
 
     function testRevertAlreadyInitializedNativeConverter() public {
         vm.selectFork(_l2Fork);
-        vm.startPrank(_deployerOwnerAdmin);
+        vm.startPrank(_admin);
 
         // it's initialized
         assertNotEq(address(_nativeConverter.bridge()), address(0));
@@ -74,6 +76,7 @@ contract SecurityFlows is Base {
         // can't initialize because already initialized
         vm.expectRevert("Initializable: contract is already initialized");
         _nativeConverter.initialize(
+            address(0),
             address(0),
             address(0),
             _l1NetworkId,
@@ -96,6 +99,7 @@ contract SecurityFlows is Base {
         _l1Escrow.initialize(
             address(0),
             address(0),
+            address(0),
             _l2NetworkId,
             address(0),
             address(0)
@@ -115,6 +119,7 @@ contract SecurityFlows is Base {
         _minterBurner.initialize(
             address(0),
             address(0),
+            address(0),
             _l1NetworkId,
             address(0),
             address(0)
@@ -132,6 +137,7 @@ contract SecurityFlows is Base {
         // can't initialize because already initialized
         vm.expectRevert("NOT_ADMIN");
         _nativeConverter.initialize(
+            address(0),
             address(0),
             address(0),
             _l1NetworkId,

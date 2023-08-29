@@ -34,7 +34,7 @@ contract DeployInit is Script {
         // deploy L1 contract
         vm.selectFork(l1ForkId);
         vm.startBroadcast(vm.envUint("DEPLOYER_PRIVATE_KEY"));
-        address l1EscrowProxy = LibDeployInit.deployL1Contracts(admin);
+        address l1EscrowProxy = LibDeployInit.deployL1Contracts();
         vm.stopBroadcast();
 
         // deploy L2 contracts
@@ -43,7 +43,7 @@ contract DeployInit is Script {
         (
             address minterBurnerProxy,
             address nativeConverterProxy
-        ) = LibDeployInit.deployL2Contracts(admin);
+        ) = LibDeployInit.deployL2Contracts();
         vm.stopBroadcast();
 
         // init L1 contract
@@ -51,6 +51,7 @@ contract DeployInit is Script {
         vm.startBroadcast(vm.envUint("DEPLOYER_PRIVATE_KEY"));
         L1EscrowImpl l1Escrow = LibDeployInit.initL1Contracts(
             owner,
+            admin,
             l2NetworkId,
             bridge,
             l1EscrowProxy,
@@ -67,6 +68,7 @@ contract DeployInit is Script {
             NativeConverterImpl nativeConverter
         ) = LibDeployInit.initL2Contracts(
                 owner,
+                admin,
                 l1NetworkId,
                 bridge,
                 l1EscrowProxy,

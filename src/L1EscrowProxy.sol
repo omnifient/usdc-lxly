@@ -5,10 +5,10 @@ import "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 
 contract L1EscrowProxy is ERC1967Proxy {
     constructor(
-        address admin_,
         address impl_,
         bytes memory data_
     ) payable ERC1967Proxy(impl_, data_) {
-        _changeAdmin(admin_);
+        // set admin=deployer, this is changed on the subsequent call to init
+        _changeAdmin(msg.sender);
     }
 }

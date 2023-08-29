@@ -30,19 +30,22 @@ contract L1EscrowImpl is IBridgeMessageReceiver, CommonAdminOwner {
 
     function initialize(
         address owner_,
+        address admin_,
         address bridge_,
         uint32 zkNetworkId_,
         address zkMinterBurnerProxy_,
         address l1Usdc_
     ) external onlyProxy onlyAdmin initializer {
-        require(bridge_ != address(0), "INVALID_ADDRESS");
-        require(zkMinterBurnerProxy_ != address(0), "INVALID_ADDRESS");
-        require(l1Usdc_ != address(0), "INVALID_ADDRESS");
-        require(owner_ != address(0), "INVALID_ADDRESS");
+        require(bridge_ != address(0), "INVALID_BRIDGE");
+        require(zkMinterBurnerProxy_ != address(0), "INVALID_MB");
+        require(l1Usdc_ != address(0), "INVALID_L1_USDC");
+        require(owner_ != address(0), "INVALID_OWNER");
+        require(admin_ != address(0), "INVALID_ADMIN");
 
         __CommonAdminOwner_init();
 
         _transferOwnership(owner_);
+        _changeAdmin(admin_);
 
         bridge = IPolygonZkEVMBridge(bridge_);
         zkNetworkId = zkNetworkId_;
