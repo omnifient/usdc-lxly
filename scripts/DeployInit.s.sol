@@ -15,7 +15,7 @@ import "../src/ZkMinterBurner.sol";
 
 /// @title DeployInit
 /// @notice A script for deploying, initializing, and setting the access controls
-/// @notice for the 3 contracts that comprise the zkUSDCe system:
+/// @notice for the 3 contracts that comprise the LXLY system:
 /// @notice 1) L1Escrow
 /// @notice 2) ZkMinterBurner
 /// @notice 3) NativeConverter
