@@ -15,10 +15,10 @@ import "../src/ZkMinterBurner.sol";
 
 /// @title DeployInit
 /// @notice A script for deploying, initializing, and setting the access controls
-/// @notice for the 3 contracts that comprise the LXLY system:
-/// @notice 1) L1Escrow
-/// @notice 2) ZkMinterBurner
-/// @notice 3) NativeConverter
+/// for the 3 contracts that comprise the LXLY system:
+/// 1) L1Escrow
+/// 2) ZkMinterBurner
+/// 3) NativeConverter
 contract DeployInit is Script {
     uint256 l1ForkId = vm.createFork(vm.envString("L1_RPC_URL"));
     uint256 l2ForkId = vm.createFork(vm.envString("L2_RPC_URL"));

@@ -20,7 +20,7 @@ contract CommonAdminOwner is
     UUPSUpgradeable
 {
     /// @notice The initializer, which must be used instead of the constructor
-    /// @notice because this is a UUPS contract
+    /// because this is a UUPS contract
     function __CommonAdminOwner_init() internal onlyInitializing {
         __Ownable_init();
         __Pausable_init();

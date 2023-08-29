@@ -27,7 +27,7 @@ contract NativeConverter is CommonAdminOwner {
     IPolygonZkEVMBridge public bridge;
 
     /// @notice The ID used internally by the bridge to identify L1 messages. Initially
-    /// @notice set to be `0`
+    /// set to be `0`
     uint32 public l1NetworkId;
 
     /// @notice The address of the L1Escrow

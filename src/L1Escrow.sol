@@ -14,7 +14,6 @@ import {LibPermit} from "./helpers/LibPermit.sol";
 /// @notice This upgradeable contract receives USDC from users on L1 and uses the PolygonZkEVMBridge
 /// to send a message to the ZkMinterBurner contract on the L2 (zkEVM) which
 /// then mints USDC-e for users
-/// @notice This contract holds all of the L1 USDC that backs the USDC-e on the zkEVM
 /// @notice This contract is upgradeable using UUPS, and can have its important functions
 /// paused and unpaused
 contract L1Escrow is IBridgeMessageReceiver, CommonAdminOwner {
