@@ -1,16 +1,22 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.17;
 
+/// @title LibPermit
+/// @notice Library to call the EIP-2612 permit method on a token
 library LibPermit {
     error NotValidSelector();
     error NotValidOwner();
     error NotValidSpender();
     error NotValidAmount();
 
-    // bytes4(keccak256(bytes("permit(address,address,uint256,uint256,uint8,bytes32,bytes32)")));
+    /// @dev bytes4(keccak256(bytes("permit(address,address,uint256,uint256,uint8,bytes32,bytes32)")));
     bytes4 private constant _PERMIT_SIGNATURE = 0xd505accf;
 
+    /// @notice Function to call token the EIP-2612 permit method on a token
     /// @dev Adapted from PolygonZKEVMBridge.sol's `_permit`
+    /// @param token ERC20 token address
+    /// @param amount Quantity that is expected to be allowed
+    /// @param permitData Raw data of the call `permit` of the token
     function permit(
         address token,
         uint256 amount,

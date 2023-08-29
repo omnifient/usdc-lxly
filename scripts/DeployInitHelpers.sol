@@ -10,6 +10,9 @@ import "../src/NativeConverter.sol";
 import "../src/ZkMinterBurnerProxy.sol";
 import "../src/ZkMinterBurner.sol";
 
+/// @title LibDeployInit
+/// @dev A helper library that implements the logic for deploying
+/// the LXLY system contracts
 library LibDeployInit {
     function deployL1Contracts() internal returns (address l1eProxy) {
         // deploy implementation
