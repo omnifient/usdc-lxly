@@ -14,7 +14,7 @@ import {LibPermit} from "./helpers/LibPermit.sol";
 // This contract will also have a permissionless publicly callable function called “migrate” which when called will
 // withdraw all BridgedWrappedUSDC to L1 via the LXLY bridge. The beneficiary address will be the L1Escrow,
 // thus migrating the supply and settling the balance.
-contract NativeConverterImpl is CommonAdminOwner {
+contract NativeConverter is CommonAdminOwner {
     using SafeERC20Upgradeable for IUSDC;
 
     event Convert(address indexed from, address indexed to, uint256 amount);

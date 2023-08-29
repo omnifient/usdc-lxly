@@ -10,9 +10,9 @@ import {DSTest} from "lib/forge-std/src/Test.sol";
 
 import {Events} from "../Base.sol";
 import "../../src/mocks/MockBridge.sol";
-import "../../src/L1EscrowImpl.sol";
-import "../../src/ZkMinterBurnerImpl.sol";
-import "../../src/NativeConverterImpl.sol";
+import "../../src/L1Escrow.sol";
+import "../../src/ZkMinterBurner.sol";
+import "../../src/NativeConverter.sol";
 
 enum Operation {
     NOOP,
@@ -150,9 +150,9 @@ contract LxLyHandler is CommonBase, StdCheats, StdUtils, DSTest {
     IERC20 internal _erc20L1Usdc;
     IERC20 internal _erc20L2Usdc;
     IERC20 internal _erc20L2Wusdc;
-    L1EscrowImpl internal _l1Escrow;
-    NativeConverterImpl internal _nativeConverter;
-    ZkMinterBurnerImpl internal _minterBurner;
+    L1Escrow internal _l1Escrow;
+    NativeConverter internal _nativeConverter;
+    ZkMinterBurner internal _minterBurner;
 
     modifier useActor(uint256 actorIndexSeed) {
         currentActor = _actors[bound(actorIndexSeed, 0, _actors.length - 1)];
@@ -186,9 +186,9 @@ contract LxLyHandler is CommonBase, StdCheats, StdUtils, DSTest {
 
     function init(
         HandlerState state,
-        L1EscrowImpl l1Escrow,
-        NativeConverterImpl nativeConverter,
-        ZkMinterBurnerImpl minterBurner
+        L1Escrow l1Escrow,
+        NativeConverter nativeConverter,
+        ZkMinterBurner minterBurner
     ) external {
         _state = state;
         _l1Escrow = l1Escrow;

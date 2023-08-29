@@ -7,11 +7,11 @@ import "lib/forge-std/src/Script.sol";
 import {LibDeployInit} from "./DeployInitHelpers.sol";
 
 import "../src/L1EscrowProxy.sol";
-import "../src/L1EscrowImpl.sol";
+import "../src/L1Escrow.sol";
 import "../src/NativeConverterProxy.sol";
-import "../src/NativeConverterImpl.sol";
+import "../src/NativeConverter.sol";
 import "../src/ZkMinterBurnerProxy.sol";
-import "../src/ZkMinterBurnerImpl.sol";
+import "../src/ZkMinterBurner.sol";
 
 contract DeployInit is Script {
     uint256 l1ForkId = vm.createFork(vm.envString("L1_RPC_URL"));
@@ -49,7 +49,7 @@ contract DeployInit is Script {
         // init L1 contract
         vm.selectFork(l1ForkId);
         vm.startBroadcast(vm.envUint("DEPLOYER_PRIVATE_KEY"));
-        L1EscrowImpl l1Escrow = LibDeployInit.initL1Contracts(
+        L1Escrow l1Escrow = LibDeployInit.initL1Contracts(
             owner,
             admin,
             l2NetworkId,
@@ -64,8 +64,8 @@ contract DeployInit is Script {
         vm.selectFork(l2ForkId);
         vm.startBroadcast(vm.envUint("DEPLOYER_PRIVATE_KEY"));
         (
-            ZkMinterBurnerImpl minterBurner,
-            NativeConverterImpl nativeConverter
+            ZkMinterBurner minterBurner,
+            NativeConverter nativeConverter
         ) = LibDeployInit.initL2Contracts(
                 owner,
                 admin,

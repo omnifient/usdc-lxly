@@ -8,11 +8,11 @@ import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import {LibDeployInit} from "../scripts/DeployInitHelpers.sol";
 import "../src/mocks/MockBridge.sol";
 import "../src/L1EscrowProxy.sol";
-import "../src/L1EscrowImpl.sol";
+import "../src/L1Escrow.sol";
 import "../src/NativeConverterProxy.sol";
-import "../src/NativeConverterImpl.sol";
+import "../src/NativeConverter.sol";
 import "../src/ZkMinterBurnerProxy.sol";
-import "../src/ZkMinterBurnerImpl.sol";
+import "../src/ZkMinterBurner.sol";
 
 library Events {
     /* ================= EVENTS ================= */
@@ -28,13 +28,13 @@ library Events {
         uint32 depositCount
     );
 
-    // copy of NativeConverterImpl.Convert
+    // copy of NativeConverter.Convert
     event Convert(address indexed from, address indexed to, uint256 amount);
 
-    // copy of L1EscrowImpl.Deposit
+    // copy of L1Escrow.Deposit
     event Deposit(address indexed from, address indexed to, uint256 amount);
 
-    // copy of NativeConverterImpl.Migrate
+    // copy of NativeConverter.Migrate
     event Migrate(uint256 amount);
 
     // copy of ZkMinterBurner.Withdraw
@@ -73,11 +73,11 @@ contract Base is Test {
     IERC20 internal _erc20L2Wusdc;
 
     // L1 contracts
-    L1EscrowImpl internal _l1Escrow;
+    L1Escrow internal _l1Escrow;
 
     // L2 contracts
-    ZkMinterBurnerImpl internal _minterBurner;
-    NativeConverterImpl internal _nativeConverter;
+    ZkMinterBurner internal _minterBurner;
+    NativeConverter internal _nativeConverter;
 
     /* ================= SETUP ================= */
     function setUp() public virtual {
