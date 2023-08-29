@@ -8,11 +8,11 @@ import "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
 
 /// @title CommonAdminOwner
 /// @notice An upgradeable contract that, when inherited from, provides 4 functionalities:
-/// @notice 1. The ability to pause and unpause functions with the `whenNotPaused` modifier
-/// @notice 2. The ability to transfer ownership (which controls who can pause/unpause)
-/// @notice 3. UUPS upgradeability, and the admin role which is allowed to upgrade
-/// @notice the implementation contract
-/// @notice 4. The ability to change the admin (which controls upgradeability)
+/// 1. The ability to pause and unpause functions with the `whenNotPaused` modifier
+/// 2. The ability to transfer ownership (which controls who can pause/unpause)
+/// 3. UUPS upgradeability, and the admin role which is allowed to upgrade
+/// the implementation contract
+/// 4. The ability to change the admin (which controls upgradeability)
 contract CommonAdminOwner is
     Initializable,
     OwnableUpgradeable,

@@ -11,7 +11,7 @@ import {LibPermit} from "./helpers/LibPermit.sol";
 
 /// @title NativeConverter
 /// @notice This contract will receive BridgeWrappedUSDC on zkEVM and issue USDC.e on the zkEVM.
-/// @notice This contract will hold the minter role giving it the ability to mint USDC.e based on
+/// @notice This contract will hold the minter role giving it the ability to mint USDC-e based on
 /// inflows of BridgeWrappedUSDC. This contract will also have a permissionless publicly
 /// callable function called “migrate” which when called will burn all BridgedWrappedUSDC
 /// on the L2, and send a message to the bridge that causes all of the corresponding
@@ -46,7 +46,14 @@ contract NativeConverter is CommonAdminOwner {
     }
 
     /// @notice Setup the state variables of the upgradeable NativeConverter contract
-    /// @notice The owner is the contract that is able to pause and unpause function calls
+    /// @notice The owner is the address that is able to pause and unpause function calls
+    /// @param owner_ the address that will be able to pause and unpause the contract,
+    /// as well as transfer the ownership of the contract
+    /// @param bridge_ the address of the PolygonZkEVMBridge deployed on the zkEVM
+    /// @param l1NetworkId_ the ID used internally by the bridge to identify L1 messages
+    /// @param l1Escrow_ the address of the L1Escrow deployed on the L1
+    /// @param zkUSDCe_ the address of the L2 USDC-e deployed on the zkEVM
+    /// @param zkBWUSDC_ the address of the default L2 USDC TokenWrapped token deployed on the zkEVM
     function initialize(
         address owner_,
         address admin_,
@@ -77,7 +84,7 @@ contract NativeConverter is CommonAdminOwner {
 
     /// @notice Converts L2 BridgeWrappedUSDC to L2 USDC-e
     /// @dev The NativeConverter transfers L2 BridgeWrappedUSDC from the caller to itself and
-    /// @dev mints L2 USDC-e to the caller
+    /// mints L2 USDC-e to the caller
     /// @param receiver address that will receive L2 USDC-e on the L2
     /// @param amount amount of L2 BridgeWrappedUSDC to convert
     /// @param permitData data for the permit call on the L2 BridgeWrappedUSDC
@@ -101,8 +108,8 @@ contract NativeConverter is CommonAdminOwner {
 
     /// @notice Migrates L2 BridgeWrappedUSDC USDC to L1 USDC
     /// @dev Any BridgeWrappedUSDC transfered in by previous calls to
-    /// @dev {NativeConverter-convert} will be burned and the corresponding
-    /// @dev L1 USDC will be sent to the L1Escrow via a message to the bridge
+    /// `convert` will be burned and the corresponding
+    /// L1 USDC will be sent to the L1Escrow via a message to the bridge
     function migrate() external whenNotPaused {
         // Anyone can call migrate() on NativeConverter to
         // have all zkBridgeWrappedUSDC withdrawn via the PolygonZkEVMBridge

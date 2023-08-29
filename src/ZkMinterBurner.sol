@@ -21,12 +21,12 @@ contract ZkMinterBurner is IBridgeMessageReceiver, CommonAdminOwner {
     event Withdraw(address indexed from, address indexed to, uint256 amount);
 
     /// @notice The singleton bridge contract on both L1 and L2 (zkEVM) that faciliates
-    /// @notice bridging messages between L1 and L2. It also stores all of the L1 USDC
-    /// @notice backing the L2 BridgeWrappedUSDC
+    /// bridging messages between L1 and L2. It also stores all of the L1 USDC
+    /// backing the L2 BridgeWrappedUSDC
     IPolygonZkEVMBridge public bridge;
 
     /// @notice The ID used internally by the bridge to identify L1 messages. Initially
-    /// @notice set to be `0`
+    /// set to be `0`
     uint32 public l1NetworkId;
 
     /// @notice The address of the L1Escrow
@@ -42,7 +42,13 @@ contract ZkMinterBurner is IBridgeMessageReceiver, CommonAdminOwner {
     }
 
     /// @notice Setup the state variables of the upgradeable ZkMinterBurner contract
-    /// @notice the owner is the contract that is able to pause and unpause function calls
+    /// @notice The owner is the address that is able to pause and unpause function calls
+    /// @param owner_ the address that will be able to pause and unpause the contract,
+    /// as well as transfer the ownership of the contract
+    /// @param bridge_ the address of the PolygonZkEVMBridge deployed on the zkEVM
+    /// @param l1NetworkId_ the ID used internally by the bridge to identify L1 messages
+    /// @param l1EscrowProxy_ the address of the L1EscrowProxy deployed on the L1
+    /// @param zkUSDCe_ the address of the L2 USDC-e deployed on the zkEVM
     function initialize(
         address owner_,
         address admin_,
@@ -70,9 +76,9 @@ contract ZkMinterBurner is IBridgeMessageReceiver, CommonAdminOwner {
 
     /// @notice Bridges L2 USDC-e to L1 USDC
     /// @dev The ZkMinterBurner transfers L2 USDC-e from the caller to itself and
-    /// @dev burns it, thencalls `bridge.bridgeMessage, which ultimately results in a message
-    /// @dev received on the L1Escrow which unlocks the corresponding L1 USDC to the
-    /// @dev destination address
+    /// burns it, then calls `bridge.bridgeMessage`, which ultimately results in a message
+    /// received on the L1Escrow which unlocks the corresponding L1 USDC to the
+    /// destination address
     /// @dev Can be paused
     /// @param destinationAddress address that will receive L1 USDC on the L1
     /// @param amount amount of L2 USDC-e to bridge
@@ -102,8 +108,8 @@ contract ZkMinterBurner is IBridgeMessageReceiver, CommonAdminOwner {
         emit Withdraw(msg.sender, destinationAddress, amount);
     }
 
-    /// @notice Similar to {ZkMinterBurnerImpl-bridgeToken}, but saves an ERC20.approve call
-    /// @notice by using the EIP-2612 permit function
+    /// @notice Similar to other `bridgeToken` function, but saves an ERC20.approve call
+    /// by using the EIP-2612 permit function
     function bridgeToken(
         address destinationAddress,
         uint256 amount,
@@ -117,9 +123,9 @@ contract ZkMinterBurner is IBridgeMessageReceiver, CommonAdminOwner {
     }
 
     /// @dev This function is triggered by the bridge to faciliate the USDC-e minting process.
-    /// @dev This function is called by the bridge when a message is sent by the L1Escrow
-    /// @dev communicating that it has received L1 USDC and wants the ZkMinterBurner to
-    /// @dev mint USDC-e.
+    /// This function is called by the bridge when a message is sent by the L1Escrow
+    /// communicating that it has received L1 USDC and wants the ZkMinterBurner to
+    /// mint USDC-e.
     /// @dev This function can only be called by the bridge contract
     /// @dev Can be paused
     function onMessageReceived(

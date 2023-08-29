@@ -23,12 +23,12 @@ contract L1Escrow is IBridgeMessageReceiver, CommonAdminOwner {
     event Deposit(address indexed from, address indexed to, uint256 amount);
 
     /// @notice The singleton bridge contract on both L1 and L2 (zkEVM) that faciliates
-    /// @notice bridging messages between L1 and L2. It also stores all of the L1 USDC
-    /// @notice backing the L2 BridgeWrappedUSDC
+    /// bridging messages between L1 and L2. It also stores all of the L1 USDC
+    /// backing the L2 BridgeWrappedUSDC
     IPolygonZkEVMBridge public bridge;
 
     /// @notice The ID used internally by the bridge to identify zkEVM messages. Initially
-    /// @notice set to be `1`
+    /// set to be `1`
     uint32 public zkNetworkId;
 
     /// @notice Address of the L2 ZkMinterBurner, which receives messages from the L1Escrow
@@ -44,7 +44,13 @@ contract L1Escrow is IBridgeMessageReceiver, CommonAdminOwner {
     }
 
     /// @notice Setup the state variables of the upgradeable L1Escrow contract
-    /// @notice the owner is the contract that is able to pause and unpause function calls
+    /// @notice The owner is the address that is able to pause and unpause function calls
+    /// @param owner_ the address that will be able to pause and unpause the contract,
+    /// as well as transfer the ownership of the contract
+    /// @param bridge_ the address of the PolygonZkEVMBridge deployed on the zkEVM
+    /// @param zkNetworkId_ the ID used internally by the bridge to identify zkEVM messages
+    /// @param zkMinterBurnerProxy_ the address of the ZkMinterBurnerProxy deployed on the L2
+    /// @param l1Usdc_ the address of the L1 USDC deployed on the L1
     function initialize(
         address owner_,
         address admin_,
@@ -72,13 +78,13 @@ contract L1Escrow is IBridgeMessageReceiver, CommonAdminOwner {
 
     /// @notice Bridges L1 USDC to L2 USDC-e
     /// @dev The L1Escrow transfers L1 USDC from the caller to itself and
-    /// @dev calls `bridge.bridgeMessage, which ultimately results in a message
-    /// @dev received on the L2 ZkMinterBurner which mints USDC-e for the destination
-    /// @dev address
+    /// calls `bridge.bridgeMessage, which ultimately results in a message
+    /// received on the L2 ZkMinterBurner which mints USDC-e for the destination
+    /// address
     /// @dev Can be paused
     /// @param destinationAddress address that will receive USDC-e on the L2
     /// @param amount amount of L1 USDC to bridge
-    /// @param forceUpdateGlobalExitRoot whether or not to force the bridge to update
+    /// @param forceUpdateGlobalExitRoot whether or not to force the bridge to update.
     function bridgeToken(
         address destinationAddress,
         uint256 amount,
@@ -104,8 +110,8 @@ contract L1Escrow is IBridgeMessageReceiver, CommonAdminOwner {
         emit Deposit(msg.sender, destinationAddress, amount);
     }
 
-    /// @notice Similar to {L1Escrow-bridgeToken}, but saves an ERC20.approve call
-    /// @notice by using the EIP-2612 permit function
+    /// @notice Similar to other `bridgeToken` function, but saves an ERC20.approve call
+    /// by using the EIP-2612 permit function
     function bridgeToken(
         address destinationAddress,
         uint256 amount,
@@ -119,11 +125,15 @@ contract L1Escrow is IBridgeMessageReceiver, CommonAdminOwner {
     }
 
     /// @dev This function is triggered by the bridge to faciliate the L1 USDC withdrawal process.
-    /// @dev This function is called by the bridge when a message is sent by the L2
-    /// @dev ZkMinterBurner communicating that it has burned USDC-e and wants to withdraw the L1 USDC
-    /// @dev that backs it.
+    /// This function is called by the bridge when a message is sent by the L2
+    /// ZkMinterBurner communicating that it has burned USDC-e and wants to withdraw the L1 USDC
+    /// that backs it.
     /// @dev This function can only be called by the bridge contract
     /// @dev Can be paused
+    /// @param originAddress address that initiated the message on the L2
+    /// @param originNetwork network that initiated the message on the L2
+    /// @param data data that was sent with the message on the L2, includes the
+    /// `l1Receiver` and `amount` of L1 USDC to send to the `l1Receiver`
     function onMessageReceived(
         address originAddress,
         uint32 originNetwork,
