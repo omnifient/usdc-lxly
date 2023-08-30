@@ -142,3 +142,119 @@ ADDRESS_L2_USDC=0x00...000
 cd usdc-lxly/
 forge script scripts/DeployInit.s.sol:DeployInit --broadcast -vvvv
 ```
+
+5. verify contracts
+
+```bash
+# verify L1Escrow
+forge verify-contract \
+    --chain-id <l1-chain-id> \
+    --watch \
+    --etherscan-api-key <l1-etherscan-api-key> \
+    <deployed-address> \
+    src/L1Escrow.sol:L1Escrow
+
+# verify L1EscrowProxy
+forge verify-contract \
+    --chain-id <l1-chain-id> \
+    --watch \
+    --etherscan-api-key <l1-etherscan-api-key> \
+    --constructor-args $(cast abi-encode "constructor(address,bytes memory)" <L1Escrow-address> "") \
+    <deployed-address> \
+    src/L1EscrowProxy.sol:L1EscrowProxy
+
+
+# verify ZkMinterBurner
+forge verify-contract \
+    --chain-id <l2-chain-id> \
+    --watch \
+    --etherscan-api-key <l2-etherscan-api-key> \
+    <deployed-address> \
+    src/ZkMinterBurner.sol:ZkMinterBurner
+
+# verify ZkMinterBurnerProxy
+forge verify-contract \
+    --chain-id <l2-chain-id> \
+    --watch \
+    --etherscan-api-key <l2-etherscan-api-key> \
+    --constructor-args $(cast abi-encode "constructor(address,bytes memory)" <ZkMinterBurner-address> "") \
+    <deployed-address> \
+    src/ZkMinterBurnerProxy.sol:ZkMinterBurnerProxy
+
+
+# verify NativeConverter
+forge verify-contract \
+    --chain-id <l2-chain-id> \
+    --watch \
+    --etherscan-api-key <l2-etherscan-api-key> \
+    <deployed-address> \
+    src/NativeConverter.sol:NativeConverter
+
+# verify NativeConverterProxy
+forge verify-contract \
+    --chain-id <l2-chain-id> \
+    --watch \
+    --etherscan-api-key <l2-etherscan-api-key> \
+    --constructor-args $(cast abi-encode "constructor(address,bytes memory)" <NativeConverter-address> "") \
+    <deployed-address> \
+    src/NativeConverterProxy.sol:NativeConverterProxy
+```
+
+6. test contracts
+
+```bash
+export PK=
+export TESTER=
+export L1_RPC=
+export L2_RPC=https://rpc.public.zkevm-test.net
+export L1_USDC=0x07865c6e87b9f70255377e024ace6630c1eaa37f
+export L2_USDC=0x34919B92b0CD1B49D9A42c5eef3c3Bd26Bb2E04A
+export L2_BWUSDC=0xA40b0dA87577Cd224962e8A3420631E1C4bD9A9f
+export L1_ESCROW=0x0c404525ca97251EaB96140fff132C8D29B4F6A7
+export MINTER_BURNER=0x70557De0922A8A207C74BeE79567B16751B9392F
+export NATIVE_CONVERTER=0x5876A2FBAEbBD1F9530f764069d5CCE652767E61
+
+#################################################
+# DEPOSIT TO L1ESCROW
+#################################################
+
+# approve the l1escrow to spend 1 usdc
+cast send --rpc-url $L1_RPC --private-key $PK $L1_USDC "approve(address,uint256)" $L1_ESCROW 1000000
+
+# check allowance
+cast call $L1_USDC "allowance(address,address)" $TESTER $L1_ESCROW --rpc-url $L1_RPC
+
+# deposit
+cast send --rpc-url $L1_RPC --private-key $PK $L1_ESCROW "bridgeToken(address,uint256,bool)" $TESTER 1000000 true
+
+#################################################
+# WITHDRAW FROM ZKMINTERBURNER
+#################################################
+
+# check usdc-e balance
+cast call $L2_USDC "balanceOf(address)" $TESTER --rpc-url $L2_RPC
+
+# check usdc-e total supply
+cast call $L2_USDC "totalSupply()" --rpc-url $L2_RPC
+
+# approve spending
+cast send --rpc-url $L2_RPC --private-key $PK $L2_USDC "approve(address,uint256)" $MINTER_BURNER 1000000
+
+# withdraw
+cast send --rpc-url $L2_RPC --private-key $PK $MINTER_BURNER "bridgeToken(address,uint256,bool)" $TESTER 1000000 true
+
+#################################################
+# CONVERT
+#################################################
+
+# approve the native converter to spend 1 bw usdc
+cast send --rpc-url $L2_RPC --private-key $PK $L2_BWUSDC "approve(address,uint256)" $NATIVE_CONVERTER 1000000
+
+# convert 1 bw usdc to 1 usdc-e
+cast send --rpc-url $L2_RPC --private-key $PK $NATIVE_CONVERTER "convert(address,uint256,bytes)" $TESTER 1000000 ""
+
+#################################################
+# MIGRATE
+#################################################
+cast send --rpc-url $L2_RPC --private-key $PK $NATIVE_CONVERTER "migrate()"
+```
