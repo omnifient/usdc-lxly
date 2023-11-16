@@ -31,10 +31,14 @@ contract DeployInit is Script {
     address zkUSDCe = vm.envAddress("ADDRESS_L2_USDC"); // ATTN: needs to be deployed beforehand zkUsdc
     address zkBWUSDC = vm.envAddress("ADDRESS_L2_WUSDC");
 
-    /// @notice the address that is able to upgrade the proxy contract's implementation contract
-    address admin = vm.envAddress("ADDRESS_PROXY_ADMIN");
-    /// @notice the address that is able to pause and unpause the l1Escrow, zkMinterBurner, and nativeConverter contracts
-    address owner = vm.envAddress("ADDRESS_OWNER");
+    /// @notice the L1 address that is able to upgrade the L1Escrow's proxy contract's implementation contract
+    address l1Admin = vm.envAddress("ADDRESS_L1_PROXY_ADMIN");
+    /// @notice the L1 address that is able to pause and unpause the L1Escrow contract
+    address l1Owner = vm.envAddress("ADDRESS_L1_OWNER");
+    /// @notice the L2 address that is able to upgrade the ZKMinterBurner and NativeConverter's proxy contracts' implementation contracts
+    address l2Admin = vm.envAddress("ADDRESS_L2_PROXY_ADMIN");
+    /// @notice the L1 address that is able to pause and unpause the ZKMinterBurner and NativeConverter contracts
+    address l2Owner = vm.envAddress("ADDRESS_L2_OWNER");
 
     function run() external {
         // deploy L1 contract
@@ -56,8 +60,8 @@ contract DeployInit is Script {
         vm.selectFork(l1ForkId);
         vm.startBroadcast(vm.envUint("DEPLOYER_PRIVATE_KEY"));
         L1Escrow l1Escrow = LibDeployInit.initL1Contracts(
-            owner,
-            admin,
+            l1Owner,
+            l1Admin,
             l2NetworkId,
             bridge,
             l1EscrowProxy,
@@ -73,8 +77,8 @@ contract DeployInit is Script {
             ZkMinterBurner minterBurner,
             NativeConverter nativeConverter
         ) = LibDeployInit.initL2Contracts(
-                owner,
-                admin,
+                l2Owner,
+                l2Admin,
                 l1NetworkId,
                 bridge,
                 l1EscrowProxy,
