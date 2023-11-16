@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.17;
 
+import "lib/forge-std/src/console.sol";
+
 import {CommonBase} from "lib/forge-std/src/Base.sol";
 
 import "../src/L1EscrowProxy.sol";
@@ -17,8 +19,11 @@ library LibDeployInit {
     function deployL1Contracts() internal returns (address l1eProxy) {
         // deploy implementation
         L1Escrow l1Escrow = new L1Escrow();
+        console.log("L1Escrow implementation address=%s", address(l1Escrow));
+
         // deploy proxy
         L1EscrowProxy l1EscrowProxy = new L1EscrowProxy(address(l1Escrow), "");
+        console.log("L1Escrow proxy address=%s", address(l1EscrowProxy));
 
         // return address of the proxy
         l1eProxy = address(l1EscrowProxy);
@@ -30,18 +35,36 @@ library LibDeployInit {
     {
         // deploy implementation
         ZkMinterBurner minterBurnerImpl = new ZkMinterBurner();
+        console.log(
+            "ZkMinterBurner implementation address=%s",
+            address(minterBurnerImpl)
+        );
+
         // deploy proxy
         ZkMinterBurnerProxy minterBurnerProxy = new ZkMinterBurnerProxy(
             address(minterBurnerImpl),
             ""
         );
+        console.log(
+            "ZKMinterBurner proxy address=%s",
+            address(minterBurnerProxy)
+        );
 
         // deploy implementation
         NativeConverter nativeConverter = new NativeConverter();
+        console.log(
+            "NativeConverter implementation address=%s",
+            address(nativeConverter)
+        );
+
         // deploy proxy
         NativeConverterProxy nativeConverterProxy = new NativeConverterProxy(
             address(nativeConverter),
             ""
+        );
+        console.log(
+            "NativeConverter proxy address=%s",
+            address(nativeConverterProxy)
         );
 
         // return addresses of the proxies
