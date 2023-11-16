@@ -8,19 +8,23 @@
 
 ## Contracts
 
-- **BridgedWrapped USDC** (zkEVM) - existing token for USDC in zkEVM, created by the Polygon ZkEVMBridge using the default TokenWrapped ERC20 contract.
+- [**BridgedWrapped USDC**](https://zkevm.polygonscan.com/address/0xA8CE8aee21bC2A48a5EF670afCc9274C7bbbC035) (zkEVM) - existing token for USDC in zkEVM, created by the Polygon ZkEVMBridge using the default TokenWrapped ERC20 contract. 
 
-- **USDC-e** (zkEVM) - "Native" USDC in zkEVM. This contract matches the current USDC contract deployed on Ethereum, with all expected features. The contract address is different from the current "bridge wrapped" USDC in use today, and has the ability to issue and burn tokens as well as "blacklist" addresses. [See USDC-e project](https://github.com/omnifient/usdc-e).
+- [**USDC-e**](https://zkevm.polygonscan.com/address/0x37eAA0eF3549a5Bb7D431be78a3D99BD360d19e5) (zkEVM) - "Native" USDC in zkEVM. This contract matches the current USDC contract deployed on Ethereum, with all expected features. The contract address is different from the current "bridge wrapped" USDC in use today, and has the ability to issue and burn tokens as well as "blacklist" addresses. [See USDC-e project](https://github.com/omnifient/usdc-e).
 
-- **L1Escrow** (L1) - This contract receives L1 USDC from users, and triggers the ZkMinterBurner contract on zkEVM (through the Polygon ZkEVM Bridge) to mint USDC-e. It holds all of the L1 backing of USDC-e.
+- [**L1Escrow**](https://etherscan.io/address/0x70E70e58ed7B1Cec0D8ef7464072ED8A52d755eB) (L1) - This contract receives L1 USDC from users, and triggers the ZkMinterBurner contract on zkEVM (through the Polygon ZkEVM Bridge) to mint USDC-e. It holds all of the L1 backing of USDC-e.
   It's also triggered by the Bridge to withdraw L1 USDC.
 
-- **ZkMinterBurner** (zkEVM) - This contract receives USDC-e from users on zkEVM, burns it, and triggers the L1Escrow contract on Ethereum Mainnet (through the Polygon ZkEVM Bridge) to transfer L1 USDC to the user.
+- [**ZkMinterBurner**](https://zkevm.polygonscan.com/address/0xBDa0B27f93B2FD3f076725b89cf02e48609bC189) (zkEVM) - This contract receives USDC-e from users on zkEVM, burns it, and triggers the L1Escrow contract on Ethereum Mainnet (through the Polygon ZkEVM Bridge) to transfer L1 USDC to the user.
   It's also triggered by the Bridge to mint USDC-e when the Bridge receives a message from the L1Escrow that a user has deposited L1 USDC.
 
-- **NativeConverter** (zkEVM) - This contract receives BridgeWrappedUSDC on zkEVM and mints back USDC-e. It also has a permissionless publicly callable function called "migrate" which withdraws all BridgedWrappedUSDC to L1 through the Bridge. The beneficiary address is the L1Escrow, thus migrating the supply and settling the balance.
+- [**NativeConverter**](https://zkevm.polygonscan.com/address/0xd4F3531Fc95572D9e7b9e9328D9FEaa8e8496054) (zkEVM) - This contract receives BridgeWrappedUSDC on zkEVM and mints back USDC-e. It also has a permissionless publicly callable function called "migrate" which withdraws all BridgedWrappedUSDC to L1 through the Bridge. The beneficiary address is the L1Escrow, thus migrating the supply and settling the balance.
 
 ## Access Control
+
+On Ethereum Mainnet the L1Escrow Admin & Owner are [this Safe wallet](https://app.safe.global/home?safe=eth:0xf694C9e3a34f5Fa48b6f3a0Ff186C1c6c4FcE904).
+
+On the Polygon zkEVM the ZkMinterBurner and NativeConverter's Admin & Owner are [this Safe wallet](https://app.safe.global/home?safe=zkevm:0x2be7b3e7b9BFfbB38B85f563f88A34d84Dc99c9f).
 
 - L1Escrow
   - Pauser/Unpauser
@@ -75,7 +79,7 @@ anvil --fork-url <https://polygonzkevm-mainnet.g.alchemy.com/v2/YOUR_ALCHEMY_KEY
 
 ```bash
 cd usdc-e/
-forge script script/DeployInitUSDCE.s.sol:DeployInitUSDCE --fork-url http://localhost:8101 --broadcast --verify -vvvv
+forge script script/DeployInitUSDCE.s.sol:DeployInitUSDCE --fork-url http://localhost:8101 --broadcast -vvvv
 ```
 
 3. Copy the address to where USDC-e was deployed (to be used in the next step)
@@ -140,65 +144,23 @@ ADDRESS_L2_USDC=0x00...000
 
 ```bash
 cd usdc-lxly/
-forge script scripts/DeployInit.s.sol:DeployInit --broadcast -vvvv
+forge script scripts/DeployInit.s.sol:DeployInit --broadcast --multi -vvvv
 ```
 
 5. verify contracts
 
-```bash
-# verify L1Escrow
-forge verify-contract \
-    --chain-id <l1-chain-id> \
-    --watch \
-    --etherscan-api-key <l1-etherscan-api-key> \
-    <deployed-address> \
-    src/L1Escrow.sol:L1Escrow
+Use the `forge flatten` CLI tool to create a single Solidity file for each of the contracts deployed, and then use the Etherscan/Polygonscan Verification GUI to manually verify each contract.
 
-# verify L1EscrowProxy
-forge verify-contract \
-    --chain-id <l1-chain-id> \
-    --watch \
-    --etherscan-api-key <l1-etherscan-api-key> \
-    --constructor-args $(cast abi-encode "constructor(address,bytes memory)" <L1Escrow-address> "") \
-    <deployed-address> \
-    src/L1EscrowProxy.sol:L1EscrowProxy
+[Etherscan Verification Tool](https://etherscan.io/verifyContract)
 
+[Polygonscan Verification Tool](https://zkevm.polygonscan.com/verifyContract)
 
-# verify ZkMinterBurner
-forge verify-contract \
-    --chain-id <l2-chain-id> \
-    --watch \
-    --etherscan-api-key <l2-etherscan-api-key> \
-    <deployed-address> \
-    src/ZkMinterBurner.sol:ZkMinterBurner
-
-# verify ZkMinterBurnerProxy
-forge verify-contract \
-    --chain-id <l2-chain-id> \
-    --watch \
-    --etherscan-api-key <l2-etherscan-api-key> \
-    --constructor-args $(cast abi-encode "constructor(address,bytes memory)" <ZkMinterBurner-address> "") \
-    <deployed-address> \
-    src/ZkMinterBurnerProxy.sol:ZkMinterBurnerProxy
-
-
-# verify NativeConverter
-forge verify-contract \
-    --chain-id <l2-chain-id> \
-    --watch \
-    --etherscan-api-key <l2-etherscan-api-key> \
-    <deployed-address> \
-    src/NativeConverter.sol:NativeConverter
-
-# verify NativeConverterProxy
-forge verify-contract \
-    --chain-id <l2-chain-id> \
-    --watch \
-    --etherscan-api-key <l2-etherscan-api-key> \
-    --constructor-args $(cast abi-encode "constructor(address,bytes memory)" <NativeConverter-address> "") \
-    <deployed-address> \
-    src/NativeConverterProxy.sol:NativeConverterProxy
-```
+* Use "Solidity (Single File)" for the Compiler Type
+* Use v0.8.17+commit.8df45f5f for the Compiler version
+* Use "MIT" for Open Source License Type
+* Select "Yes" from the Optimization dropdown
+* When it asks for contract source code, copy+paste in the result of `forge flatten <path_to_solidity_file>` 
+* When verifying one of the Proxy contracts which take constructor arguments, use [Hashex](https://abi.hashex.org/) to ABI-encode your constructor arguments. For the `bytes` constructor argument, simply leave the argument empty, do not pass "" as an argument, as that will be incorrect and your contract will not verify
 
 6. test contracts
 

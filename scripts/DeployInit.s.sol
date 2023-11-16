@@ -89,8 +89,11 @@ contract DeployInit is Script {
             );
         vm.stopBroadcast();
 
-        console.log("L1_ESCROW_PROXY=%s", address(l1Escrow));
-        console.log("ZK_MINTER_BURNER_PROXY=%s", address(minterBurner));
-        console.log("NATIVE_CONVERTER_PROXY=%s", address(nativeConverter));
+        vm.selectFork(l1ForkId);
+        console.log("L1Escrow owner=%s", l1Escrow.owner());
+
+        vm.selectFork(l2ForkId);
+        console.log("ZkMinterBurner owner=%s", minterBurner.owner());
+        console.log("NativeConverter owner=%s", nativeConverter.owner());
     }
 }
