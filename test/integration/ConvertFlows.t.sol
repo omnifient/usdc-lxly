@@ -207,6 +207,11 @@ contract ConvertFlows is Base {
         // bob converts 8k native to wrapped, with frank as the receiver
         uint256 amount2 = _toUSDC(8000);
         _erc20L2Usdc.approve(address(_nativeConverter), amount2);
+
+        // check that our convert event is emitted
+        vm.expectEmit(address(_nativeConverter));
+        emit Events.Deconvert(_bob, _frank, amount2);
+
         _nativeConverter.deconvert(_frank, amount2, _emptyBytes);
 
         // frank has 8k wrapped

@@ -21,6 +21,7 @@ contract NativeConverter is CommonAdminOwner {
     using SafeERC20Upgradeable for IUSDC;
 
     event Convert(address indexed from, address indexed to, uint256 amount);
+    event Deconvert(address indexed from, address indexed to, uint256 amount);
     event Migrate(uint256 amount);
 
     /// @notice the PolygonZkEVMBridge deployed on the zkEVM
@@ -124,6 +125,8 @@ contract NativeConverter is CommonAdminOwner {
 
         // and then send bridge wrapped usdc to the user
         zkBWUSDC.safeTransfer(receiver, amount);
+
+        emit Deconvert(msg.sender, receiver, amount);
     }
 
     /// @notice Migrates L2 BridgeWrappedUSDC USDC to L1 USDC
