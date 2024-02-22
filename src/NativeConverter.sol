@@ -114,7 +114,7 @@ contract NativeConverter is CommonAdminOwner {
     ) external whenNotPaused {
         require(receiver != address(0), "INVALID_RECEIVER");
         require(amount > 0, "INVALID_AMOUNT");
-        require(amount < zkBWUSDC.balanceOf(address(this)), "AMOUNT_TOO_LARGE");
+        require(amount <= zkBWUSDC.balanceOf(address(this)), "AMOUNT_TOO_LARGE");
 
         if (permitData.length > 0)
             LibPermit.permit(address(zkUSDCe), amount, permitData);
